@@ -1,0 +1,72 @@
+{
+  "format": 1,
+  "restore": {
+    "D:\\002. Wells\\001. 회사업무\\002. 배전지능화팀\\002. 개발소스\\016. KDMSServer\\UI\\MessageSenderTest\\MessageSenderTest.csproj": {}
+  },
+  "projects": {
+    "D:\\002. Wells\\001. 회사업무\\002. 배전지능화팀\\002. 개발소스\\016. KDMSServer\\UI\\MessageSenderTest\\MessageSenderTest.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\002. Wells\\001. 회사업무\\002. 배전지능화팀\\002. 개발소스\\016. KDMSServer\\UI\\MessageSenderTest\\MessageSenderTest.csproj",
+        "projectName": "MessageSenderTest",
+        "projectPath": "D:\\002. Wells\\001. 회사업무\\002. 배전지능화팀\\002. 개발소스\\016. KDMSServer\\UI\\MessageSenderTest\\MessageSenderTest.csproj",
+        "packagesPath": "C:\\Users\\Han\\.nuget\\packages\\",
+        "outputPath": "D:\\002. Wells\\001. 회사업무\\002. 배전지능화팀\\002. 개발소스\\016. KDMSServer\\UI\\MessageSenderTest\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "D:\\Program Files\\DevExpress 23.1\\Components\\Offline Packages",
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\Han\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\DevExpress 23.1.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net7.0-windows"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "D:\\Program Files\\DevExpress 23.1\\Components\\System\\Components\\Packages": {},
+          "https://www.nuget.org/api/v2/": {}
+        },
+        "frameworks": {
+          "net7.0-windows7.0": {
+            "targetAlias": "net7.0-windows",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net7.0-windows7.0": {
+          "targetAlias": "net7.0-windows",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            },
+            "Microsoft.WindowsDesktop.App.WPF": {
+              "privateAssets": "none"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101\\RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,101 @@
+﻿<Application x:Class="KDMSViewer.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:KDMSViewer"
+             xmlns:view="clr-namespace:KDMSViewer.View"
+             xmlns:model="clr-namespace:KDMSViewer.ViewModel">
+    
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Theme/Colors.xaml"/>
+                <ResourceDictionary Source="Theme/Fonts.xaml"/>
+                <ResourceDictionary Source="Theme/ThemeAnimation.xaml"/>
+                <ResourceDictionary Source="Theme/ThemeButton.xaml"/>
+                <ResourceDictionary Source="Theme/ThemeTabContrl.xaml"/>
+                <ResourceDictionary Source="Theme/ThemeText.xaml"/>
+                <ResourceDictionary Source="Theme/ThemeComboBox.xaml"/>
+                <ResourceDictionary Source="Theme/ThemeCheckBox.xaml"/>
+                <ResourceDictionary Source="Theme/ThemeDatePicker.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <DataTemplate DataType="{x:Type model:MainViewModel}">
+                <local:MainWindow/>
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type model:DataViewModel}">
+                <view:DataView/>
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type model:ViewModel_SwitchData}">
+                <view:View_SwitchData/>
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type model:ViewModel_FiAlarmData}">
+                <view:View_FiAlarmData/>
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type model:ViewModel_DayStatData}">
+                <view:View_DayStatData/>
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type model:ViewModel_StatisticsMinData}">
+                <view:View_StatisticsMinData/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type model:ViewModel_StatisticsHourData}">
+                <view:View_StatisticsHourData/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type model:ViewModel_StatisticsDayData}">
+                <view:View_StatisticsDayData/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type model:ViewModel_StatisticsMonthData}">
+                <view:View_StatisticsMonthData/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type model:ViewModel_StatisticsYearData}">
+                <view:View_StatisticsYearData/>
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type model:ViewModel_CommDayData}">
+                <view:View_CommDayData/>
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type model:ViewModel_CommLogData}">
+                <view:View_CommLogData/>
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type model:OperationViewModel}">
+                <view:OperationView/>
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type model:OperationBiViewModel}">
+                <view:OperationBiView/>
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type model:OperationAiViewModel}">
+                <view:OperationAiView/>
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type model:OperationAlarmViewModel}">
+                <view:OperationAlarmView/>
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type model:OperationSchduleViewModel}">
+                <view:OperationSchduleView/>
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type model:OperationStorageViewModel}">
+                <view:OperationStorageView/>
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type model:ConfigViewModel}">
+                <view:ConfigView/>
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type model:TrandViewModel}">
+                <view:TrandView/>
+            </DataTemplate>
+
+
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

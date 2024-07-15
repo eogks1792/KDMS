@@ -1,0 +1,41 @@
+﻿<dx:ThemedWindow  x:Class="KDMSViewer.View.LoadingView"
+                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                  xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" 
+                  xmlns:local="clr-namespace:KDMSViewer.View"
+                  mc:Ignorable="d"
+                  Title="LoadingView" 
+                  Height="90" 
+                  Width="250"
+                  WindowStyle="None"
+                  WindowStartupLocation="CenterScreen"
+                  AllowsTransparency="True"
+                  Background="Transparent"
+                  dx:ThemeManager.ThemeName="Win11Dark">
+
+    <Grid Background="Transparent">
+        <dx:LoadingDecorator Width="auto"
+                             Height="auto"
+                             IsSplashScreenShown="True" 
+                             OwnerLock="None" 
+                             SplashScreenLocation="CenterContainer">
+            <dx:LoadingDecorator.SplashScreenTemplate>
+                <DataTemplate>
+                    <dx:WaitIndicator Content="Loading..." DeferedVisibility="True">
+                        <dx:WaitIndicator.ContentTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="데이터 로딩중..." 
+                                           FontSize="{StaticResource FontSizeMiddle}"/>
+                            </DataTemplate>
+                        </dx:WaitIndicator.ContentTemplate>
+                    </dx:WaitIndicator>
+                </DataTemplate>
+            </dx:LoadingDecorator.SplashScreenTemplate>
+        </dx:LoadingDecorator>
+    </Grid>
+</dx:ThemedWindow>
+    
+    
+

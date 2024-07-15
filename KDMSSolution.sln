@@ -1,0 +1,53 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34511.84
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LIB", "LIB", "{C7A37E77-763E-45F4-B286-2F122331FC17}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UI", "UI", "{23FDFEBF-D109-4DA1-A769-2076FCA418CE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KDMSViewer", "UI\KDMSViewer\KDMSViewer.csproj", "{186810FB-15D1-4C7B-BF79-8029BBEB28B4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KDMS.EF.Core", "LIB\KDMS.EF.Core\KDMS.EF.Core.csproj", "{78FC39C4-4915-475A-8923-10B59521984E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessageSenderTest", "UI\MessageSenderTest\MessageSenderTest.csproj", "{8B996749-1A6B-405E-82E7-45870FE4821B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KDMSServer", "UI\KDMSServer\KDMSServer.csproj", "{BAFBC6FD-1637-4C41-8141-B7E148A914BB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{186810FB-15D1-4C7B-BF79-8029BBEB28B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{186810FB-15D1-4C7B-BF79-8029BBEB28B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{186810FB-15D1-4C7B-BF79-8029BBEB28B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{186810FB-15D1-4C7B-BF79-8029BBEB28B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{78FC39C4-4915-475A-8923-10B59521984E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78FC39C4-4915-475A-8923-10B59521984E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78FC39C4-4915-475A-8923-10B59521984E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78FC39C4-4915-475A-8923-10B59521984E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B996749-1A6B-405E-82E7-45870FE4821B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B996749-1A6B-405E-82E7-45870FE4821B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B996749-1A6B-405E-82E7-45870FE4821B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B996749-1A6B-405E-82E7-45870FE4821B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BAFBC6FD-1637-4C41-8141-B7E148A914BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BAFBC6FD-1637-4C41-8141-B7E148A914BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BAFBC6FD-1637-4C41-8141-B7E148A914BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BAFBC6FD-1637-4C41-8141-B7E148A914BB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{186810FB-15D1-4C7B-BF79-8029BBEB28B4} = {23FDFEBF-D109-4DA1-A769-2076FCA418CE}
+		{78FC39C4-4915-475A-8923-10B59521984E} = {C7A37E77-763E-45F4-B286-2F122331FC17}
+		{8B996749-1A6B-405E-82E7-45870FE4821B} = {23FDFEBF-D109-4DA1-A769-2076FCA418CE}
+		{BAFBC6FD-1637-4C41-8141-B7E148A914BB} = {23FDFEBF-D109-4DA1-A769-2076FCA418CE}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DFA4AE02-3935-4FC9-819E-1BCFF13FFC6C}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,191 @@
+﻿<UserControl x:Class="KDMSViewer.View.View_CommLogData"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:KDMSViewer.View"
+             xmlns:converter="clr-namespace:KDMSViewer.Converters"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="1450">
+
+    <UserControl.Resources>
+        <converter:IndexConverter x:Key="indexConvert"/>
+        
+        <Style TargetType="{x:Type GridViewColumnHeader}">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Height" Value="40" />
+            <Setter Property="FontSize" Value="{StaticResource FontSizeSmall}" />
+            <Setter Property="BorderThickness" Value="5"/>
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Margin" Value="0,-5,0,0"/>
+            <Setter Property="Padding" Value="0,5,0,0"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="Black"></Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <ListView Margin="0 0 0 0"
+                  FontFamily="{StaticResource LatoBold}" 
+                  FontSize="{StaticResource FontSizeMiddle}" 
+                  BorderBrush="Transparent"
+                  BorderThickness="0,0,0,1"
+                  Background="Transparent"
+                  HorizontalAlignment="Stretch" 
+                  VerticalAlignment="Stretch" 
+                  ItemsSource="{Binding PointItems}" 
+                  ScrollViewer.VerticalScrollBarVisibility="Auto" 
+                  VirtualizingStackPanel.IsVirtualizing="True" 
+                  VirtualizingStackPanel.VirtualizationMode="Recycling">
+
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    <Setter Property="Height" Value="22" />
+                    <Setter Property="FontSize" Value="{StaticResource FontSizeSmall}" />
+                    <Setter Property="Background" Value="Transparent" />
+                    <Setter Property="Foreground" Value="White" />
+                    <Setter Property="BorderBrush" Value="Transparent" />
+                    <Setter Property="BorderThickness" Value="0,0,0,0" />
+
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Foreground" Value="Black"></Setter>
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Foreground" Value="Black"></Setter>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </ListView.ItemContainerStyle>
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="번호" Width="{Binding ElementName=no, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListViewItem}}, Mode=OneWay, Converter={StaticResource indexConvert}}" 
+                                               TextAlignment="Center" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="변전소" Width="{Binding ElementName=subs, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding SubsName}" TextAlignment="Left" Margin="3 0 0 0"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="DL 이름" Width="{Binding ElementName=dl, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Dl}" TextAlignment="Left" Margin="3 0 0 0"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="단말장치명" Width="{Binding ElementName=sw, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}" TextAlignment="Left" Margin="3 0 0 0"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="CEQ ID" Width="{Binding ElementName=ceq, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding CeqID}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+      
+                    <GridViewColumn Header="성공 여부" Width="{Binding ElementName=succ_fail, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding CommState}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="전체 횟수" Width="{Binding ElementName=total, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding CommTotalCount}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="성공 횟수" Width="{Binding ElementName=sucess, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding CommSucessCount}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="실패 횟수" Width="{Binding ElementName=faill, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding CommSucessCount}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="통신 성공률" Width="{Binding ElementName=sucess_rate, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding CommSucessCount}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Header="정보 수집시간" Width="{Binding ElementName=comm_time, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding CommTime, StringFormat=yyyy-MM-dd HH:mm:ss}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="DB 기록시간" Width="{Binding ElementName=save_time, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding SaveTime, StringFormat=yyyy-MM-dd HH:mm:ss}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+        <Grid Visibility="Hidden">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="60"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="auto"/>
+
+                <ColumnDefinition Width="130"/>
+                <ColumnDefinition Width="130"/>
+                <ColumnDefinition Width="130"/>
+                <ColumnDefinition Width="130"/>
+                <ColumnDefinition Width="130"/>
+
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="30"/>
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0" x:Name="no"/>
+            <Grid Grid.Column="1" x:Name="subs"/>
+            <Grid Grid.Column="2" x:Name="dl"/>
+            <Grid Grid.Column="3" x:Name="sw"/>
+            <Grid Grid.Column="4" x:Name="ceq"/>
+
+            <Grid Grid.Column="5" x:Name="succ_fail"/>
+            <Grid Grid.Column="6" x:Name="total"/>
+            <Grid Grid.Column="7" x:Name="sucess"/>
+            <Grid Grid.Column="8" x:Name="faill"/>
+            <Grid Grid.Column="9" x:Name="sucess_rate"/>
+
+            <Grid Grid.Column="10" x:Name="comm_time"/>
+            <Grid Grid.Column="11" x:Name="save_time"/>
+        </Grid>
+    </Grid>
+</UserControl>

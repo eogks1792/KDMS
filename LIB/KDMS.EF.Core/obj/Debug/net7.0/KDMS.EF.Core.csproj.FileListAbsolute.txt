@@ -1,0 +1,14 @@
+D:\002. Wells\001. 회사업무\002. 배전지능화팀\002. 개발소스\016. KDMS\KDMSSolution\LIB\KDMS.EF.Core\bin\Debug\net7.0\KDMS.EF.Core.deps.json
+D:\002. Wells\001. 회사업무\002. 배전지능화팀\002. 개발소스\016. KDMS\KDMSSolution\LIB\KDMS.EF.Core\bin\Debug\net7.0\KDMS.EF.Core.runtimeconfig.json
+D:\002. Wells\001. 회사업무\002. 배전지능화팀\002. 개발소스\016. KDMS\KDMSSolution\LIB\KDMS.EF.Core\bin\Debug\net7.0\KDMS.EF.Core.dll
+D:\002. Wells\001. 회사업무\002. 배전지능화팀\002. 개발소스\016. KDMS\KDMSSolution\LIB\KDMS.EF.Core\bin\Debug\net7.0\KDMS.EF.Core.pdb
+D:\002. Wells\001. 회사업무\002. 배전지능화팀\002. 개발소스\016. KDMS\KDMSSolution\LIB\KDMS.EF.Core\obj\Debug\net7.0\KDMS.EF.Core.csproj.AssemblyReference.cache
+D:\002. Wells\001. 회사업무\002. 배전지능화팀\002. 개발소스\016. KDMS\KDMSSolution\LIB\KDMS.EF.Core\obj\Debug\net7.0\KDMS.EF.Core.GeneratedMSBuildEditorConfig.editorconfig
+D:\002. Wells\001. 회사업무\002. 배전지능화팀\002. 개발소스\016. KDMS\KDMSSolution\LIB\KDMS.EF.Core\obj\Debug\net7.0\KDMS.EF.Core.AssemblyInfoInputs.cache
+D:\002. Wells\001. 회사업무\002. 배전지능화팀\002. 개발소스\016. KDMS\KDMSSolution\LIB\KDMS.EF.Core\obj\Debug\net7.0\KDMS.EF.Core.AssemblyInfo.cs
+D:\002. Wells\001. 회사업무\002. 배전지능화팀\002. 개발소스\016. KDMS\KDMSSolution\LIB\KDMS.EF.Core\obj\Debug\net7.0\KDMS.EF.Core.csproj.CoreCompileInputs.cache
+D:\002. Wells\001. 회사업무\002. 배전지능화팀\002. 개발소스\016. KDMS\KDMSSolution\LIB\KDMS.EF.Core\obj\Debug\net7.0\KDMS.EF.Core.dll
+D:\002. Wells\001. 회사업무\002. 배전지능화팀\002. 개발소스\016. KDMS\KDMSSolution\LIB\KDMS.EF.Core\obj\Debug\net7.0\refint\KDMS.EF.Core.dll
+D:\002. Wells\001. 회사업무\002. 배전지능화팀\002. 개발소스\016. KDMS\KDMSSolution\LIB\KDMS.EF.Core\obj\Debug\net7.0\KDMS.EF.Core.pdb
+D:\002. Wells\001. 회사업무\002. 배전지능화팀\002. 개발소스\016. KDMS\KDMSSolution\LIB\KDMS.EF.Core\obj\Debug\net7.0\KDMS.EF.Core.genruntimeconfig.cache
+D:\002. Wells\001. 회사업무\002. 배전지능화팀\002. 개발소스\016. KDMS\KDMSSolution\LIB\KDMS.EF.Core\obj\Debug\net7.0\ref\KDMS.EF.Core.dll

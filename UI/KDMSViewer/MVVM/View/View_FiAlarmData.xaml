@@ -1,0 +1,289 @@
+﻿<UserControl x:Class="KDMSViewer.View.View_FiAlarmData"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:KDMSViewer.View"
+             xmlns:converter="clr-namespace:KDMSViewer.Converters"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="1450">
+    <UserControl.Resources>
+        <converter:IndexConverter x:Key="indexConvert"/>
+
+        <Style TargetType="{x:Type GridViewColumnHeader}">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Height" Value="40" />
+            <Setter Property="FontSize" Value="{StaticResource FontSizeSmall}" />
+            <Setter Property="BorderThickness" Value="5"/>
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Margin" Value="0,-5,0,0"/>
+            <Setter Property="Padding" Value="0,5,0,0"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="Black"></Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
+
+    <Grid>
+        <ListView Margin="0 0 0 0"
+                  FontFamily="{StaticResource LatoBold}" 
+                  FontSize="{StaticResource FontSizeMiddle}" 
+                  BorderBrush="Transparent"
+                  BorderThickness="0,0,0,1"
+                  Background="Transparent"
+                  HorizontalAlignment="Stretch" 
+                  VerticalAlignment="Stretch" 
+                  ItemsSource="{Binding PointItems}" 
+                  IsSynchronizedWithCurrentItem="True"
+                  VirtualizingStackPanel.IsVirtualizing="True" 
+                  VirtualizingStackPanel.VirtualizationMode="Recycling">
+
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    <Setter Property="Height" Value="22" />
+                    <Setter Property="FontSize" Value="{StaticResource FontSizeSmall}" />
+                    <Setter Property="Background" Value="Transparent" />
+                    <Setter Property="Foreground" Value="White" />
+                    <Setter Property="BorderBrush" Value="Transparent" />
+                    <Setter Property="BorderThickness" Value="0,0,0,0" />
+
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Foreground" Value="Black"></Setter>
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Foreground" Value="Black"></Setter>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </ListView.ItemContainerStyle>
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="번호" Width="{Binding ElementName=no, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListViewItem}}, Mode=OneWay, Converter={StaticResource indexConvert}}" 
+                                               TextAlignment="Center" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="변전소" Width="{Binding ElementName=subs, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding SubsName}" TextAlignment="Left" Margin="3 0 0 0"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="DL 이름" Width="{Binding ElementName=dl, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Dl}" TextAlignment="Left" Margin="3 0 0 0"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="단말장치명" Width="{Binding ElementName=sw, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}" TextAlignment="Left" Margin="3 0 0 0"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="CEQ ID" Width="{Binding ElementName=ceq, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Ceqid}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="단자번호" Width="{Binding ElementName=circuit, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Circuitno}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="알람 이름" Width="{Binding ElementName=alarm_name, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Circuitno}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="알람 값" Width="{Binding ElementName=alarm_value, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Circuitno}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="알람 내용" Width="{Binding ElementName=log_desc, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Circuitno}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <!--<GridViewColumn Header="FI 준비" Width="{Binding ElementName=fi_ready, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Circuitno}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="일시 FI" Width="{Binding ElementName=perm_fi, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding PermFi}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="순시 FI" Width="{Binding ElementName=temp_fi, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding TempFi}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="FI A상" Width="{Binding ElementName=fi_a, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding FiA}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="FI B상" Width="{Binding ElementName=fi_b, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding FiA}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="FI C상" Width="{Binding ElementName=fi_c, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding FiC}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="FI N상" Width="{Binding ElementName=fi_n, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding FiN}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>-->
+                    <GridViewColumn Header="고장전류A" Width="{Binding ElementName=fi_cur_a, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding FaultCurrentA}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="고장전류B" Width="{Binding ElementName=fi_cur_b, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding FaultCurrentB}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="고장전류C" Width="{Binding ElementName=fi_cur_c, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding FaultCurrentC}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="고장전류N" Width="{Binding ElementName=fi_cur_n, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding FaultCurrentN}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="서버 기록시간" Width="{Binding ElementName=log_time, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding LogTime, StringFormat=yyyy-MM-dd HH:mm:ss}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="단말 발생시간" Width="{Binding ElementName=frtu_time, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding FrtuTime, StringFormat=yyyy-MM-dd HH:mm:ss.fff}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="DB 기록시간" Width="{Binding ElementName=save_time, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding SaveTime, StringFormat=yyyy-MM-dd HH:mm:ss}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+        <Grid Visibility="Hidden">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="60"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="120"/>
+                <ColumnDefinition Width="140"/>
+
+                <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="130"/>
+                <ColumnDefinition Width="130"/>
+                <ColumnDefinition Width="130"/>
+                <!--<ColumnDefinition Width="130"/>
+                <ColumnDefinition Width="130"/>
+                <ColumnDefinition Width="130"/>
+                <ColumnDefinition Width="130"/>-->
+                <ColumnDefinition Width="130"/>
+                <ColumnDefinition Width="130"/>
+                <ColumnDefinition Width="130"/>
+                <ColumnDefinition Width="130"/>
+                <ColumnDefinition Width="175"/>
+                <ColumnDefinition Width="180"/>
+                <ColumnDefinition Width="175"/>
+
+                <ColumnDefinition Width="30"/>
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0" x:Name="no"/>
+            <Grid Grid.Column="1" x:Name="subs"/>
+            <Grid Grid.Column="2" x:Name="dl"/>
+            <Grid Grid.Column="3" x:Name="sw"/>
+            <Grid Grid.Column="4" x:Name="ceq"/>
+
+            <Grid Grid.Column="5" x:Name="circuit"/>
+            <Grid Grid.Column="6" x:Name="alarm_name"/>
+            <Grid Grid.Column="7" x:Name="alarm_value"/>
+            <Grid Grid.Column="8" x:Name="log_desc"/>
+            <!--<Grid Grid.Column="6" x:Name="fi_ready"/>
+            <Grid Grid.Column="7" x:Name="perm_fi"/>
+            <Grid Grid.Column="8" x:Name="temp_fi"/>
+            <Grid Grid.Column="9" x:Name="fi_a"/>
+            <Grid Grid.Column="10" x:Name="fi_b"/>
+            <Grid Grid.Column="11" x:Name="fi_c"/>
+            <Grid Grid.Column="12" x:Name="fi_n"/>-->
+            <Grid Grid.Column="9" x:Name="fi_cur_a"/>
+            <Grid Grid.Column="10" x:Name="fi_cur_b"/>
+            <Grid Grid.Column="11" x:Name="fi_cur_c"/>
+            <Grid Grid.Column="12" x:Name="fi_cur_n"/>
+
+            <Grid Grid.Column="13" x:Name="log_time"/>
+            <Grid Grid.Column="14" x:Name="frtu_time"/>
+            <Grid Grid.Column="15" x:Name="save_time"/>
+        </Grid>
+    </Grid>
+
+
+</UserControl>
+
+    

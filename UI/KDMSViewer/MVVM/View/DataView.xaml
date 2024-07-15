@@ -1,0 +1,941 @@
+﻿<UserControl  x:Class="KDMSViewer.View.DataView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:KDMSViewer.View"
+             xmlns:model="clr-namespace:KDMSViewer.Model"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/charts" 
+             xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" 
+             mc:Ignorable="d" 
+             d:DesignHeight="1024" d:DesignWidth="1800">
+
+    <!--xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"-->
+
+    <UserControl.Resources>
+        
+        <Style TargetType="{x:Type TextBlock}" x:Key="pointTypeStyle">
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding PointType}" Value="1">
+                    <Setter Property="Text" Value="BI"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding PointType}" Value="2">
+                    <Setter Property="Text" Value="BO"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding PointType}" Value="3">
+                    <Setter Property="Text" Value="AI"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding PointType}" Value="4">
+                    <Setter Property="Text" Value="AO"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding PointType}" Value="5">
+                    <Setter Property="Text" Value="COUNTER"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="{x:Type GridViewColumnHeader}">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="FontSize" Value="{StaticResource FontSizeRegular}" />
+            <Setter Property="BorderThickness" Value="5"/>
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Margin" Value="-5,-5,-5,0"/>
+            <Setter Property="Padding" Value="0,5,0,0"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="Black"></Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="5*"/>
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Row="0"
+                Margin="5 5 0 5 "
+                BorderThickness="1"
+                BorderBrush="Gray"
+                CornerRadius="5 0 0 5">
+            <TreeView Foreground="White"
+                      Background="Transparent"
+                      BorderThickness="0"
+                      FontSize="{StaticResource FontSizeSmall}"
+                      ItemsSource="{Binding TreeItems}"
+                      VirtualizingStackPanel.IsVirtualizing="True" 
+                      VirtualizingStackPanel.VirtualizationMode="Recycling">
+
+                <!--<i:Interaction.Behaviors>
+                    <model:TreeViewSelectedItemBehavior SelectedItem="{Binding DLSelected, Mode=TwoWay}" />
+                </i:Interaction.Behaviors>-->
+
+                <!--<i:Interaction.Triggers>
+                <i:EventTrigger EventName="SelectedItemChanged">
+                    <i:CallMethodAction TargetObject="{Binding}" MethodName="OnSelectionChanged" />
+                </i:EventTrigger>
+            </i:Interaction.Triggers>-->
+
+                <TreeView.Resources>
+                    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}"
+                         Color="Black" />
+                    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}"
+                         Color="White" />
+                    <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}"
+                         Color="Black" />
+                    <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}"
+                         Color="White" />
+
+                    <HierarchicalDataTemplate DataType="{x:Type model:TreeDataModel}" ItemsSource="{Binding DataModels}">
+                        <StackPanel Orientation="Horizontal"
+                                    Margin="0 -3 0 -3">
+                            <CheckBox IsChecked="{Binding IsChecked}"
+                                      Visibility="{Binding IsVisible}"
+                                      Margin="5 0 0 0"
+                                      VerticalAlignment="Center"
+                                      VerticalContentAlignment="Center">
+
+                                <!--<CheckBox.LayoutTransform>
+                                    <ScaleTransform ScaleX="1.2" ScaleY="1.2" />
+                                </CheckBox.LayoutTransform>-->
+
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Checked">
+                                        <i:CallMethodAction TargetObject="{Binding}" MethodName="OnChecked" />
+                                    </i:EventTrigger>
+
+                                    <i:EventTrigger EventName="Unchecked">
+                                        <i:CallMethodAction TargetObject="{Binding}" MethodName="OnUnchecked" />
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </CheckBox>
+                            <TextBlock Text="{Binding Name}"
+                                       Margin="5 0 5 0"/>
+                        </StackPanel>
+                    </HierarchicalDataTemplate>
+                    <!--<DataTemplate DataType="{x:Type model:TreeItemModel}">
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox IsChecked="{Binding IsChecked}"
+                                  Margin="5 0 0 0"
+                                  VerticalAlignment="Center"
+                                  VerticalContentAlignment="Center">
+                            <CheckBox.LayoutTransform>
+                                <ScaleTransform ScaleX="1" ScaleY="1" />
+                            </CheckBox.LayoutTransform>
+                        </CheckBox>
+                        <TextBlock Text="{Binding Name}"
+                                   FontSize="{StaticResource FontSizeSmall}"
+                                   Margin="5 0 5 3"/>
+                    </StackPanel>
+                </DataTemplate>-->
+                </TreeView.Resources>
+            </TreeView>
+        </Border>
+
+        <GridSplitter Grid.Column="1" 
+                      HorizontalAlignment="Stretch"
+                      Background="Transparent"
+                      Width="5"/>
+
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="2*"/>
+            </Grid.RowDefinitions>
+
+            <Grid Margin="0 0 0 5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="50"/>
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="0">
+                    <StackPanel Orientation="Horizontal">
+                        <Border Grid.Row="0"
+                                Margin="0 5 0 0"
+                                BorderThickness="1 1 1 0"
+                                BorderBrush="Gray"
+                                CornerRadius="0 5 0 0">
+
+                            <RadioButton Grid.Row="0"
+                                        Content="실시간 데이터"
+                                        Margin="10 5 15 5"
+                                        Style="{StaticResource radiobtnType}"
+                                        IsChecked="{Binding RealDataCheck}"
+                                        Background="Transparent"
+                                        FontSize="{StaticResource FontSizeRegular}" 
+                                        VerticalContentAlignment="Center">
+
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Checked">
+                                        <i:CallMethodAction TargetObject="{Binding}" MethodName="OnRealDataChecked" />
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </RadioButton>
+
+                            <!--<CheckBox Grid.Row="0"
+                                        Content="실시간 데이터"
+                                        Margin="5 5 10 5"
+                                        Style="{StaticResource checkboxType}"
+                                        IsChecked="{Binding RealDataCheck}"
+                                        Background="Transparent"
+                                        FontSize="{StaticResource FontSizeRegular}" 
+                                        VerticalContentAlignment="Center">
+
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Checked">
+                                        <i:CallMethodAction TargetObject="{Binding}" MethodName="OnRealDataChecked" />
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </CheckBox>-->
+                        </Border>
+
+                        <Border Grid.Row="0"
+                                Margin="0 5 0 0"
+                                BorderThickness="1 1 1 0"
+                                BorderBrush="Gray"
+                                CornerRadius="5 5 0 0">
+
+                            <RadioButton Grid.Row="0"
+                                        Content="통계 데이터"
+                                        Margin="10 5 15 5"
+                                        Style="{StaticResource radiobtnType}"
+                                        Background="Transparent"
+                                        IsChecked="{Binding StatisticalCheck}"
+                                        FontSize="{StaticResource FontSizeRegular}" 
+                                        VerticalContentAlignment="Center">
+
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Checked">
+                                        <i:CallMethodAction TargetObject="{Binding}" MethodName="OnStatisticalChecked" />
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </RadioButton>
+                        </Border>
+
+                        <Border Grid.Row="0"
+                                Margin="0 5 0 0"
+                                BorderThickness="1 1 1 0"
+                                BorderBrush="Gray"
+                                CornerRadius="5 5 0 0">
+
+                            <RadioButton Grid.Row="0"
+                                        Content="통신 데이터"
+                                        Margin="10 5 15 5"
+                                        Style="{StaticResource radiobtnType}"
+                                        Background="Transparent"
+                                        IsChecked="{Binding CommCheck}"
+                                        FontSize="{StaticResource FontSizeRegular}" 
+                                        VerticalContentAlignment="Center">
+
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Checked">
+                                        <i:CallMethodAction TargetObject="{Binding}" MethodName="OnCommChecked" />
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </RadioButton>
+                        </Border>
+                    </StackPanel>
+                </Grid>
+
+                <Border Grid.Row="1"
+                        Margin="0 0 5 0"
+                        BorderThickness="0 0 1 0"
+                        BorderBrush="Gray"
+                        Width="auto"
+                        HorizontalAlignment="Stretch"
+                        CornerRadius="0 5 5 5">
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Grid Grid.Column="0">
+                            <Border Margin="0 0 5 0"
+                                    BorderThickness="1 0 1 1"
+                                    BorderBrush="Gray"
+                                    Width="auto"
+                                    HorizontalAlignment="Stretch"
+                                    CornerRadius="0 0 0 0">
+                                <Grid>
+                                    <Border BorderThickness="0 1 0 0"
+                                            Margin="181,0,0,0"
+                                            BorderBrush="Gray"
+                                            CornerRadius="0 0 0 5"
+                                            Visibility="{Binding RealVisibility}" />
+
+                                    <Border BorderThickness="0 1 0 0"
+                                            Width="181"
+                                            BorderBrush="Gray"
+                                            HorizontalAlignment="Left"
+                                            CornerRadius="0 0 0 5"
+                                            Visibility="{Binding StatisticalVisibility}"/>
+
+                                    <Border BorderThickness="0 1 0 0"
+                                            Margin="343 0 0 0"
+                                            BorderBrush="Gray"
+                                            CornerRadius="0 0 0 5"
+                                            Visibility="{Binding StatisticalVisibility}" />
+
+                                    <Border BorderThickness="0 1 0 0"
+                                            Width="343"
+                                            BorderBrush="Gray"
+                                            HorizontalAlignment="Left"
+                                            CornerRadius="0 0 0 5"
+                                            Visibility="{Binding CommVisibility}"/>
+
+                                    <Border BorderThickness="0 1 0 0"
+                                            Margin="504 0 0 0"
+                                            BorderBrush="Gray"
+                                            CornerRadius="0 0 0 5"
+                                            Visibility="{Binding CommVisibility}" />
+
+                                    <StackPanel Visibility="{Binding RealVisibility}"
+                                                Orientation="Horizontal">
+
+                                        <RadioButton Grid.Row="0"
+                                                  Content="개폐기 데이터"
+                                                  Margin="10 5 6 5"
+                                                  Style="{StaticResource radiobtnType}"
+                                                  IsChecked="{Binding SwitchCheck}"
+                                                  FontSize="{StaticResource FontSizeSmall}" 
+                                                  HorizontalAlignment="Right"
+                                                  VerticalContentAlignment="Center">
+                                            <i:Interaction.Triggers>
+                                                <i:EventTrigger EventName="Checked">
+                                                    <i:CallMethodAction TargetObject="{Binding}" MethodName="OnSwitchChecked" />
+                                                </i:EventTrigger>
+                                                <!--<i:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                                                    <i:CallMethodAction TargetObject="{Binding}" MethodName="OnMouseLeftButtonDown" />
+                                                </i:EventTrigger>-->
+                                                <!--<i:EventTrigger EventName="Unchecked">
+                                                    <i:CallMethodAction TargetObject="{Binding}" MethodName="OnUnChecked" />
+                                                </i:EventTrigger>-->
+                                            </i:Interaction.Triggers>
+                                        </RadioButton>
+
+                                        <RadioButton Grid.Row="0"
+                                                  Content="FI 데이터"
+                                                  Margin="10 0 10 0"
+                                                  Style="{StaticResource radiobtnType}"
+                                                  IsChecked="{Binding FiCheck}"
+                                                  FontSize="{StaticResource FontSizeSmall}" 
+                                                  HorizontalAlignment="Left"
+                                                  VerticalContentAlignment="Center">
+                                            <i:Interaction.Triggers>
+                                                <i:EventTrigger EventName="Checked">
+                                                    <i:CallMethodAction TargetObject="{Binding}" MethodName="OnFiChecked" />
+                                                </i:EventTrigger>
+                                            </i:Interaction.Triggers>
+                                        </RadioButton>
+                                    </StackPanel>
+                                    <StackPanel Visibility="{Binding StatisticalVisibility}"
+                                                Orientation="Horizontal" >
+                                        <RadioButton Grid.Row="0"
+                                                  Content="1일 통계"
+                                                  Margin="10 0 10 0"
+                                                  Style="{StaticResource radiobtnType}"
+                                                  IsChecked="{Binding DayCheck}"
+                                                  FontSize="{StaticResource FontSizeSmall}" 
+                                                  HorizontalAlignment="Right"
+                                                  VerticalContentAlignment="Center">
+                                            <i:Interaction.Triggers>
+                                                <i:EventTrigger EventName="Checked">
+                                                    <i:CallMethodAction TargetObject="{Binding}" MethodName="OnDayStatChecked" />
+                                                </i:EventTrigger>
+                                            </i:Interaction.Triggers>
+                                        </RadioButton>
+
+                                        <RadioButton Grid.Row="0"
+                                                  Content="전류통계 15분"
+                                                  Margin="5 0 10 0"
+                                                  Style="{StaticResource radiobtnType}"
+                                                  IsChecked="{Binding StatisticMinCheck}"
+                                                  FontSize="{StaticResource FontSizeSmall}" 
+                                                  HorizontalAlignment="Right"
+                                                  VerticalContentAlignment="Center">
+                                            <i:Interaction.Triggers>
+                                                <i:EventTrigger EventName="Checked">
+                                                    <i:CallMethodAction TargetObject="{Binding}" MethodName="OnMinChecked" />
+                                                </i:EventTrigger>
+                                            </i:Interaction.Triggers>
+                                        </RadioButton>
+
+                                        <RadioButton Grid.Row="0"
+                                                  Content="1시간"
+                                                  Margin="5 0 10 0"
+                                                  Style="{StaticResource radiobtnType}"
+                                                  IsChecked="{Binding StatisticHourCheck}"
+                                                  FontSize="{StaticResource FontSizeSmall}" 
+                                                  HorizontalAlignment="Right"
+                                                  VerticalContentAlignment="Center">
+                                            <i:Interaction.Triggers>
+                                                <i:EventTrigger EventName="Checked">
+                                                    <i:CallMethodAction TargetObject="{Binding}" MethodName="OnHourChecked" />
+                                                </i:EventTrigger>
+                                            </i:Interaction.Triggers>
+                                        </RadioButton>
+
+                                        <RadioButton Grid.Row="0"
+                                                  Content="일"
+                                                  Margin="5 0 10 0"
+                                                  Style="{StaticResource radiobtnType}"
+                                                  IsChecked="{Binding StatisticDayCheck}"
+                                                  FontSize="{StaticResource FontSizeSmall}" 
+                                                  HorizontalAlignment="Right"
+                                                  VerticalContentAlignment="Center">
+                                            <i:Interaction.Triggers>
+                                                <i:EventTrigger EventName="Checked">
+                                                    <i:CallMethodAction TargetObject="{Binding}" MethodName="OnDayChecked" />
+                                                </i:EventTrigger>
+                                            </i:Interaction.Triggers>
+                                        </RadioButton>
+
+                                        <RadioButton Grid.Row="0"
+                                                  Content="월"
+                                                  Margin="5 0 10 0"
+                                                  Style="{StaticResource radiobtnType}"
+                                                  IsChecked="{Binding StatisticMonthCheck}"
+                                                  FontSize="{StaticResource FontSizeSmall}" 
+                                                  HorizontalAlignment="Right"
+                                                  VerticalContentAlignment="Center">
+                                            <i:Interaction.Triggers>
+                                                <i:EventTrigger EventName="Checked">
+                                                    <i:CallMethodAction TargetObject="{Binding}" MethodName="OnMonthChecked" />
+                                                </i:EventTrigger>
+                                            </i:Interaction.Triggers>
+                                        </RadioButton>
+
+                                        <RadioButton Grid.Row="0"
+                                                  Content="년"
+                                                  Margin="5 0 20 0"
+                                                  Style="{StaticResource radiobtnType}"
+                                                  IsChecked="{Binding StatisticYearCheck}"
+                                                  FontSize="{StaticResource FontSizeSmall}" 
+                                                  HorizontalAlignment="Left"
+                                                  VerticalContentAlignment="Center">
+                                            <i:Interaction.Triggers>
+                                                <i:EventTrigger EventName="Checked">
+                                                    <i:CallMethodAction TargetObject="{Binding}" MethodName="OnYearChecked" />
+                                                </i:EventTrigger>
+                                            </i:Interaction.Triggers>
+                                        </RadioButton>
+                                    </StackPanel>
+
+                                    <StackPanel Visibility="{Binding CommVisibility}"
+                                                Orientation="Horizontal">
+
+                                        <RadioButton Grid.Row="0"
+                                                  Content="설비 통신 데이터"
+                                                  Margin="10 5 6 5"
+                                                  Style="{StaticResource radiobtnType}"
+                                                  IsChecked="{Binding CommDayCheck}"
+                                                  FontSize="{StaticResource FontSizeSmall}" 
+                                                  HorizontalAlignment="Right"
+                                                  VerticalContentAlignment="Center">
+                                            <i:Interaction.Triggers>
+                                                <i:EventTrigger EventName="Checked">
+                                                    <i:CallMethodAction TargetObject="{Binding}" MethodName="OnCommDayChecked" />
+                                                </i:EventTrigger>
+                                            </i:Interaction.Triggers>
+                                        </RadioButton>
+
+                                        <RadioButton Grid.Row="0"
+                                                  Content="설비 통신 이력 데이터"
+                                                  Margin="10 0 10 0"
+                                                  Style="{StaticResource radiobtnType}"
+                                                  IsChecked="{Binding CommLogCheck}"
+                                                  FontSize="{StaticResource FontSizeSmall}" 
+                                                  HorizontalAlignment="Left"
+                                                  VerticalContentAlignment="Center">
+                                            <i:Interaction.Triggers>
+                                                <i:EventTrigger EventName="Checked">
+                                                    <i:CallMethodAction TargetObject="{Binding}" MethodName="OnCommLogChecked" />
+                                                </i:EventTrigger>
+                                            </i:Interaction.Triggers>
+                                        </RadioButton>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </Grid>
+
+                        <Border Grid.Column="1"
+                                HorizontalAlignment="Stretch"
+                                BorderThickness="1 1 1 1"
+                                BorderBrush="Gray"
+                                Width="auto"
+                                CornerRadius="0 5 5 0">
+
+                            <Grid HorizontalAlignment="Right" >
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="180"/>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="180"/>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="20"/>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <dxe:DateEdit Grid.Row="0" 
+                                              Grid.Column="0"
+                                              Margin="5"
+                                              HorizontalContentAlignment="Center"
+                                              FontSize="{StaticResource FontSizeSmall}"
+                                              DisplayFormatString="yyyy-MM-dd"
+                                              EditValue="{Binding FromDate}"
+                                              ShowClearButton="False"
+                                              MaxValue="{Binding ToDate}">
+                                    <!--<i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="EditValueChanged">
+                                            <i:CallMethodAction TargetObject="{Binding}" MethodName="OnEditValueChanged" />
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>-->
+                                </dxe:DateEdit>
+
+                                <dxe:ButtonEdit Grid.Row="0"
+                                                Grid.Column="1"
+                                                Margin="5"
+                                                AllowDefaultButton="False"
+                                                EditValue="{Binding FromTime}" 
+                                                Mask="{Binding TimeEditMask}"
+                                                MaskType="DateTime"
+                                                DisplayFormatString="{Binding TimeEditMask}"
+                                                FontSize="{StaticResource FontSizeRegular}"
+                                                MaskUseAsDisplayFormat="True"
+                                                Visibility="{Binding RealVisibility}">  
+                                    <dxe:ButtonEdit.Buttons>
+                                        <dxe:SpinButtonInfo IsDefaultButton="True" />
+                                    </dxe:ButtonEdit.Buttons>
+                                </dxe:ButtonEdit>
+
+                                <!--<DatePicker Grid.Row="0" 
+                                            Grid.Column="0"
+                                            Margin="5 0 5 0"
+                                            FontSize="{StaticResource FontSizeRegular}"
+                                            Height="35"
+                                            SelectedDateFormat="Short"
+                                            SelectedDate="{Binding FromDate}"
+                                            Style="{StaticResource DatePickerIconResizingStyle}" />-->
+
+                                <TextBlock Grid.Row="0" 
+                                           Grid.Column="2" 
+                                           Margin="5 0 5 0"
+                                           Text="~"
+                                           FontSize="20"
+                                           Style="{StaticResource baseTextBlock}"/>
+
+                                <dxe:DateEdit Grid.Row="0" 
+                                              Grid.Column="3"
+                                              Margin="5"
+                                              HorizontalContentAlignment="Center"
+                                              FontSize="{StaticResource FontSizeSmall}"
+                                              DisplayFormatString="yyyy-MM-dd"
+                                              EditValue="{Binding ToDate}"
+                                              ShowClearButton="False"
+                                              MinValue="{Binding FromDate}">
+                                    <!--<i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="EditValueChanged">
+                                            <i:CallMethodAction TargetObject="{Binding}" MethodName="OnEditValueChanged" />
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>-->
+                                </dxe:DateEdit>
+
+                                <dxe:ButtonEdit Grid.Row="0"
+                                                Grid.Column="4"
+                                                Margin="5"
+                                                AllowDefaultButton="False"
+                                                EditValue="{Binding ToTime}" 
+                                                Mask="{Binding TimeEditMask}"
+                                                MaskType="DateTime"
+                                                DisplayFormatString="{Binding TimeEditMask}"
+                                                FontSize="{StaticResource FontSizeRegular}"
+                                                MaskUseAsDisplayFormat="True"
+                                                Visibility="{Binding RealVisibility}">
+                                    <dxe:ButtonEdit.Buttons>
+                                        <dxe:SpinButtonInfo IsDefaultButton="True" />
+                                    </dxe:ButtonEdit.Buttons>
+                                </dxe:ButtonEdit>
+
+                                <!--<DatePicker Grid.Row="0" 
+                                      Grid.Column="2"
+                                      Margin="5 0 5 0"
+                                      FontSize="{StaticResource FontSizeRegular}"
+                                      Height="35"
+                                      SelectedDateFormat="Short"
+                                      SelectedDate="{Binding ToDate}"
+                                      Style="{StaticResource DatePickerIconResizingStyle}" />-->
+
+                                <Button Grid.Column="6"
+                                        Margin="5 5 0 5"
+                                        Width="80"
+                                        Height="35"
+                                        Content="조회"
+                                        FontSize="{StaticResource FontSizeRegular}"
+                                        Style="{StaticResource btnMainType}"
+                                        Command="{Binding InquiryCommand}"
+                                        IsEnabled="{Binding IsInquiry}"
+                                        Tag="1"/>
+
+                                <Button Grid.Column="7"
+                                        Margin="5 5 5 5"
+                                        Width="100"
+                                        Height="35"
+                                        Content="파일저장"
+                                        FontSize="{StaticResource FontSizeRegular}"
+                                        Style="{StaticResource btnMainType}"
+                                        Command="{Binding FileSaveCommand}"
+                                        Tag="1"/>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <Border Grid.Row="1" 
+                    BorderThickness="1"
+                    BorderBrush="Gray"
+                    CornerRadius="0 0 5 0"
+                    Margin="0 0 5 5">
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+
+                    <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                                  VerticalScrollBarVisibility="Auto">
+                        <ContentControl Content="{Binding ChildViewModel}"/>
+                    </ScrollViewer>
+
+                    <!--<ListView Margin="0 0 0 0"
+                              FontFamily="{StaticResource LatoBold}" 
+                              FontSize="{StaticResource FontSizeMiddle}" 
+                              BorderBrush="Transparent"
+                              BorderThickness="0,0,0,1"
+                              Background="Transparent"
+                              HorizontalAlignment="Stretch" 
+                              VerticalAlignment="Stretch" 
+                              ItemsSource="{Binding PointItems}" 
+                              ScrollViewer.VerticalScrollBarVisibility="Auto" 
+                              IsSynchronizedWithCurrentItem="True">
+
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                <Setter Property="Height" Value="22" />
+                                <Setter Property="FontSize" Value="{StaticResource FontSizeSmall}" />
+                                <Setter Property="Background" Value="Transparent" />
+                                <Setter Property="Foreground" Value="White" />
+                                <Setter Property="BorderBrush" Value="Transparent" />
+                                <Setter Property="BorderThickness" Value="0,0,0,0" />
+
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Foreground" Value="Black"></Setter>
+                                    </Trigger>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="Foreground" Value="Black"></Setter>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ListView.ItemContainerStyle>
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="PID" Width="{Binding ElementName=pid, Path=ActualWidth}">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding PID}" TextAlignment="Center"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="변전소" Width="{Binding ElementName=subs, Path=ActualWidth}">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding SubsName}" TextAlignment="Left" Margin="3 0 0 0"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="DL 이름" Width="{Binding ElementName=dl, Path=ActualWidth}">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding DlName}" TextAlignment="Left" Margin="3 0 0 0"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="SW 이름" Width="{Binding ElementName=sw, Path=ActualWidth}">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding SwName}" TextAlignment="Left" Margin="3 0 0 0"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="CEQ ID" Width="{Binding ElementName=ceq, Path=ActualWidth}">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding CeqID}" TextAlignment="Center"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="데이터 종류" Width="{Binding ElementName=dataType, Path=ActualWidth}">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding DataType}" TextAlignment="Center"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="포인트 타입" Width="{Binding ElementName=pointType, Path=ActualWidth}">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Style="{StaticResource pointTypeStyle}" />
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="포인트 이름" Width="{Binding ElementName=pointName, Path=ActualWidth}">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding PointName}" TextAlignment="Left" Margin="3 0 0 0"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="포인트 값" Width="{Binding ElementName=pointVal, Path=ActualWidth}">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding PointValue}" TextAlignment="Right"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="TLQ" Width="{Binding ElementName=tlq, Path=ActualWidth}">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding PointTlq}" TextAlignment="Center"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="업데이트 시간" Width="{Binding ElementName=updatetime, Path=ActualWidth}">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding UpdateTime, StringFormat=yyyy-MM-dd HH:mm}" TextAlignment="Center"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+
+                    <Grid Visibility="Hidden">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="60"/>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="140"/>
+                            <ColumnDefinition Width="130"/>
+                            <ColumnDefinition Width="130"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="130"/>
+                            <ColumnDefinition Width="90"/>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="30"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Column="0" x:Name="pid"/>
+                        <Grid Grid.Column="1" x:Name="subs"/>
+                        <Grid Grid.Column="2" x:Name="dl"/>
+                        <Grid Grid.Column="3" x:Name="sw"/>
+                        <Grid Grid.Column="4" x:Name="ceq"/>
+                        <Grid Grid.Column="5" x:Name="dataType"/>
+                        <Grid Grid.Column="6" x:Name="pointType"/>
+                        <Grid Grid.Column="7" x:Name="pointName"/>
+                        <Grid Grid.Column="8" x:Name="pointVal"/>
+                        <Grid Grid.Column="9" x:Name="tlq"/>
+                        <Grid Grid.Column="10" x:Name="updatetime"/>
+                    </Grid>-->
+
+                    <Expander Header="차트 보기"
+                              FontSize="{StaticResource FontSizeRegular}"
+                              Grid.Row="3"
+                              Margin="0 0 5 5"
+                              FlowDirection="RightToLeft"
+                              Visibility="{Binding SwitchVisibility}">
+                        <Border Grid.Row="3"
+                                Margin="0 0 5 5"
+                                Height="400"
+                                VerticalAlignment="Stretch"
+                                BorderThickness="1"
+                                BorderBrush="Gray"
+                                Background="#292929"
+                                CornerRadius="10"
+                                FlowDirection="LeftToRight">
+
+                            <dxc:ChartControl BorderThickness="0"
+                                              Margin="5"
+                                              CrosshairEnabled="True" 
+                                              ToolTipEnabled="False">
+                                <dxc:ChartControl.Diagram>
+                                    <dxc:XYDiagram2D SeriesItemsSource="{Binding SeriesItems}">
+                                        <dxc:XYDiagram2D.AxisX>
+                                            <dxc:AxisX2D>
+                                                <dxc:AxisX2D.Label>
+                                                    <dxc:AxisLabel TextPattern="{}{A:yy-MM-dd HH:mm}"/>
+                                                </dxc:AxisX2D.Label>
+                                                <dxc:AxisX2D.DateTimeScaleOptions>
+                                                    <dxc:ManualDateTimeScaleOptions AggregateFunction="Maximum" 
+                                                                                    GridSpacing="23" 
+                                                                                    AutoGrid="False" 
+                                                                                    GridAlignment="Hour"
+                                                                                    MeasureUnit="Minute" />
+                                                </dxc:AxisX2D.DateTimeScaleOptions>
+                                            </dxc:AxisX2D>
+                                        </dxc:XYDiagram2D.AxisX>
+                                        <dxc:XYDiagram2D.AxisY>
+                                            <dxc:AxisY2D>
+                                                <dxc:AxisY2D.WholeRange>
+                                                    <dxc:Range dxc:AxisY2D.AlwaysShowZeroLevel="False"/>
+                                                </dxc:AxisY2D.WholeRange>
+                                            </dxc:AxisY2D>
+                                        </dxc:XYDiagram2D.AxisY>
+                                        <dxc:XYDiagram2D.SeriesItemTemplate>
+                                            <DataTemplate>
+                                                <dxc:LineSeries2D DisplayName="{Binding Name}"
+                                                                  DataSource="{Binding Datas}"
+                                                                  ArgumentScaleType="DateTime"
+                                                                  ArgumentDataMember="Date"
+                                                                  ValueDataMember="Value"
+                                                                  LabelsVisibility="False"
+                                                                  MarkerSize="7" 
+                                                                  MarkerVisible="True"
+                                                                  FontSize="{StaticResource FontSizeLittle}">
+                                                    <dxc:LineSeries2D.CrosshairLabelTemplate>
+                                                        <DataTemplate>
+                                                            <StackPanel Orientation="Vertical">
+                                                                <TextBlock Text="{Binding HeaderText}" 
+                                                                           HorizontalAlignment="Left" 
+                                                                           VerticalAlignment="Center" 
+                                                                           Margin="0 2"
+                                                                           Foreground="{Binding Foreground}" 
+                                                                           FontWeight="{Binding FontWeight}"
+                                                                           FontStyle="{Binding FontStyle}"
+                                                                           FontSize="{Binding FontSize}"
+                                                                           FontStretch="{Binding FontStretch}"
+                                                                           FontFamily="{Binding FontFamily}"
+                                                                           Visibility="{Binding HeaderTextVisibility}"/>
+                                                                <StackPanel Orientation="Horizontal" 
+                                                                            Margin="0 2">
+                                                                    <Grid Width="15" Height="15"
+                                                                          VerticalAlignment="Center" Margin="0 0 3 0"
+                                                                          Visibility="{Binding MarkerVisibility}">
+                                                                        <Rectangle Stretch="Uniform" Fill="Transparent"/>
+                                                                        <ContentPresenter Content="{Binding MarkerItem}" 
+                                                                                          ContentTemplate="{Binding RelativeSource={RelativeSource Self}, Path= Content.MarkerTemplate}"/>
+                                                                    </Grid>
+                                                                    <TextBlock Grid.Column="1" Text="{Binding Text}" VerticalAlignment="Center" Margin="1"
+                                                                               Foreground="{Binding Foreground}" 
+                                                                               FontWeight="{Binding FontWeight}"
+                                                                               FontStyle="{Binding FontStyle}"
+                                                                               FontSize="{Binding FontSize}"
+                                                                               FontStretch="{Binding FontStretch}"
+                                                                               FontFamily="{Binding FontFamily}"
+                                                                               Visibility="{Binding TextVisibility}"/>
+                                                                </StackPanel>
+                                                                <TextBlock Text="{Binding FooterText}" 
+                                                                           HorizontalAlignment="Left" 
+                                                                           VerticalAlignment="Center" 
+                                                                           Margin="0 2"
+                                                                           Foreground="{Binding Foreground}" 
+                                                                           FontWeight="{Binding FontWeight}"
+                                                                           FontStyle="{Binding FontStyle}"
+                                                                           FontSize="{Binding FontSize}"
+                                                                           FontStretch="{Binding FontStretch}"
+                                                                           FontFamily="{Binding FontFamily}"
+                                                                           Visibility="{Binding FooterTextVisibility}"/>
+                                                            </StackPanel>
+                                                        </DataTemplate>
+                                                    </dxc:LineSeries2D.CrosshairLabelTemplate>
+                                                </dxc:LineSeries2D>
+                                                <!--CrosshairLabelPattern="{}{S}&#x0a;Value: {V:f3}"-->
+                                                <!--ToolTipPointPattern="{}{A:yy-MM-dd HH:mm}&#x0a;{S}&#x0a;Value: {V:f3}"/>-->
+                                            </DataTemplate>
+                                        </dxc:XYDiagram2D.SeriesItemTemplate>
+                                    </dxc:XYDiagram2D>
+                                </dxc:ChartControl.Diagram>
+                                <dxc:ChartControl.Legend>
+                                    <dxc:Legend VerticalPosition="Top"
+                                                HorizontalPosition="RightOutside"
+                                                Padding="0"
+                                                IndentFromDiagram="0"
+                                                BorderThickness="0"
+                                                FontSize="{StaticResource FontSizeSmall}"
+                                                Orientation="Vertical"/>    
+                                </dxc:ChartControl.Legend>
+
+                                <!--<dxc:ChartControl.ToolTipController>
+                                    <dxc:ChartToolTipController OpenMode="OnHover" 
+                                                                ShowShadow="False" 
+                                                                InitialDelay="0:0:0.1" 
+                                                                ContentMargin="3"/>
+                                </dxc:ChartControl.ToolTipController>-->
+                                <dxc:ChartControl.CrosshairOptions>
+                                    <dxc:CrosshairOptions  GroupHeaderPattern="{}{A:yy-MM-dd HH:mm}" 
+                                                           ShowArgumentLabels="True" ShowArgumentLine="True" 
+                                                           ShowValueLabels="False" ShowValueLine="False">
+                                    </dxc:CrosshairOptions>
+                                </dxc:ChartControl.CrosshairOptions>
+                                <!--<dxc:ChartControl.ToolTipOptions >
+                                    <dxc:ToolTipOptions ShowForSeries="True" 
+                                                        ShowForPoints="True" >
+                                        <dxc:ToolTipOptions.ToolTipPosition>
+                                            <dxc:ToolTipMousePosition Location="TopLeft"  />
+                                        </dxc:ToolTipOptions.ToolTipPosition>
+                                    </dxc:ToolTipOptions>
+                                </dxc:ChartControl.ToolTipOptions>-->
+                            </dxc:ChartControl>
+
+
+                            <!--<lvc:CartesianChart LegendLocation="Top"
+                                                Hoverable="False" 
+                                                Series="{Binding SeriesItems}">
+                                <lvc:CartesianChart.Resources>
+                                    <Style TargetType="lvc:DefaultTooltip">
+                                        <Setter Property="ShowTitle" Value="True"/>
+                                        -->
+                            <!--new property-->
+                            <!--
+                                        <Setter Property="ShowSeries" Value="True"/>
+                                        -->
+                            <!--new property-->
+                            <!--
+                                        <Setter Property="FontSize" Value="{StaticResource FontSizeSmaller}"/>
+                                        <Setter Property="FontWeight" Value="Bold"/>
+                                        <Setter Property="CornerRadius" Value="20"/>
+                                        <Setter Property="Width" Value="auto"/>
+                                        <Setter Property="Height" Value="auto"/>
+                                        <Setter Property="BorderThickness" Value="0"/>
+                                    </Style>
+                                </lvc:CartesianChart.Resources>
+                                <lvc:CartesianChart.AxisY>
+                                    <lvc:Axis MinValue="{Binding MinValue}" MaxValue="{Binding MaxValue}"/>
+                                </lvc:CartesianChart.AxisY>
+                                <lvc:CartesianChart.AxisX>
+                                    <lvc:Axis LabelFormatter="{Binding Formatter}"/>
+                                </lvc:CartesianChart.AxisX>
+                            </lvc:CartesianChart>-->
+                        </Border>
+                    </Expander>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>
+
+    
+        
+    

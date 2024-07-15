@@ -1,0 +1,137 @@
+﻿<UserControl x:Class="KDMSViewer.View.OperationAiView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:KDMSViewer.View"
+             xmlns:converters="clr-namespace:KDMSViewer.Converters"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+
+    <UserControl.Resources>
+        <Style TargetType="{x:Type DataGridColumnHeader}">
+            <Setter Property="Height" Value="40" />
+            <Setter Property="BorderBrush" Value="White"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0 1 1 1"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="FontSize" Value="{StaticResource FontSizeRegular}"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        </Style>
+
+        <Style TargetType="{x:Type DataGridRow}">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="White" />
+            <Setter Property="BorderThickness" Value="0 0 0 1" />
+            <Style.Resources>
+                <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="{x:Static SystemColors.HighlightColor}" />
+            </Style.Resources>
+        </Style>
+    </UserControl.Resources>
+    
+    <Grid >
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+
+        <DataGrid FontWeight="Normal"
+                  Grid.Row="0"
+                  Margin="10 0 0 0"
+                  AutoGenerateColumns="False"
+                  CanUserDeleteRows="False"
+                  CanUserAddRows="False"
+                  IsReadOnly="False"
+                  BorderThickness="0 0 0 0"
+                  BorderBrush="White"
+                  Foreground="White"
+                  Background="Transparent"
+                  HeadersVisibility="Column"
+                  GridLinesVisibility="Horizontal"
+                  FontSize="{StaticResource FontSizeRegular}"
+                  ItemsSource="{Binding AiItems, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                  ScrollViewer.HorizontalScrollBarVisibility="Hidden">
+
+            <DataGrid.Resources>
+                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}"
+                                Color="Black" />
+                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}"
+                                Color="White" />
+                <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}"
+                                Color="Black" />
+                <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}"
+                                Color="White" />
+            </DataGrid.Resources>
+            
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="No" Width="60" Binding="{Binding Path=No}" IsReadOnly="True">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style>
+                            <Setter Property="TextBlock.FontSize" Value="{StaticResource FontSizeSmaller}"/>
+                            <Setter Property="TextBlock.TextAlignment" Value="Center"/>
+                            <Setter Property="TextBlock.Margin" Value="0,0,0,0"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+
+                <DataGridTextColumn Header="MINDATA 컬럼 목록" Width="1*" Binding="{Binding Path=Columnname}" IsReadOnly="True">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style>
+                            <Setter Property="TextBlock.TextAlignment" Value="Left"/>
+                            <Setter Property="TextBlock.Margin" Value="10,0,0,0"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="DATAPOINT 아이디" Width="1*" Binding="{Binding Path=Datapointid}" IsReadOnly="False">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style>
+                            <Setter Property="TextBlock.TextAlignment" Value="Center"/>
+                            <Setter Property="TextBlock.Margin" Value="0,0,0,0"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+
+                <DataGridTextColumn Header="DATAPOINT 이름" Width="1*" Binding="{Binding Path=Datapointname}" IsReadOnly="False">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style>
+                            <Setter Property="TextBlock.TextAlignment" Value="Left"/>
+                            <Setter Property="TextBlock.Margin" Value="10,0,0,0"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <DockPanel Grid.Row="3" LastChildFill="False"
+                Margin="0,5,0,5">
+
+            <Button DockPanel.Dock="Right"
+                    Content="저장"
+                    Margin="5 0 0 0"
+                    Width="80"
+                    Height="40"
+                    Style="{StaticResource btnMainType}"
+                    Command="{Binding SaveCommand}"
+                    Tag="1"/>
+
+            <!--<Button DockPanel.Dock="Right"
+                    Content="전체 사용"
+                    Margin="5 0 0 0"
+                    Width="140"
+                    Height="40"
+                    Style="{StaticResource btnMainType}"
+                    Command="{Binding AllCheckCommand}"
+                    Tag="1"/>
+
+            <Button DockPanel.Dock="Right"
+                    Content="전체 미사용"
+                    Width="140"
+                    Height="40"
+                    Style="{StaticResource btnMainType}"
+                    Command="{Binding AllUnCheckCommand}"
+                    Tag="1"/>-->
+        </DockPanel>
+    </Grid>
+</UserControl>

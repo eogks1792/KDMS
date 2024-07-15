@@ -1,0 +1,106 @@
+{
+  "format": 1,
+  "restore": {
+    "D:\\002. Wells\\001. 회사업무\\002. 배전지능화팀\\002. 개발소스\\016. KDMS\\KDMSSolution\\UI\\KDMSViewer\\KDMSViewer.csproj": {}
+  },
+  "projects": {
+    "D:\\002. Wells\\001. 회사업무\\002. 배전지능화팀\\002. 개발소스\\016. KDMS\\KDMSSolution\\UI\\KDMSViewer\\KDMSViewer.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\002. Wells\\001. 회사업무\\002. 배전지능화팀\\002. 개발소스\\016. KDMS\\KDMSSolution\\UI\\KDMSViewer\\KDMSViewer.csproj",
+        "projectName": "KDMSViewer",
+        "projectPath": "D:\\002. Wells\\001. 회사업무\\002. 배전지능화팀\\002. 개발소스\\016. KDMS\\KDMSSolution\\UI\\KDMSViewer\\KDMSViewer.csproj",
+        "packagesPath": "C:\\Users\\Han\\.nuget\\packages\\",
+        "outputPath": "D:\\002. Wells\\001. 회사업무\\002. 배전지능화팀\\002. 개발소스\\016. KDMS\\KDMSSolution\\UI\\KDMSViewer\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "D:\\Program Files\\DevExpress 23.1\\Components\\Offline Packages",
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\Han\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\DevExpress 23.1.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net7.0-windows"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "D:\\Program Files\\DevExpress 23.1\\Components\\System\\Components\\Packages": {},
+          "https://www.nuget.org/api/v2/": {}
+        },
+        "frameworks": {
+          "net7.0-windows7.0": {
+            "targetAlias": "net7.0-windows",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net7.0-windows7.0": {
+          "targetAlias": "net7.0-windows",
+          "dependencies": {
+            "CommunityToolkit.Mvvm": {
+              "target": "Package",
+              "version": "[8.1.0, )"
+            },
+            "FontAwesome6.Svg": {
+              "target": "Package",
+              "version": "[2.5.1, )"
+            },
+            "MediatR": {
+              "target": "Package",
+              "version": "[12.2.0, )"
+            },
+            "Microsoft.Extensions.DependencyInjection": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Microsoft.Xaml.Behaviors.Wpf": {
+              "target": "Package",
+              "version": "[1.1.39, )"
+            },
+            "Serilog.AspNetCore": {
+              "target": "Package",
+              "version": "[7.0.0, )"
+            },
+            "Serilog.Expressions": {
+              "target": "Package",
+              "version": "[3.4.1, )"
+            },
+            "Serilog.Sinks.Seq": {
+              "target": "Package",
+              "version": "[5.2.2, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            },
+            "Microsoft.WindowsDesktop.App.WPF": {
+              "privateAssets": "none"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101\\RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

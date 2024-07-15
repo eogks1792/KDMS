@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup />
+  <ItemGroup>
+    <ApplicationDefinition Update="App.xaml">
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="MainWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Theme\Colors.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Theme\Fonts.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Theme\ThemeAnimation.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Theme\ThemeButton.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Theme\ThemeCheckBox.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Theme\ThemeComboBox.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Theme\ThemeDatePicker.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Theme\ThemeTabContrl.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Theme\ThemeText.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+</Project>

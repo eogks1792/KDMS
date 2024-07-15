@@ -1,0 +1,618 @@
+﻿<dx:ThemedWindow  x:Class="KDMSServer.MainWindow"
+                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                  xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" 
+                  xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" 
+                  xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+                  xmlns:local="clr-namespace:KDMSServer"
+                  xmlns:model="clr-namespace:KDMSServer.Model"
+                  mc:Ignorable="d"
+                  Title="KDMS 서버" 
+                  Height="1024" Width="1920"
+                  MinHeight="1024" MinWidth="1920"
+                  Background="Transparent"
+                  WindowStartupLocation="CenterScreen"
+                  WindowState="Maximized"
+                  Closing="Window_Closing"
+                  dx:ThemeManager.ThemeName="Win11Dark">
+
+    <Window.Resources>
+        <Style TargetType="{x:Type GridViewColumnHeader}">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="White"/>
+            <Setter Property="BorderThickness" Value="5"/>
+            <Setter Property="Margin" Value="0,0,0,0"/>
+            <Setter Property="Padding" Value="0,5,0,0"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="Black"></Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <Grid Margin="5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="260"/>
+                <RowDefinition />
+            </Grid.RowDefinitions>
+
+            <GroupBox>
+                <GroupBox.Header>
+                    <TextBlock Text="KDMS SERVER 설정 정보"
+                               FontSize="{StaticResource FontSizeMiddle}"/>
+                </GroupBox.Header>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="145"/>
+                    </Grid.ColumnDefinitions>
+
+                    <GroupBox Margin="0 0 5 5">
+                        <GroupBox.Header>
+                            <TextBlock Text="PRIME SERVER 정보"
+                                       FontSize="{StaticResource FontSizeRegular}"/>
+                        </GroupBox.Header>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="160"/>
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Row="0" 
+                                       Grid.Column="0"
+                                       Text="PRIME IP 정보"
+                                       Style="{StaticResource baseTextBlock}" />    
+                            <TextBox Grid.Row="0" 
+                                     Grid.Column="1"
+                                     Text="{Binding PrimeIP}" 
+                                     TextAlignment="Center"
+                                     Style="{StaticResource baseTextBox}" />
+                        </Grid>
+                    </GroupBox>
+
+                    <GroupBox Grid.Column="1"
+                              Margin="5 0 0 5">
+                        <GroupBox.Header>
+                            <TextBlock Text="BACKUP SERVER 정보"
+                                       FontSize="{StaticResource FontSizeRegular}"/>
+                        </GroupBox.Header>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="160"/>
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            
+                            <TextBlock Grid.Row="0" 
+                                      Grid.Column="0"
+                                      Text="BACKUP IP 정보"
+                                      Style="{StaticResource baseTextBlock}" />
+                            <TextBox Grid.Row="0" 
+                                    Grid.Column="1"
+                                    Text="{Binding BackupIP}" 
+                                    TextAlignment="Center"
+                                    Style="{StaticResource baseTextBox}" />
+                        </Grid>
+                    </GroupBox>
+
+
+                    <GroupBox Grid.Row="1"
+                              Grid.ColumnSpan="2"
+                              Margin="0 0 0 0">
+                        <GroupBox.Header>
+                            <TextBlock Text="CHANNEL 정보"
+                                       FontSize="{StaticResource FontSizeRegular}"/>
+                        </GroupBox.Header>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="110"/>
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="110"/>
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="110"/>
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Row="0" 
+                                      Grid.Column="0"
+                                      Text="SCAN"
+                                      Style="{StaticResource baseTextBlock}" />
+                            <TextBox Grid.Row="0" 
+                                    Grid.Column="1"
+                                    Text="{Binding ScanPort}" 
+                                    TextAlignment="Center"
+                                    Style="{StaticResource baseTextBox}" />
+
+                            <TextBlock Grid.Row="0" 
+                                      Grid.Column="2"
+                                      Text="CONTROL"
+                                      Style="{StaticResource baseTextBlock}" />
+                            <TextBox Grid.Row="0" 
+                                    Grid.Column="3"
+                                    Text="{Binding ContorlPort}" 
+                                    TextAlignment="Center"
+                                    Style="{StaticResource baseTextBox}" />
+
+                            <TextBlock Grid.Row="0" 
+                                      Grid.Column="4"
+                                      Text="EVENT"
+                                      Style="{StaticResource baseTextBlock}" />
+                            <TextBox Grid.Row="0" 
+                                    Grid.Column="5"
+                                    Text="{Binding EventPort}" 
+                                    TextAlignment="Center"
+                                    Style="{StaticResource baseTextBox}" />
+                        </Grid>
+                    </GroupBox>
+
+                    <Grid Grid.RowSpan="3" Grid.Column="3"
+                          Margin="5 0 0 0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
+
+                        <GroupBox Grid.Row="0"
+                                  Margin="5 0 5 5">
+                            <GroupBox.Header>
+                                <TextBlock Text="서버 상태"
+                                       FontSize="{StaticResource FontSizeRegular}"/>
+                            </GroupBox.Header>
+                            <Grid>
+                                <TextBlock Text="{Binding IsConnetionState}"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          FontSize="{StaticResource FontSizeMiddle}"
+                                          Style="{StaticResource baseTextBlock}" />
+                            </Grid>
+                        </GroupBox>
+
+                        <GroupBox Grid.Row="1"
+                                 Margin="5 0 5 5">
+                            <GroupBox.Header>
+                                <TextBlock Text="통신 상태"
+                                                 FontSize="{StaticResource FontSizeRegular}"/>
+                            </GroupBox.Header>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+                            </Grid>
+                        </GroupBox>
+
+                        <Button Grid.Row="2"
+                               Content="연결 테스트"
+                               Height="35"
+                               Margin="5"
+                               Command="{Binding ConnnetionCheckCommand}"
+                               FontSize="{StaticResource FontSizeRegular}"/>
+
+                        <Button Grid.Row="3"
+                               Content="저장"
+                               Height="35"
+                               Margin="5 5 5 0"
+                               Command="{Binding SaveCommand}"
+                               FontSize="{StaticResource FontSizeRegular}"/>
+                    </Grid>
+
+                    <Border Grid.Row="3" 
+                            Grid.ColumnSpan="2"
+                            Margin="0 5 0 0"
+                            CornerRadius="5"
+                            BorderBrush="White"
+                            BorderThickness="1"
+                            Background="Transparent">
+                        <TextBlock Text="{Binding IsConnetionText}"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   Style="{StaticResource baseTextBlock}" />
+                    </Border>
+                </Grid>
+            </GroupBox>
+
+            <GroupBox Grid.Row="1">
+                <GroupBox.Header>
+                    <TextBlock Text="KDMS SERVER 이력"
+                               FontSize="{StaticResource FontSizeMiddle}"/>
+                </GroupBox.Header>
+
+                <Grid>
+                    <Border Grid.Row="1"
+                              Margin="0 5 0 0"
+                              CornerRadius="5"
+                              BorderBrush="White"
+                              BorderThickness="1">
+                        <Grid>
+                            <ListView FontFamily="{StaticResource LatoBold}" 
+                                FontSize="{StaticResource FontSizeSmall}" 
+                                BorderBrush="Transparent"
+                                BorderThickness="0"
+                                Background="Transparent"
+                                HorizontalAlignment="Stretch" 
+                                VerticalAlignment="Stretch" 
+                                ItemsSource="{Binding ServerLogView}" 
+                                ScrollViewer.VerticalScrollBarVisibility="Auto" 
+                                IsSynchronizedWithCurrentItem="True">
+                                <ListView.ItemContainerStyle>
+                                    <Style TargetType="ListViewItem">
+                                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                        <Setter Property="Height" Value="22" />
+                                        <Setter Property="FontSize" Value="{StaticResource FontSizeSmall}" />
+                                        <Setter Property="Background" Value="Transparent" />
+                                        <Setter Property="Foreground" Value="White" />
+                                        <Setter Property="BorderBrush" Value="Transparent" />
+                                        <Setter Property="BorderThickness" Value="0,0,0,0" />
+
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Foreground" Value="Black"></Setter>
+                                            </Trigger>
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter Property="Foreground" Value="Black"></Setter>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ListView.ItemContainerStyle>
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Header="로그 시간" Width="{Binding ElementName=server_logtime, Path=ActualWidth}">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding LogTime}" TextAlignment="Left"/>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                        <GridViewColumn Header="로그 메시지" Width="{Binding ElementName=server_logmsg, Path=ActualWidth}">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding LogMessage}"  />
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+
+                            <Grid Visibility="Hidden">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="220"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="22"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid Grid.Column="0" x:Name="server_logtime"/>
+                                <Grid Grid.Column="1" x:Name="server_logmsg"/>
+                            </Grid>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </GroupBox>
+
+        </Grid>
+
+        <Grid Grid.Column="1"
+              Margin="5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="260"/>
+                <RowDefinition />
+            </Grid.RowDefinitions>
+
+            <GroupBox>
+                <GroupBox.Header>
+                    <TextBlock Text="SDM DATABASE 설정 정보"
+                               FontSize="{StaticResource FontSizeMiddle}"/>
+                </GroupBox.Header>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="145"/>
+                    </Grid.ColumnDefinitions>
+
+                    <GroupBox>
+                        <GroupBox.Header>
+                            <TextBlock Text="DATABASE 정보"
+                                       FontSize="{StaticResource FontSizeRegular}"/>
+                        </GroupBox.Header>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="160"/>
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="160"/>
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Row="0" 
+                                       Grid.Column="0"
+                                       Text="DATABASE IP"
+                                       Style="{StaticResource baseTextBlock}" />
+                            <TextBox Grid.Row="0" 
+                                     Grid.Column="1"
+                                     Text="{Binding IpAddress}" 
+                                     TextAlignment="Center"
+                                     Style="{StaticResource baseTextBox}" />
+
+                            <TextBlock Grid.Row="1" 
+                                       Grid.Column="0"
+                                       Text="DATABASE Port"
+                                       Style="{StaticResource baseTextBlock}" />
+                            <TextBox Grid.Row="1" 
+                                     Grid.Column="1"
+                                     Text="{Binding Port}" 
+                                     TextAlignment="Center"
+                                     Style="{StaticResource baseTextBox}" />
+
+                            <TextBlock Grid.Row="0"
+                                       Grid.Column="2"
+                                       Text="DATABASE 이름"
+                                       Style="{StaticResource baseTextBlock}" />
+                            <TextBox Grid.Row="0"
+                                     Grid.Column="3"
+                                     Text="{Binding Name}" 
+                                     TextAlignment="Center"
+                                     Style="{StaticResource baseTextBox}" />
+
+                            <TextBlock Grid.Row="1"
+                                       Grid.Column="2"
+                                       Text="사용자 이름"
+                                       Style="{StaticResource baseTextBlock}" />
+                            <TextBox Grid.Row="1"
+                                     Grid.Column="3"
+                                     Text="{Binding UserId}" 
+                                     TextAlignment="Center"
+                                     Style="{StaticResource baseTextBox}" />
+
+                            <TextBlock Grid.Row="3"
+                                       Grid.Column="2"
+                                       Text="비밀번호"
+                                       Style="{StaticResource baseTextBlock}" />
+
+                            <Border Grid.Row="3"
+                                    Grid.Column="3"
+                                    Margin="0 5 10 5"
+                                    Background="Transparent"
+                                    BorderBrush="Gray"
+                                    BorderThickness="1"
+                                    CornerRadius="5">
+
+                                <PasswordBox FontSize="{StaticResource FontSizeSmall}"
+                                             BorderThickness="0"
+                                             Background="Transparent"
+                                             TextBlock.TextAlignment="Right"
+                                             PasswordChar="●"
+                                             VerticalContentAlignment="Center"
+                                             model:PasswordHelper.Attach="True" 
+                                             model:PasswordHelper.Password="{Binding UserPwd, Mode=TwoWay}"/>
+                            </Border>
+                        </Grid>
+                    </GroupBox>
+
+                    <Grid Grid.RowSpan="2" Grid.Column="1"
+                          Margin="5 0 0 0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
+
+                        <GroupBox Grid.Column="1"
+                                  Margin="5 0 5 5">
+                            <GroupBox.Header>
+                                <TextBlock Text="DB 상태"
+                                                 FontSize="{StaticResource FontSizeRegular}"/>
+                            </GroupBox.Header>
+                            <Grid>
+                                <TextBlock Text="{Binding IsDBConnetionState}"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           FontSize="40"
+                                           Style="{StaticResource baseTextBlock}" /> 
+                            </Grid>
+                        </GroupBox>
+
+                        <Button Grid.Row="1"
+                                Content="연결 테스트"
+                                Height="35"
+                                Margin="5"
+                                Command="{Binding ConnnetionCheckCommand}"
+                                FontSize="{StaticResource FontSizeRegular}"/>
+
+                        <Button Grid.Row="2"
+                                Content="저장"
+                                Height="35"
+                                Margin="5 5 5 0"
+                                Command="{Binding SaveCommand}"
+                                FontSize="{StaticResource FontSizeRegular}"/>
+                    </Grid>
+
+                    <Border Grid.Row="1" 
+                            Margin="0 5 0 0"
+                            CornerRadius="5"
+                            BorderBrush="White"
+                            BorderThickness="1"
+                            Background="Transparent"> 
+                        <TextBlock Text="{Binding IsDBConnetionText}"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   Style="{StaticResource baseTextBlock}" />
+                    </Border>
+                </Grid>
+            </GroupBox>
+
+            <GroupBox Grid.Row="1">
+                <GroupBox.Header>
+                    <TextBlock Text="SDM DATABASE 이력"
+                               FontSize="{StaticResource FontSizeMiddle}"/>
+                </GroupBox.Header>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="160"/>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="120"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0"
+                              Text="일자 정보"
+                              Style="{StaticResource baseTextBlock}" />
+
+                        <dxe:DateEdit Grid.Column="1"
+                                      Margin="5"
+                                      HorizontalContentAlignment="Center"
+                                      FontSize="{StaticResource FontSizeSmall}"
+                                      DisplayFormatString="yyyy-MM-dd"
+                                      EditValue="{Binding Manualtime}"
+                                      ShowClearButton="False" />
+
+                        <dxe:ButtonEdit Grid.Column="2"
+                                        Margin="5"
+                                        AllowDefaultButton="False"
+                                        EditValue="{Binding Manualtime}" 
+                                        Mask="{Binding TimeEditMask}"
+                                        MaskType="DateTime"
+                                        DisplayFormatString="{Binding TimeEditMask}"
+                                        FontSize="{StaticResource FontSizeSmall}"
+                                        Visibility="{Binding IsVisibility}">  
+                            <dxe:ButtonEdit.Buttons>
+                                <dxe:SpinButtonInfo IsDefaultButton="True" />
+                            </dxe:ButtonEdit.Buttons>
+                        </dxe:ButtonEdit>
+
+
+                        <ComboBox Grid.Column="4"
+                                  Margin="5"
+                                  FontSize="{StaticResource FontSizeSmall}"
+                                  SelectedValue="{Binding SelectItem}"
+                                  SelectedValuePath="Tag"
+                                  VerticalContentAlignment="Center">
+
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="SelectionChanged">
+                                    <i:CallMethodAction TargetObject="{Binding}" MethodName="OnSelectionChanged" />
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+
+                            <ComboBoxItem Content="일일 통계 생성" Tag="2"/>
+                            <ComboBoxItem Content="전류 시간 통계 생성" Tag="4"/>
+                            <ComboBoxItem Content="전류 일 통계 생성" Tag="5"/>
+                            <ComboBoxItem Content="전류 월 통계 생성" Tag="6"/>
+                            <ComboBoxItem Content="전류 년 통계 생성" Tag="7"/>
+                        </ComboBox>
+
+                        <Button Grid.Column="5"
+                                Content="수동 생성"
+                                Margin="5"
+                                IsEnabled="{Binding IsInput}"
+                                FontSize="{StaticResource FontSizeRegular}"
+                                Command="{Binding ManualStatisticsCommand}"/>
+                    </Grid>
+
+                    <Border Grid.Row="1"
+                       Margin="0 5 0 0"
+                       CornerRadius="5"
+                       BorderBrush="White"
+                       BorderThickness="1">
+                        <Grid>
+                            <ListView FontFamily="{StaticResource LatoBold}" 
+                                 FontSize="{StaticResource FontSizeSmall}" 
+                                 BorderBrush="Transparent"
+                                 BorderThickness="0"
+                                 Background="Transparent"
+                                 HorizontalAlignment="Stretch" 
+                                 VerticalAlignment="Stretch" 
+                                 ItemsSource="{Binding DbLogView}" 
+                                 ScrollViewer.VerticalScrollBarVisibility="Auto" 
+                                 IsSynchronizedWithCurrentItem="True">
+                                <ListView.ItemContainerStyle>
+                                    <Style TargetType="ListViewItem">
+                                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                        <Setter Property="Height" Value="22" />
+                                        <Setter Property="FontSize" Value="{StaticResource FontSizeSmall}" />
+                                        <Setter Property="Background" Value="Transparent" />
+                                        <Setter Property="Foreground" Value="White" />
+                                        <Setter Property="BorderBrush" Value="Transparent" />
+                                        <Setter Property="BorderThickness" Value="0,0,0,0" />
+
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Foreground" Value="Black"></Setter>
+                                            </Trigger>
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter Property="Foreground" Value="Black"></Setter>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ListView.ItemContainerStyle>
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Header="로그 시간" Width="{Binding ElementName=db_logtime, Path=ActualWidth}">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding LogTime}" TextAlignment="Left"/>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                        <GridViewColumn Header="로그 메시지" Width="{Binding ElementName=db_logmsg, Path=ActualWidth}">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding LogMessage}"  />
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+
+                            <Grid Visibility="Hidden">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="220"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="22"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid Grid.Column="0" x:Name="db_logtime"/>
+                                <Grid Grid.Column="1" x:Name="db_logmsg"/>
+                            </Grid>
+                        </Grid>
+                    </Border>
+
+                </Grid>
+            </GroupBox>
+
+        </Grid>
+    </Grid>
+ 
+</dx:ThemedWindow>
