@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace KDMS.EF.Core.Infrastructure.Reverse.Models;
 
 /// <summary>
-/// 설비별 일일 통신 성공 로그 테이
+/// 설비별 일일 통신 성공 로그 테이블
 /// </summary>
 public partial class HistoryCommStateLog
 {
@@ -12,6 +12,16 @@ public partial class HistoryCommStateLog
     /// DB 기록시간
     /// </summary>
     public DateTime SaveTime { get; set; }
+
+    /// <summary>
+    /// 장치 타입
+    /// </summary>
+    public int EqType { get; set; }
+
+    /// <summary>
+    /// 단말장치 ID
+    /// </summary>
+    public int Ceqid { get; set; }
 
     /// <summary>
     /// CompositeSwitch ID

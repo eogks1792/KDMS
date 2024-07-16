@@ -220,10 +220,10 @@ namespace KDMSViewer.ViewModel
                 }
             }
 
-            if (SwitchCheck)
-            {
-                ChartDataInit();
-            }
+            //if (SwitchCheck)
+            //{
+            //    ChartDataInit();
+            //}
 
             //Application.Current.Dispatcher.Invoke(() =>
             //{
@@ -244,85 +244,85 @@ namespace KDMSViewer.ViewModel
             });
         }
 
-        private void ChartDataInit()
-        {
-            SeriesItems = new ObservableCollection<ChartModel>();
-            var chartDatas = (List<HistoryMinDatum>)_worker.GetPointItems((int)SearchTypeCode.MINDATA);
-            if (chartDatas != null && chartDatas.Count > 0)
-            {
-                var distintPoints = chartDatas.Select(p => new { CeqId = p.Ceqid, DisplayName = p.Name } ).Distinct().ToList();
-                foreach (var data in distintPoints)
-                {
-                    var lstColumns = GetColumnsNames<HistoryMinDatum>();
-                    foreach (var column in lstColumns)
-                    {
-                        switch (column)
-                        {
-                            case "currenta":
-                                {
-                                    var dataList = chartDatas.Where(p => p.Ceqid == data.CeqId).Select(p => new ChartDateModel
-                                    {
-                                        Date = p.SaveTime,
-                                        Value = p.CurrentA ?? 0.0f
-                                    }).ToList();
+        //private void ChartDataInit()
+        //{
+        //    SeriesItems = new ObservableCollection<ChartModel>();
+        //    var chartDatas = (List<HistoryMinDatum>)_worker.GetPointItems((int)SearchTypeCode.MINDATA);
+        //    if (chartDatas != null && chartDatas.Count > 0)
+        //    {
+        //        var distintPoints = chartDatas.Select(p => new { CeqId = p.Ceqid, DisplayName = p.Name } ).Distinct().ToList();
+        //        foreach (var data in distintPoints)
+        //        {
+        //            var lstColumns = GetColumnsNames<HistoryMinDatum>();
+        //            foreach (var column in lstColumns)
+        //            {
+        //                switch (column)
+        //                {
+        //                    case "currenta":
+        //                        {
+        //                            var dataList = chartDatas.Where(p => p.Ceqid == data.CeqId).Select(p => new ChartDateModel
+        //                            {
+        //                                Date = p.SaveTime,
+        //                                Value = p.CurrentA ?? 0.0f
+        //                            }).ToList();
 
-                                    SeriesItems.Add(new ChartModel()
-                                    {
-                                        Name = $"{data.DisplayName}(current_a)",
-                                        Datas = dataList
-                                    });
-                                }
-                                break;
-                            case "currentb":
-                                {
-                                    var dataList = chartDatas.Where(p => p.Ceqid == data.CeqId).Select(p => new ChartDateModel
-                                    {
-                                        Date = p.SaveTime,
-                                        Value = p.CurrentB ?? 0.0f
-                                    }).ToList();
+        //                            SeriesItems.Add(new ChartModel()
+        //                            {
+        //                                Name = $"{data.DisplayName}(current_a)",
+        //                                Datas = dataList
+        //                            });
+        //                        }
+        //                        break;
+        //                    case "currentb":
+        //                        {
+        //                            var dataList = chartDatas.Where(p => p.Ceqid == data.CeqId).Select(p => new ChartDateModel
+        //                            {
+        //                                Date = p.SaveTime,
+        //                                Value = p.CurrentB ?? 0.0f
+        //                            }).ToList();
 
-                                    SeriesItems.Add(new ChartModel()
-                                    {
-                                        Name = $"{data.DisplayName}(current_b)",
-                                        Datas = dataList
-                                    });
-                                }
-                                break;
-                            case "currentc":
-                                {
-                                    var dataList = chartDatas.Where(p => p.Ceqid == data.CeqId).Select(p => new ChartDateModel
-                                    {
-                                        Date = p.SaveTime,
-                                        Value = p.CurrentC ?? 0.0f
-                                    }).ToList();
+        //                            SeriesItems.Add(new ChartModel()
+        //                            {
+        //                                Name = $"{data.DisplayName}(current_b)",
+        //                                Datas = dataList
+        //                            });
+        //                        }
+        //                        break;
+        //                    case "currentc":
+        //                        {
+        //                            var dataList = chartDatas.Where(p => p.Ceqid == data.CeqId).Select(p => new ChartDateModel
+        //                            {
+        //                                Date = p.SaveTime,
+        //                                Value = p.CurrentC ?? 0.0f
+        //                            }).ToList();
 
-                                    SeriesItems.Add(new ChartModel()
-                                    {
-                                        Name = $"{data.DisplayName}(current_c)",
-                                        Datas = dataList
-                                    });
-                                }
-                                break;
-                            case "currentn":
-                                {
-                                    var dataList = chartDatas.Where(p => p.Ceqid == data.CeqId).Select(p => new ChartDateModel
-                                    {
-                                        Date = p.SaveTime,
-                                        Value = p.CurrentN ?? 0.0f
-                                    }).ToList();
+        //                            SeriesItems.Add(new ChartModel()
+        //                            {
+        //                                Name = $"{data.DisplayName}(current_c)",
+        //                                Datas = dataList
+        //                            });
+        //                        }
+        //                        break;
+        //                    case "currentn":
+        //                        {
+        //                            var dataList = chartDatas.Where(p => p.Ceqid == data.CeqId).Select(p => new ChartDateModel
+        //                            {
+        //                                Date = p.SaveTime,
+        //                                Value = p.CurrentN ?? 0.0f
+        //                            }).ToList();
 
-                                    SeriesItems.Add(new ChartModel()
-                                    {
-                                        Name = $"{data.DisplayName}(current_n)",
-                                        Datas = dataList
-                                    });
-                                }
-                                break;
-                        }
-                    }
-                }
-            }
-        }
+        //                            SeriesItems.Add(new ChartModel()
+        //                            {
+        //                                Name = $"{data.DisplayName}(current_n)",
+        //                                Datas = dataList
+        //                            });
+        //                        }
+        //                        break;
+        //                }
+        //            }
+        //        }
+        //    }
+        //}
 
         private List<string> GetColumnsNames<T>() where T : class, new()
         {

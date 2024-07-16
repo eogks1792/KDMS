@@ -8,12 +8,14 @@ namespace KDMS.EF.Core.Infrastructure.Reverse;
 
 public partial class KdmsContext : DbContext
 {
+
     protected readonly IConfiguration _configuration;
 
     public KdmsContext(IConfiguration configuration)
     {
         _configuration = configuration;
     }
+
 
     public virtual DbSet<AiInfo> AiInfos { get; set; }
 
@@ -67,9 +69,9 @@ public partial class KdmsContext : DbContext
 
     public virtual DbSet<Substation> Substations { get; set; }
 
-//    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-//#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-//        => optionsBuilder.UseMySql("server=192.168.1.205;port=3306;database=kdms;user=root;password=20wellsdb19!@", Microsoft.EntityFrameworkCore.ServerVersion.Parse("11.3.2-mariadb"));
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseMySql("server=192.168.1.205;port=3306;database=kdms;user=root;password=20wellsdb19!@", Microsoft.EntityFrameworkCore.ServerVersion.Parse("11.3.2-mariadb"));
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -291,6 +293,10 @@ public partial class KdmsContext : DbContext
                 .HasComment("DB 기록시간")
                 .HasColumnType("datetime")
                 .HasColumnName("SAVE_TIME");
+            entity.Property(e => e.Ceqid)
+                .HasComment("단말장치 ID")
+                .HasColumnType("int(11)")
+                .HasColumnName("CEQID");
             entity.Property(e => e.CommFailCount)
                 .HasComment("실패횟수")
                 .HasColumnType("int(11)")
@@ -318,6 +324,10 @@ public partial class KdmsContext : DbContext
                 .HasMaxLength(64)
                 .HasComment("소속DL")
                 .HasColumnName("DL");
+            entity.Property(e => e.EqType)
+                .HasComment("장치 타입")
+                .HasColumnType("int(11)")
+                .HasColumnName("EQ_TYPE");
             entity.Property(e => e.Name)
                 .HasMaxLength(128)
                 .HasComment("단말장치 명")
@@ -328,12 +338,16 @@ public partial class KdmsContext : DbContext
         {
             entity.HasKey(e => e.SaveTime).HasName("PRIMARY");
 
-            entity.ToTable("history_comm_state_log", tb => tb.HasComment("설비별 일일 통신 성공 로그 테이"));
+            entity.ToTable("history_comm_state_log", tb => tb.HasComment("설비별 일일 통신 성공 로그 테이블"));
 
             entity.Property(e => e.SaveTime)
                 .HasComment("DB 기록시간")
                 .HasColumnType("datetime")
                 .HasColumnName("SAVE_TIME");
+            entity.Property(e => e.Ceqid)
+                .HasComment("단말장치 ID")
+                .HasColumnType("int(11)")
+                .HasColumnName("CEQID");
             entity.Property(e => e.CommFailCount)
                 .HasComment("실패횟수")
                 .HasColumnType("int(11)")
@@ -364,6 +378,10 @@ public partial class KdmsContext : DbContext
                 .HasMaxLength(64)
                 .HasComment("소속DL")
                 .HasColumnName("DL");
+            entity.Property(e => e.EqType)
+                .HasComment("장치 타입")
+                .HasColumnType("int(11)")
+                .HasColumnName("EQ_TYPE");
             entity.Property(e => e.Name)
                 .HasMaxLength(128)
                 .HasComment("단말장치 명")
@@ -947,7 +965,7 @@ public partial class KdmsContext : DbContext
                 .HasColumnType("int(11)")
                 .HasColumnName("SCHDULE_TYPE");
             entity.Property(e => e.SchduleValue)
-                .HasMaxLength(10)
+                .HasMaxLength(64)
                 .HasComment("스케줄 설정 주기")
                 .HasColumnName("SCHDULE_VALUE");
         });

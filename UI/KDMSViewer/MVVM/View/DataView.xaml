@@ -162,6 +162,19 @@
                                 BorderBrush="Gray"
                                 CornerRadius="0 5 0 0">
 
+                            <Border.Style>
+                                <Style TargetType="{x:Type Border}" >
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding RealDataCheck}" Value="True">
+                                            <Setter Property="Background" Value="Black"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding RealDataCheck}" Value="False">
+                                            <Setter Property="Background" Value="Transparent"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+
                             <RadioButton Grid.Row="0"
                                         Content="실시간 데이터"
                                         Margin="10 5 15 5"
@@ -201,6 +214,19 @@
                                 BorderBrush="Gray"
                                 CornerRadius="5 5 0 0">
 
+                            <Border.Style>
+                                <Style TargetType="{x:Type Border}" >
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding StatisticalCheck}" Value="True">
+                                            <Setter Property="Background" Value="Black"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding StatisticalCheck}" Value="False">
+                                            <Setter Property="Background" Value="Transparent"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+
                             <RadioButton Grid.Row="0"
                                         Content="통계 데이터"
                                         Margin="10 5 15 5"
@@ -223,6 +249,19 @@
                                 BorderThickness="1 1 1 0"
                                 BorderBrush="Gray"
                                 CornerRadius="5 5 0 0">
+
+                            <Border.Style>
+                                <Style TargetType="{x:Type Border}" >
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding CommCheck}" Value="True">
+                                            <Setter Property="Background" Value="Black"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding CommCheck}" Value="False">
+                                            <Setter Property="Background" Value="Transparent"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
 
                             <RadioButton Grid.Row="0"
                                         Content="통신 데이터"
@@ -760,7 +799,7 @@
                         <Grid Grid.Column="10" x:Name="updatetime"/>
                     </Grid>-->
 
-                    <Expander Header="차트 보기"
+                    <!--<Expander Header="차트 보기"
                               FontSize="{StaticResource FontSizeRegular}"
                               Grid.Row="3"
                               Margin="0 0 5 5"
@@ -861,8 +900,8 @@
                                                         </DataTemplate>
                                                     </dxc:LineSeries2D.CrosshairLabelTemplate>
                                                 </dxc:LineSeries2D>
-                                                <!--CrosshairLabelPattern="{}{S}&#x0a;Value: {V:f3}"-->
-                                                <!--ToolTipPointPattern="{}{A:yy-MM-dd HH:mm}&#x0a;{S}&#x0a;Value: {V:f3}"/>-->
+                                                --><!--CrosshairLabelPattern="{}{S}&#x0a;Value: {V:f3}"-->
+                                                <!--ToolTipPointPattern="{}{A:yy-MM-dd HH:mm}&#x0a;{S}&#x0a;Value: {V:f3}"/>--><!--
                                             </DataTemplate>
                                         </dxc:XYDiagram2D.SeriesItemTemplate>
                                     </dxc:XYDiagram2D>
@@ -877,59 +916,18 @@
                                                 Orientation="Vertical"/>    
                                 </dxc:ChartControl.Legend>
 
-                                <!--<dxc:ChartControl.ToolTipController>
-                                    <dxc:ChartToolTipController OpenMode="OnHover" 
-                                                                ShowShadow="False" 
-                                                                InitialDelay="0:0:0.1" 
-                                                                ContentMargin="3"/>
-                                </dxc:ChartControl.ToolTipController>-->
                                 <dxc:ChartControl.CrosshairOptions>
                                     <dxc:CrosshairOptions  GroupHeaderPattern="{}{A:yy-MM-dd HH:mm}" 
                                                            ShowArgumentLabels="True" ShowArgumentLine="True" 
                                                            ShowValueLabels="False" ShowValueLine="False">
                                     </dxc:CrosshairOptions>
                                 </dxc:ChartControl.CrosshairOptions>
-                                <!--<dxc:ChartControl.ToolTipOptions >
-                                    <dxc:ToolTipOptions ShowForSeries="True" 
-                                                        ShowForPoints="True" >
-                                        <dxc:ToolTipOptions.ToolTipPosition>
-                                            <dxc:ToolTipMousePosition Location="TopLeft"  />
-                                        </dxc:ToolTipOptions.ToolTipPosition>
-                                    </dxc:ToolTipOptions>
-                                </dxc:ChartControl.ToolTipOptions>-->
+                
                             </dxc:ChartControl>
-
-
-                            <!--<lvc:CartesianChart LegendLocation="Top"
-                                                Hoverable="False" 
-                                                Series="{Binding SeriesItems}">
-                                <lvc:CartesianChart.Resources>
-                                    <Style TargetType="lvc:DefaultTooltip">
-                                        <Setter Property="ShowTitle" Value="True"/>
-                                        -->
-                            <!--new property-->
-                            <!--
-                                        <Setter Property="ShowSeries" Value="True"/>
-                                        -->
-                            <!--new property-->
-                            <!--
-                                        <Setter Property="FontSize" Value="{StaticResource FontSizeSmaller}"/>
-                                        <Setter Property="FontWeight" Value="Bold"/>
-                                        <Setter Property="CornerRadius" Value="20"/>
-                                        <Setter Property="Width" Value="auto"/>
-                                        <Setter Property="Height" Value="auto"/>
-                                        <Setter Property="BorderThickness" Value="0"/>
-                                    </Style>
-                                </lvc:CartesianChart.Resources>
-                                <lvc:CartesianChart.AxisY>
-                                    <lvc:Axis MinValue="{Binding MinValue}" MaxValue="{Binding MaxValue}"/>
-                                </lvc:CartesianChart.AxisY>
-                                <lvc:CartesianChart.AxisX>
-                                    <lvc:Axis LabelFormatter="{Binding Formatter}"/>
-                                </lvc:CartesianChart.AxisX>
-                            </lvc:CartesianChart>-->
                         </Border>
-                    </Expander>
+                    </Expander>-->
+                    
+                    
                 </Grid>
             </Border>
         </Grid>

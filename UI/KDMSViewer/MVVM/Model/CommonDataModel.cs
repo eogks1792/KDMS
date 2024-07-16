@@ -75,20 +75,6 @@ namespace KDMSViewer.Model
                     dl.IsVisible = Visibility.Collapsed;
                     subs.DataModels.Add(dl);
 
-
-                    var baseSwList = ConductingEquipments.Where(p => p.DlFk == distributionline.Dlid && p.EcFk == 0);
-                    if (baseSwList.Count() > 0)
-                    {
-                        foreach (var sw in baseSwList)
-                        {
-                            TreeDataModel equipment = new TreeDataModel();
-                            equipment.Type = TreeTypeCode.EQUIPMENT;
-                            equipment.Id = sw.Ceqid;
-                            equipment.Name = sw.Name!.Trim() ?? string.Empty;
-                            dl.DataModels.Add(equipment);
-                        }
-                    }
-
                     var multiSwList = ConductingEquipments.Where(p => p.DlFk == distributionline.Dlid && p.EcFk != 0);
                     if (multiSwList.Count() > 0)
                     {
@@ -110,6 +96,19 @@ namespace KDMSViewer.Model
                                 equipment.Name = conductingEquipment.Name!.Trim() ?? string.Empty;
                                 composit.DataModels.Add(equipment);
                             }
+                        }
+                    }
+
+                    var baseSwList = ConductingEquipments.Where(p => p.DlFk == distributionline.Dlid && p.EcFk == 0);
+                    if (baseSwList.Count() > 0)
+                    {
+                        foreach (var sw in baseSwList)
+                        {
+                            TreeDataModel equipment = new TreeDataModel();
+                            equipment.Type = TreeTypeCode.EQUIPMENT;
+                            equipment.Id = sw.Ceqid;
+                            equipment.Name = sw.Name!.Trim() ?? string.Empty;
+                            dl.DataModels.Add(equipment);
                         }
                     }
 
@@ -514,42 +513,42 @@ namespace KDMSViewer.Model
                         case (int)ProcDataCode.HISTORY_DAYSTAT_DATA:
                             {
                                 schdule.SchduleType = model.HisStatInterval;
-                                schdule.SchduleValue = GetDateTimeFormat(schdule.SchduleType, model.HisStatTime);// = $"yyyy-MM-dd {model.HisStatTime}";
+                                schdule.SchduleValue = GetDateTimeFormat(schdule.SchduleType, model.HisStatTime);
                                 schdule.Desc = model.HisStatDesc;
                             }
                             break;
                         case (int)ProcDataCode.STATISTICS_15MIN:
                             {
                                 schdule.SchduleType = model.StatMinInterval;
-                                schdule.SchduleValue = GetDateTimeFormat(schdule.SchduleType, model.StatMinTime);// = model.StatMinTime; 
+                                schdule.SchduleValue = GetDateTimeFormat(schdule.SchduleType, model.StatMinTime);
                                 schdule.Desc = model.StatMinDesc;
                             }
                             break;
                         case (int)ProcDataCode.STATISTICS_HOUR:
                             {
                                 schdule.SchduleType = model.StatHourInterval;
-                                schdule.SchduleValue = GetDateTimeFormat(schdule.SchduleType, model.StatHourTime);// = $"yyyy-MM-dd HH:{model.StatHourTime}";
+                                schdule.SchduleValue = GetDateTimeFormat(schdule.SchduleType, model.StatHourTime);
                                 schdule.Desc = model.StatHourDesc;
                             }
                             break;
                         case (int)ProcDataCode.STATISTICS_DAY:
                             {
                                 schdule.SchduleType = model.StatDayInterval;
-                                schdule.SchduleValue = GetDateTimeFormat(schdule.SchduleType, model.StatDayTime);// = $"yyyy-MM-dd {model.StatDayTime}";
+                                schdule.SchduleValue = GetDateTimeFormat(schdule.SchduleType, model.StatDayTime);
                                 schdule.Desc = model.StatDayDesc;
                             }
                             break;
                         case (int)ProcDataCode.STATISTICS_MONTH:
                             {
                                 schdule.SchduleType = model.StatMonthInterval;
-                                schdule.SchduleValue = GetDateTimeFormat(schdule.SchduleType, model.StatMonthTime);// = $"yyyy-MM-{model.StatMonthTime}";
+                                schdule.SchduleValue = GetDateTimeFormat(schdule.SchduleType, model.StatMonthTime);
                                 schdule.Desc = model.StatMonthDesc;
                             }
                             break;
                         case (int)ProcDataCode.STATISTICS_YEAR:
                             {
                                 schdule.SchduleType = model.StatYearInterval;
-                                schdule.SchduleValue = GetDateTimeFormat(schdule.SchduleType, model.StatYearTime);// = $"yyyy-{model.StatYearTime}";
+                                schdule.SchduleValue = GetDateTimeFormat(schdule.SchduleType, model.StatYearTime);
                                 schdule.Desc = model.StatYearDesc;
                             }
                             break;
@@ -561,7 +560,7 @@ namespace KDMSViewer.Model
                         case (int)ProcDataCode.HISTORY_COMM_STATE:
                             {
                                 schdule.SchduleType = model.HisCommInterval;
-                                schdule.SchduleValue = GetDateTimeFormat(schdule.SchduleType, model.HisCommTime);// = $"yyyy-MM-dd {model.HisCommTime}";
+                                schdule.SchduleValue = GetDateTimeFormat(schdule.SchduleType, model.HisCommTime);
                                 schdule.Desc = model.HisCommDesc;
                             }
                             break;
@@ -571,32 +570,7 @@ namespace KDMSViewer.Model
                             }
                             break;
                     }
-
-
-                    //switch (schdule.SchduleId)
-                    //{
-                    //    //    case (int)ProcDataCode.BI:
-                    //    //        schdule.SchduleValue = model.BiTime.ToString();
-                    //    //        break;
-                    //    //    case (int)ProcDataCode.BO:
-                    //    //        schdule.SchduleValue = model.BoTime.ToString();
-                    //    //        break;
-                    //    //    case (int)ProcDataCode.AI:
-                    //    //        schdule.SchduleValue = model.AiTime.ToString();
-                    //    //        break;
-                    //    //    case (int)ProcDataCode.AO:
-                    //    //        schdule.SchduleValue = model.AoTime.ToString();
-                    //    //        break;
-                    //    //    case (int)ProcDataCode.COUNTER:
-                    //    //        schdule.SchduleValue = model.CounterTime.ToString();
-                    //    //        break;
-                    //    //    case (int)ProcDataCode.STATISTICS:
-                    //    //        schdule.SchduleValue = model.StatisticalTime.ToString("HH:mm:ss");
-                    //    //        break;
-                    //    //}
-                    //}
                 }
-
                 await _kdmsContext.SaveChangesAsync();
             }
         }

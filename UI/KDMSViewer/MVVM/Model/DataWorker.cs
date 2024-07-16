@@ -2,6 +2,7 @@
 using DevExpress.Xpf.Editors.Helpers;
 using KDMS.EF.Core.Contexts;
 using KDMS.EF.Core.Infrastructure.Reverse.Models;
+using KDMSViewer.Extensions;
 using KDMSViewer.Features;
 using KDMSViewer.View;
 using KDMSViewer.ViewModel;
@@ -863,7 +864,10 @@ namespace KDMSViewer.Model
                                 var response = await _mediator.Send(request);
                                 if (response != null && response.Result)
                                 {
-                                    Application.Current.Dispatcher.Invoke(() => { model.PointItems = response.datas; });
+                                    DispatcherService.Invoke((System.Action)(() =>
+                                    {
+                                        model.PointItems = response.datas;
+                                    }));
                                 }
                                 else
                                 {
@@ -888,6 +892,7 @@ namespace KDMSViewer.Model
                                 var response = await _mediator.Send(request);
                                 if (response != null && response.Result)
                                 {
+                                    Application.Current.Dispatcher.Invoke(() => { model.PointItems = response.datas; });
                                 }
                                 else
                                 {
@@ -912,7 +917,7 @@ namespace KDMSViewer.Model
                                 var response = await _mediator.Send(request);
                                 if (response != null && response.Result)
                                 {
-                                    
+                                    Application.Current.Dispatcher.Invoke(() => { model.PointItems = response.datas; });
                                 }
                                 else
                                 {
@@ -937,6 +942,7 @@ namespace KDMSViewer.Model
                                 var response = await _mediator.Send(request);
                                 if (response != null && response.Result)
                                 {
+                                    Application.Current.Dispatcher.Invoke(() => { model.PointItems = response.datas; });
                                 }
                                 else
                                 {
@@ -961,7 +967,7 @@ namespace KDMSViewer.Model
                                 var response = await _mediator.Send(request);
                                 if (response != null && response.Result)
                                 {
-
+                                    Application.Current.Dispatcher.Invoke(() => { model.PointItems = response.datas; });
                                 }
                                 else
                                 {
@@ -986,6 +992,7 @@ namespace KDMSViewer.Model
                                 var response = await _mediator.Send(request);
                                 if (response != null && response.Result)
                                 {
+                                    Application.Current.Dispatcher.Invoke(() => { model.PointItems = response.datas; });
                                 }
                                 else
                                 {
@@ -1010,6 +1017,7 @@ namespace KDMSViewer.Model
                                 var response = await _mediator.Send(request);
                                 if (response != null && response.Result)
                                 {
+                                    Application.Current.Dispatcher.Invoke(() => { model.PointItems = response.datas; });
                                 }
                                 else
                                 {
@@ -1034,7 +1042,7 @@ namespace KDMSViewer.Model
                                 var response = await _mediator.Send(request);
                                 if (response != null && response.Result)
                                 {
-                                   
+                                    Application.Current.Dispatcher.Invoke(() => { model.PointItems = response.datas; });
                                 }
                                 else
                                 {
@@ -1059,6 +1067,7 @@ namespace KDMSViewer.Model
                                 var response = await _mediator.Send(request);
                                 if (response != null && response.Result)
                                 {
+                                    Application.Current.Dispatcher.Invoke(() => { model.PointItems = response.datas; });
                                 }
                                 else
                                 {
@@ -1083,6 +1092,7 @@ namespace KDMSViewer.Model
                                 var response = await _mediator.Send(request);
                                 if (response != null && response.Result)
                                 {
+                                    Application.Current.Dispatcher.Invoke(() => { model.PointItems = response.datas; });
                                 }
                                 else
                                 {
@@ -1098,6 +1108,7 @@ namespace KDMSViewer.Model
                 MessageBox.Show(ex.Message);
             }
         }
+
 
         public object GetPointItems(int type)
         {

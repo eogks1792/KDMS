@@ -14,14 +14,14 @@ public partial class StorageInfo
     public int StorageId { get; set; }
 
     /// <summary>
-    /// 보관주기 설정 주기
-    /// </summary>
-    public string StorageValue { get; set; } = null!;
-
-    /// <summary>
     /// 보관주기 설정 타입
     /// </summary>
     public int SchduleType { get; set; }
+
+    /// <summary>
+    /// 보관주기 설정 주기
+    /// </summary>
+    public string StorageValue { get; set; } = null!;
 
     /// <summary>
     /// 보관주기 설명

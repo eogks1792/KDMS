@@ -271,8 +271,8 @@ namespace KDMSServer.Model
                             else
                                 _logger.DbLog($"{hourInitialTime.AddHours(-1).ToString("yyyy-MM-dd HH:00:00")} [시간 통계(15분활용)] 데이터 생성 실패 (DB 접속 실패) ");
                         }
-                        hourInitialTime = hourInitialTime.AddDays(1);
-                        _logger.DbLog($"NEXT [시간 통계(15분활용)] 데이터 생성 시간: {hourInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+                        hourInitialTime = hourInitialTime.AddHours(1);
+                        _logger.DbLog($"[시간 통계(15분활용)] NEXT 데이터 생성 시간: {hourInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
                     }
 
                     if (dayInitialTime <= DateTime.Now)
@@ -286,7 +286,7 @@ namespace KDMSServer.Model
                                 _logger.DbLog($"{dayInitialTime.AddDays(-1).ToString("yyyy-MM-dd")} [일 통계(시간활용)] 데이터 생성 실패 (DB 접속 실패) ");
                         }
                         dayInitialTime = dayInitialTime.AddDays(1);
-                        _logger.DbLog($"NEXT [일 통계(시간활용)] 데이터 생성 시간: {dayInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+                        _logger.DbLog($"[일 통계(시간활용)] NEXT 데이터 생성 시간: {dayInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
                     }
 
                     if (monthInitialTime <= DateTime.Now)
@@ -299,8 +299,8 @@ namespace KDMSServer.Model
                             else
                                 _logger.DbLog($"{monthInitialTime.AddMonths(-1).ToString("yyyy-MM")} [월 통계(일활용)] 데이터 생성 실패 (DB 접속 실패) ");
                         }
-                        monthInitialTime = monthInitialTime.AddDays(1);
-                        _logger.DbLog($"NEXT [월 통계(일활용)] 데이터 생성 시간: {monthInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+                        monthInitialTime = monthInitialTime.AddMonths(1);
+                        _logger.DbLog($"[월 통계(일활용)] NEXT 데이터 생성 시간: {monthInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
                     }
 
                     if (yearhInitialTime <= DateTime.Now)
@@ -313,8 +313,8 @@ namespace KDMSServer.Model
                             else
                                 _logger.DbLog($"{yearhInitialTime.AddYears(-1).ToString("yyyy")} [년 통계(월활용)] 데이터 생성 실패 (DB 접속 실패) ");
                         }
-                        yearhInitialTime = yearhInitialTime.AddDays(1);
-                        _logger.DbLog($"NEXT [년 통계(월활용)] 데이터 생성 시간: {yearhInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+                        yearhInitialTime = yearhInitialTime.AddYears(1);
+                        _logger.DbLog($"[년 통계(월활용)] NEXT 데이터 생성 시간: {yearhInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
                     }
 
                     if (dayInitialTimeForOneMinute <= DateTime.Now)
@@ -328,7 +328,7 @@ namespace KDMSServer.Model
                                 _logger.DbLog($"{dayInitialTime.AddDays(-1).ToString("yyyy-MM-dd HH:mm:ss")} [1일 통계(1분활용)] 데이터 생성 실패 (DB 접속 실패) ");
                         }
                         dayInitialTime = dayInitialTime.AddDays(1);
-                        _logger.DbLog($"NEXT [1일 통계(1분활용)] 데이터 생성 시간: {dayInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+                        _logger.DbLog($"[1일 통계(1분활용)] NEXT 데이터 생성 시간: {dayInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
                     }
                 }
                 catch
@@ -373,7 +373,7 @@ namespace KDMSServer.Model
                             }
                         }
                         dayInitialTime = dayInitialTime.AddDays(1);
-                        _logger.DbLog($"NEXT [1분 실시간] 테이블 생성 시간: {dayInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+                        _logger.DbLog($"[1분 실시간] NEXT 테이블 생성 시간: {dayInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
                     }
 
                     if (yearInitialTime <= DateTime.Now)
@@ -393,7 +393,7 @@ namespace KDMSServer.Model
                                 _logger.DbLog($"{yearInitialTime.AddYears(1).ToString("yyyy")} [1일 통계(1분활용)] 테이블 생성 실패 (DB 접속 실패) ");
                         }
                         yearInitialTime = yearInitialTime.AddYears(1);
-                        _logger.DbLog($"NEXT [1일 통계(1분활용)] 테이블 생성 시간: {yearInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+                        _logger.DbLog($"[1일 통계(1분활용)] NEXT 테이블 생성 시간: {yearInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
                     }
                 }
                 catch

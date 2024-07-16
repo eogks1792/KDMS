@@ -14,14 +14,14 @@ public partial class SchduleInfo
     public int SchduleId { get; set; }
 
     /// <summary>
-    /// 스케줄 설정 주기
-    /// </summary>
-    public string SchduleValue { get; set; } = null!;
-
-    /// <summary>
     /// 스케줄 설정 타입
     /// </summary>
     public int SchduleType { get; set; }
+
+    /// <summary>
+    /// 스케줄 설정 주기
+    /// </summary>
+    public string SchduleValue { get; set; } = null!;
 
     /// <summary>
     /// 스케줄 설명

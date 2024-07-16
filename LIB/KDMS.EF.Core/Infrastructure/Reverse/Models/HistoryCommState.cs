@@ -14,6 +14,16 @@ public partial class HistoryCommState
     public DateTime SaveTime { get; set; }
 
     /// <summary>
+    /// 장치 타입
+    /// </summary>
+    public int EqType { get; set; }
+
+    /// <summary>
+    /// 단말장치 ID
+    /// </summary>
+    public int Ceqid { get; set; }
+
+    /// <summary>
     /// CompositeSwitch ID
     /// </summary>
     public int Cpsid { get; set; }

@@ -365,7 +365,7 @@
 
             <GroupBox>
                 <GroupBox.Header>
-                    <TextBlock Text="SDM DATABASE 설정 정보"
+                    <TextBlock Text="DBMS DABABASE 설정 정보"
                                FontSize="{StaticResource FontSizeMiddle}"/>
                 </GroupBox.Header>
                 <Grid>
@@ -443,7 +443,7 @@
 
                             <Border Grid.Row="3"
                                     Grid.Column="3"
-                                    Margin="0 5 10 5"
+                                    Margin="0 5 5 5"
                                     Background="Transparent"
                                     BorderBrush="Gray"
                                     BorderThickness="1"
@@ -515,7 +515,7 @@
 
             <GroupBox Grid.Row="1">
                 <GroupBox.Header>
-                    <TextBlock Text="SDM DATABASE 이력"
+                    <TextBlock Text="DBMS DATABASE 이력"
                                FontSize="{StaticResource FontSizeMiddle}"/>
                 </GroupBox.Header>
                 <Grid>
