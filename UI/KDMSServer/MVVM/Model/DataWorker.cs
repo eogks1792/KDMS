@@ -42,10 +42,10 @@ namespace KDMSServer.Model
                 TableCreateWorker();
             });
 
-            Task.Run(() =>
-            {
-                RealTimeDataWorker();
-            });
+            //Task.Run(() =>
+            //{
+            //    RealTimeDataWorker();
+            //});
 
             Task.Run(() =>
             {
@@ -196,53 +196,66 @@ namespace KDMSServer.Model
 
         private void RealTimeDataWorker()
         {
-            Thread.Sleep(1500);
+            //Thread.Sleep(1500);
 
-            var value = Convert.ToDateTime(_commonData.SchduleInfos.FirstOrDefault(p => p.SchduleId == (int)SchduleCode.STATISTICS)?.SchduleValue);
-            DateTime dayInitialTime = DateTimeHelper.GetNextDateTime(DateTime.Now, TimeDivisionCode.Day, hour: value.Hour, min: value.Minute, sec: value.Second);
+            //var value = Convert.ToDateTime(DateTime.Now.ToString(_commonData.SchduleInfos.FirstOrDefault(p => p.SchduleId == (int)ProcTypeCode.DAYSTATDATA)?.SchduleValue));
+            //DateTime dayInitialTime = DateTimeHelper.GetNextDateTime(DateTime.Now, TimeDivisionCode.Day, hour: value.Hour, min: value.Minute, sec: value.Second);
 
-            _logger.DbLog($"[1일 통계(1분활용)] 데이터 생성 시간: {dayInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
-            while (ThreadFlag)
-            {
-                try
-                {
-                    if (dayInitialTime <= DateTime.Now)
-                    {
-                        var model = App.Current.Services.GetService<MainViewModel>()!;
-                        if (model != null)
-                        {
-                            if (model.IsDBConnetion)
-                                GetProcData((int)ProcTypeCode.DAYSTATDATA, dayInitialTime.AddDays(-1));
-                            else
-                                _logger.DbLog($"{dayInitialTime.AddDays(-1).ToString("yyyy-MM-dd HH:mm:ss")} [1일 통계(1분활용)] 데이터 생성 실패 (DB 접속 실패) ");
-                        }
-                        dayInitialTime = dayInitialTime.AddDays(1);
-                        _logger.DbLog($"NEXT [1일 통계(1분활용)] 데이터 생성 시간: {dayInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
-                    }
-                }
-                catch
-                {
+            //_logger.DbLog($"[1일 통계(1분활용)] 데이터 생성 시간: {dayInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+            //while (ThreadFlag)
+            //{
+            //    try
+            //    {
+            //        if (dayInitialTime <= DateTime.Now)
+            //        {
+            //            var model = App.Current.Services.GetService<MainViewModel>()!;
+            //            if (model != null)
+            //            {
+            //                if (model.IsDBConnetion)
+            //                    GetProcData((int)ProcTypeCode.DAYSTATDATA, dayInitialTime.AddDays(-1));
+            //                else
+            //                    _logger.DbLog($"{dayInitialTime.AddDays(-1).ToString("yyyy-MM-dd HH:mm:ss")} [1일 통계(1분활용)] 데이터 생성 실패 (DB 접속 실패) ");
+            //            }
+            //            dayInitialTime = dayInitialTime.AddDays(1);
+            //            _logger.DbLog($"NEXT [1일 통계(1분활용)] 데이터 생성 시간: {dayInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+            //        }
+            //    }
+            //    catch
+            //    {
 
-                }
-                Thread.Sleep(1000);
-            }
+            //    }
+            //    Thread.Sleep(1000);
+            //}
         }
 
         private void StatisticsDataWorker()
         {
             Thread.Sleep(2500);
 
-            DateTime hourInitialTime = DateTimeHelper.GetNextDateTime(DateTime.Now, TimeDivisionCode.Hour, min:5);
+            string HourString = _commonData.SchduleInfos.FirstOrDefault(x=>x.SchduleId == (int)ProcTypeCode.STATISTICSHOUR)!.SchduleValue.ToString();
+            string DayString = _commonData.SchduleInfos.FirstOrDefault(x => x.SchduleId == (int)ProcTypeCode.STATISTICSDAY)!.SchduleValue.ToString();
+            string MonthString = _commonData.SchduleInfos.FirstOrDefault(x => x.SchduleId == (int)ProcTypeCode.STATISTICSMONTH)!.SchduleValue.ToString();
+            string YearString = _commonData.SchduleInfos.FirstOrDefault(x => x.SchduleId == (int)ProcTypeCode.STATISTICSYEAR)!.SchduleValue.ToString();
+            string DayStringForOneMinute = _commonData.SchduleInfos.FirstOrDefault(p => p.SchduleId == (int)ProcTypeCode.DAYSTATDATA)?.SchduleValue.ToString();
+            DateTime HourDt = Convert.ToDateTime(DateTime.Now.ToString(HourString));
+            DateTime hourInitialTime = DateTimeHelper.GetNextDateTime(DateTime.Now, TimeDivisionCode.Hour, min:HourDt.Minute);
             _logger.DbLog($"[시간 통계(15분활용)] 데이터 생성 시간: {hourInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
 
-            DateTime dayInitialTime = DateTimeHelper.GetNextDateTime(DateTime.Now, TimeDivisionCode.Day, hour:1);
+            DateTime DayDt = Convert.ToDateTime(DateTime.Now.ToString(DayString));
+            DateTime dayInitialTime = DateTimeHelper.GetNextDateTime(DateTime.Now, TimeDivisionCode.Day, hour:DayDt.Hour);
             _logger.DbLog($"[일 통계(시간활용)] 데이터 생성 시간: {dayInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
 
-            DateTime monthInitialTime = DateTimeHelper.GetNextDateTime(DateTime.Now, TimeDivisionCode.Month, hour: 1);
+            DateTime MonthDt = Convert.ToDateTime(DateTime.Now.ToString(MonthString));
+            DateTime monthInitialTime = DateTimeHelper.GetNextDateTime(DateTime.Now, TimeDivisionCode.Month, day:MonthDt.Day, hour:MonthDt.Hour);
             _logger.DbLog($"[월 통계(일활용)] 데이터 생성 시간: {monthInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
-            
-            DateTime yearhInitialTime = DateTimeHelper.GetNextDateTime(DateTime.Now, TimeDivisionCode.Year, hour: 1);
+
+            DateTime YearDt = Convert.ToDateTime(DateTime.Now.ToString(YearString));
+            DateTime yearhInitialTime = DateTimeHelper.GetNextDateTime(DateTime.Now, TimeDivisionCode.Year, month:YearDt.Month, day:YearDt.Day, hour:YearDt.Hour);
             _logger.DbLog($"[년 통계(월활용)] 데이터 생성 시간: {yearhInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+
+            DateTime DayForOneMinute = Convert.ToDateTime(DateTime.Now.ToString(DayStringForOneMinute));
+            DateTime dayInitialTimeForOneMinute = DateTimeHelper.GetNextDateTime(DateTime.Now, TimeDivisionCode.Day, hour: DayForOneMinute.Hour, min: DayForOneMinute.Minute, sec: DayForOneMinute.Second);
+            _logger.DbLog($"[1일 통계(1분활용)] 데이터 생성 시간: {dayInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
 
             while (ThreadFlag)
             {
@@ -302,6 +315,20 @@ namespace KDMSServer.Model
                         }
                         yearhInitialTime = yearhInitialTime.AddDays(1);
                         _logger.DbLog($"NEXT [년 통계(월활용)] 데이터 생성 시간: {yearhInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+                    }
+
+                    if (dayInitialTimeForOneMinute <= DateTime.Now)
+                    {
+                        var model = App.Current.Services.GetService<MainViewModel>()!;
+                        if (model != null)
+                        {
+                            if (model.IsDBConnetion)
+                                GetProcData((int)ProcTypeCode.DAYSTATDATA, dayInitialTime.AddDays(-1));
+                            else
+                                _logger.DbLog($"{dayInitialTime.AddDays(-1).ToString("yyyy-MM-dd HH:mm:ss")} [1일 통계(1분활용)] 데이터 생성 실패 (DB 접속 실패) ");
+                        }
+                        dayInitialTime = dayInitialTime.AddDays(1);
+                        _logger.DbLog($"NEXT [1일 통계(1분활용)] 데이터 생성 시간: {dayInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
                     }
                 }
                 catch

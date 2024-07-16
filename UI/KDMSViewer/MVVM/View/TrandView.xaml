@@ -9,7 +9,7 @@
              xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
              xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/charts" 
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="1450">
+             d:DesignHeight="800" d:DesignWidth="1800">
 
     <Grid Background="Transparent">
         <Grid.ColumnDefinitions>
@@ -18,84 +18,113 @@
             <ColumnDefinition Width="5*"/>
         </Grid.ColumnDefinitions>
 
-        <Border Grid.Row="0"
-                Margin="5,5,0,5"
-                BorderThickness="1"
-                BorderBrush="Gray"
-                CornerRadius="5 0 0 5">
-            <TreeView Foreground="White"
-                      Background="Transparent"
-                      BorderThickness="0"
-                      FontSize="{StaticResource FontSizeSmall}"
-                      ItemsSource="{Binding TreeItems}"
-                      VirtualizingStackPanel.IsVirtualizing="True" 
-                      VirtualizingStackPanel.VirtualizationMode="Recycling">
 
-                <!--<i:Interaction.Behaviors>
-                    <model:TreeViewSelectedItemBehavior SelectedItem="{Binding DLSelected, Mode=TwoWay}" />
-                </i:Interaction.Behaviors>-->
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
 
-                <!--<i:Interaction.Triggers>
-                <i:EventTrigger EventName="SelectedItemChanged">
-                    <i:CallMethodAction TargetObject="{Binding}" MethodName="OnSelectionChanged" />
-                </i:EventTrigger>
-            </i:Interaction.Triggers>-->
+            <Border Grid.Row="0"
+                   Margin="5,5,0,5"
+                   BorderThickness="1"
+                   BorderBrush="Gray"
+                   CornerRadius="5 0 0 5">
+                <TreeView Foreground="White"
+                     Background="Transparent"
+                     BorderThickness="0"
+                     FontSize="{StaticResource FontSizeSmall}"
+                     ItemsSource="{Binding TreeItems}"
+                     VirtualizingStackPanel.IsVirtualizing="True" 
+                     VirtualizingStackPanel.VirtualizationMode="Recycling">
 
-                <TreeView.Resources>
-                    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}"
-                         Color="Black" />
-                    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}"
-                         Color="White" />
-                    <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}"
-                         Color="Black" />
-                    <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}"
-                         Color="White" />
+                <i:Interaction.Behaviors>
+                   <model:TreeViewSelectedItemBehavior SelectedItem="{Binding TreeSelected, Mode=TwoWay}" />
+               </i:Interaction.Behaviors>
 
-                    <HierarchicalDataTemplate DataType="{x:Type model:TreeDataModel}" ItemsSource="{Binding DataModels}">
-                        <StackPanel Orientation="Horizontal"
-                                    Margin="0 -3 0 -3">
-                            <CheckBox IsChecked="{Binding IsChecked}"
-                                      Visibility="{Binding IsVisible}"
-                                      Margin="5 0 0 0"
-                                      VerticalAlignment="Center"
-                                      VerticalContentAlignment="Center">
+                    <TreeView.Resources>
+                        <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}"
+                        Color="Black" />
+                        <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}"
+                        Color="White" />
+                        <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}"
+                        Color="Black" />
+                        <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}"
+                        Color="White" />
 
-                                <!--<CheckBox.LayoutTransform>
-                                    <ScaleTransform ScaleX="1.2" ScaleY="1.2" />
-                                </CheckBox.LayoutTransform>-->
+                        <HierarchicalDataTemplate DataType="{x:Type model:TreeDataModel}" ItemsSource="{Binding DataModels}">
+                            <StackPanel Orientation="Horizontal"
+                                   Margin="0 -3 0 -3">
+                                <TextBlock Text="{Binding Name}"
+                                      Margin="5 0 5 0"/>
+                            </StackPanel>
+                        </HierarchicalDataTemplate>
+                    </TreeView.Resources>
+                </TreeView>
+            </Border>
 
-                                <i:Interaction.Triggers>
-                                    <i:EventTrigger EventName="Checked">
-                                        <i:CallMethodAction TargetObject="{Binding}" MethodName="OnChecked" />
-                                    </i:EventTrigger>
+            <Border Grid.Row="1"
+                   Margin="5,5,0,5"
+                   BorderThickness="1"
+                   BorderBrush="Gray"
+                   CornerRadius="5 0 0 5">
+                <StackPanel>
+                    <TextBlock Margin="20 0 0 0"
+                               FontSize="{StaticResource FontSizeSmall}">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="{}{0} + {1}">
+                                <Binding Path="TreeSelected.Name" />
+                                <Binding Path="ItemCount" />
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
 
-                                    <i:EventTrigger EventName="Unchecked">
-                                        <i:CallMethodAction TargetObject="{Binding}" MethodName="OnUnchecked" />
-                                    </i:EventTrigger>
-                                </i:Interaction.Triggers>
-                            </CheckBox>
-                            <TextBlock Text="{Binding Name}"
-                                       Margin="5 0 5 0"/>
-                        </StackPanel>
-                    </HierarchicalDataTemplate>
-                    <!--<DataTemplate DataType="{x:Type model:TreeItemModel}">
-                    <StackPanel Orientation="Horizontal">
-                        <CheckBox IsChecked="{Binding IsChecked}"
-                                  Margin="5 0 0 0"
-                                  VerticalAlignment="Center"
-                                  VerticalContentAlignment="Center">
-                            <CheckBox.LayoutTransform>
-                                <ScaleTransform ScaleX="1" ScaleY="1" />
-                            </CheckBox.LayoutTransform>
-                        </CheckBox>
-                        <TextBlock Text="{Binding Name}"
-                                   FontSize="{StaticResource FontSizeSmall}"
-                                   Margin="5 0 5 3"/>
-                    </StackPanel>
-                </DataTemplate>-->
-                </TreeView.Resources>
-            </TreeView>
-        </Border>
+                    <RadioButton Content="실시간 분 데이터"
+                                 Height="auto"
+                                 IsChecked="{Binding MinDataCheck}"
+                                 Style="{StaticResource MenuButtonTheme}"
+                                 Command="{Binding MinDataCommand}"/>
+
+                    <RadioButton Content="일일 통계 데이터"
+                                 Height="auto"
+                                 IsChecked="{Binding MinDataCheck}"
+                                 Style="{StaticResource MenuButtonTheme}"
+                                 Command="{Binding DayStatCommand}"/>
+
+                    <RadioButton Content="실시간 15분 데이터"
+                                 Height="auto"
+                                 IsChecked="{Binding StatisticsMinCheck}"
+                                 Style="{StaticResource MenuButtonTheme}"
+                                 Command="{Binding StatisticsMinCommand}"/>
+
+                    <RadioButton Content="시간 통게 데이터"
+                                 Height="auto"
+                                 IsChecked="{Binding StatisticsHourCheck}"
+                                 Style="{StaticResource MenuButtonTheme}"
+                                 Command="{Binding StatisticsHourCommand}"/>
+
+                    <RadioButton Content="일 통계 데이터"
+                                 Height="auto"
+                                 IsChecked="{Binding StatisticsDayCheck}"
+                                 Style="{StaticResource MenuButtonTheme}"
+                                 Command="{Binding StatisticsDayCommand}"/>
+
+                    <RadioButton Content="월 통게 데이터"
+                                 Height="auto"
+                                 IsChecked="{Binding StatisticsMonthCheck}"
+                                 Style="{StaticResource MenuButtonTheme}"
+                                 Command="{Binding StatisticsMonthCommand}"/>
+
+                    <RadioButton Content="년 통게 데이터"
+                                 Height="auto"
+                                 IsChecked="{Binding StatisticsYearCheck}"
+                                 Style="{StaticResource MenuButtonTheme}"
+                                 Command="{Binding StatisticsYearCommand}"/>
+                </StackPanel>
+            </Border>
+
+        </Grid>
+ 
 
         <GridSplitter Grid.Column="1" 
                   HorizontalAlignment="Stretch"
@@ -122,14 +151,63 @@
 
                     <Grid Grid.Row="0">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="1.2*"/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
                             <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="1.2*"/>
                         </Grid.ColumnDefinitions>
 
                         <GroupBox Grid.Column="0"
+                                  Margin="5 0 5 0">
+                            <GroupBox.Header>
+                                <CheckBox Content="타입"
+                                          Style="{StaticResource checkboxType}"
+                                          IsChecked="{Binding CurrentCheck}"
+                                          FontSize="{StaticResource FontSizeRegular}" 
+                                          Margin="0 0 10 0"
+                                          HorizontalAlignment="Right"
+                                          VerticalContentAlignment="Center">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="Checked">
+                                            <i:CallMethodAction TargetObject="{Binding}" MethodName="OnCurrentChecked" />
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="Unchecked">
+                                            <i:CallMethodAction TargetObject="{Binding}" MethodName="OnCurrentUnChecked" />
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </CheckBox>
+                            </GroupBox.Header>
+
+                            <StackPanel Orientation="Horizontal"
+                                        Margin="10 5 5 5">
+                                <CheckBox Content="평균"
+                                          Style="{StaticResource checkboxType}"
+                                          IsChecked="{Binding CurrentA}"
+                                          FontSize="{StaticResource FontSizeRegular}" 
+                                          Margin="0 0 10 0"
+                                          HorizontalAlignment="Right"
+                                          VerticalContentAlignment="Center"/>
+
+                                <CheckBox Content="최대"
+                                          Style="{StaticResource checkboxType}"
+                                          IsChecked="{Binding CurrentB}"
+                                          FontSize="{StaticResource FontSizeRegular}" 
+                                          Margin="0 0 10 0"
+                                          HorizontalAlignment="Right"
+                                          VerticalContentAlignment="Center"/>
+
+                                <CheckBox Content="최소"
+                                          Style="{StaticResource checkboxType}"
+                                          IsChecked="{Binding CurrentC}"
+                                          FontSize="{StaticResource FontSizeRegular}" 
+                                          Margin="0 0 10 0"
+                                          HorizontalAlignment="Right"
+                                          VerticalContentAlignment="Center"/>
+                            </StackPanel>
+                        </GroupBox>
+
+
+                        <GroupBox Grid.Column="1"
                                   Margin="5 0 5 0">
                             <GroupBox.Header>
                                 <CheckBox Content="전류"
@@ -186,7 +264,7 @@
                             </StackPanel>
                         </GroupBox>
 
-                        <GroupBox Grid.Column="1"
+                        <GroupBox Grid.Column="2"
                                   Margin="0 0 5 0">
                             <GroupBox.Header>
                                 <CheckBox Content="전압"
@@ -235,213 +313,9 @@
                             </StackPanel>
                         </GroupBox>
 
-                        <GroupBox Grid.Column="2"
-                                  Margin="0 0 5 0">
-                            <GroupBox.Header>
-                                <CheckBox Content="피상전력"
-                                          Style="{StaticResource checkboxType}"
-                                          IsChecked="{Binding PowerCheck}"
-                                          FontSize="{StaticResource FontSizeRegular}" 
-                                          Margin="0 0 10 0"
-                                          HorizontalAlignment="Right"
-                                          VerticalContentAlignment="Center">
-                                    <i:Interaction.Triggers>
-                                        <i:EventTrigger EventName="Checked">
-                                            <i:CallMethodAction TargetObject="{Binding}" MethodName="OnPowerChecked" />
-                                        </i:EventTrigger>
-                                        <i:EventTrigger EventName="Unchecked">
-                                            <i:CallMethodAction TargetObject="{Binding}" MethodName="OnPowerUnChecked" />
-                                        </i:EventTrigger>
-                                    </i:Interaction.Triggers>
-                                </CheckBox>
-                            </GroupBox.Header>
-
-                            <StackPanel Orientation="Horizontal"
-                                        Margin="10 5 5 5">
-                                <!--<CheckBox Content="전체"
-                                          Style="{StaticResource checkboxType}"
-                                          IsChecked="{Binding PowerAll}"
-                                          FontSize="{StaticResource FontSizeRegular}" 
-                                          Margin="0 0 10 0"
-                                          HorizontalAlignment="Right"
-                                          VerticalContentAlignment="Center"/>-->
-                                
-                                <CheckBox Content="A"
-                                          Style="{StaticResource checkboxType}"
-                                          IsChecked="{Binding PowerA}"
-                                          FontSize="{StaticResource FontSizeRegular}" 
-                                          Margin="0 0 10 0"
-                                          HorizontalAlignment="Right"
-                                          VerticalContentAlignment="Center"/>
-
-                                <CheckBox Content="B"
-                                          Style="{StaticResource checkboxType}"
-                                          IsChecked="{Binding PowerB}"
-                                          FontSize="{StaticResource FontSizeRegular}" 
-                                          Margin="0 0 10 0"
-                                          HorizontalAlignment="Right"
-                                          VerticalContentAlignment="Center"/>
-
-                                <CheckBox Content="C"
-                                          Style="{StaticResource checkboxType}"
-                                          IsChecked="{Binding PowerC}"
-                                          FontSize="{StaticResource FontSizeRegular}" 
-                                          Margin="0 0 10 0"
-                                          HorizontalAlignment="Right"
-                                          VerticalContentAlignment="Center"/>
-
-                                <!--<CheckBox Content="피상전력"
-                                          Style="{StaticResource checkboxType}"
-                                          IsChecked="{Binding ApparentPower}"
-                                          FontSize="{StaticResource FontSizeRegular}" 
-                                          Margin="0 0 10 0"
-                                          HorizontalAlignment="Right"
-                                          VerticalContentAlignment="Center"/>-->
-                            </StackPanel>
-                        </GroupBox>
-
-                        <GroupBox Grid.Column="3"
-                                  Margin="0 0 5 0">
-                            <GroupBox.Header>
-                                <CheckBox Content="역률"
-                                          Style="{StaticResource checkboxType}"
-                                          IsChecked="{Binding PowerFactorCheck}"
-                                          FontSize="{StaticResource FontSizeRegular}" 
-                                          Margin="0 0 10 0"
-                                          HorizontalAlignment="Right"
-                                          VerticalContentAlignment="Center">
-                                    <i:Interaction.Triggers>
-                                        <i:EventTrigger EventName="Checked">
-                                            <i:CallMethodAction TargetObject="{Binding}" MethodName="OnPowerFactorChecked" />
-                                        </i:EventTrigger>
-                                        <i:EventTrigger EventName="Unchecked">
-                                            <i:CallMethodAction TargetObject="{Binding}" MethodName="OnPowerFactorUnChecked" />
-                                        </i:EventTrigger>
-                                    </i:Interaction.Triggers>
-                                </CheckBox>
-                            </GroupBox.Header>
-
-                            <StackPanel Orientation="Horizontal"
-                                        Margin="10 5 5 5">
-                                <CheckBox Content="3상"
-                                          Style="{StaticResource checkboxType}"
-                                          IsChecked="{Binding PowerFactor3p}"
-                                          FontSize="{StaticResource FontSizeRegular}" 
-                                          Margin="0 0 10 0"
-                                          HorizontalAlignment="Right"
-                                          VerticalContentAlignment="Center"/>
-                                
-                                <CheckBox Content="A"
-                                          Style="{StaticResource checkboxType}"
-                                          IsChecked="{Binding PowerFactorA}"
-                                          FontSize="{StaticResource FontSizeRegular}" 
-                                          Margin="0 0 10 0"
-                                          HorizontalAlignment="Right"
-                                          VerticalContentAlignment="Center"/>
-
-                                <CheckBox Content="B"
-                                          Style="{StaticResource checkboxType}"
-                                          IsChecked="{Binding PowerFactorB}"
-                                          FontSize="{StaticResource FontSizeRegular}" 
-                                          Margin="0 0 10 0"
-                                          HorizontalAlignment="Right"
-                                          VerticalContentAlignment="Center"/>
-
-                                <CheckBox Content="C"
-                                          Style="{StaticResource checkboxType}"
-                                          IsChecked="{Binding PowerFactorC}"
-                                          FontSize="{StaticResource FontSizeRegular}" 
-                                          Margin="0 0 10 0"
-                                          HorizontalAlignment="Right"
-                                          VerticalContentAlignment="Center"/>
-                            </StackPanel>
-                        </GroupBox>
-
-                        <GroupBox Grid.Column="4"
-                                  Margin="0 0 5 0">
-                            <GroupBox.Header>
-                                <CheckBox Content="고장전류"
-                                          Style="{StaticResource checkboxType}"
-                                          IsChecked="{Binding FaultCurrentCheck}"
-                                          FontSize="{StaticResource FontSizeRegular}" 
-                                          Margin="0 0 10 0"
-                                          HorizontalAlignment="Right"
-                                          VerticalContentAlignment="Center">
-                                    <i:Interaction.Triggers>
-                                        <i:EventTrigger EventName="Checked">
-                                            <i:CallMethodAction TargetObject="{Binding}" MethodName="OnFaultCurrentChecked" />
-                                        </i:EventTrigger>
-                                        <i:EventTrigger EventName="Unchecked">
-                                            <i:CallMethodAction TargetObject="{Binding}" MethodName="OnFaultCurrentUnChecked" />
-                                        </i:EventTrigger>
-                                    </i:Interaction.Triggers>
-                                </CheckBox>
-                            </GroupBox.Header>
-
-                            <StackPanel Orientation="Horizontal"
-                                        Margin="10 5 5 5">
-                                <CheckBox Content="A"
-                                          Style="{StaticResource checkboxType}"
-                                          IsChecked="{Binding FaultCurrentA}"
-                                          FontSize="{StaticResource FontSizeRegular}" 
-                                          Margin="0 0 10 0"
-                                          HorizontalAlignment="Right"
-                                          VerticalContentAlignment="Center"/>
-
-                                <CheckBox Content="B"
-                                          Style="{StaticResource checkboxType}"
-                                          IsChecked="{Binding FaultCurrentB}"
-                                          FontSize="{StaticResource FontSizeRegular}" 
-                                          Margin="0 0 10 0"
-                                          HorizontalAlignment="Right"
-                                          VerticalContentAlignment="Center"/>
-
-                                <CheckBox Content="C"
-                                          Style="{StaticResource checkboxType}"
-                                          IsChecked="{Binding FaultCurrentC}"
-                                          FontSize="{StaticResource FontSizeRegular}" 
-                                          Margin="0 0 10 0"
-                                          HorizontalAlignment="Right"
-                                          VerticalContentAlignment="Center"/>
-
-                                <CheckBox Content="N"
-                                          Style="{StaticResource checkboxType}"
-                                          IsChecked="{Binding FaultCurrentN}"
-                                          FontSize="{StaticResource FontSizeRegular}" 
-                                          Margin="0 0 10 0"
-                                          HorizontalAlignment="Right"
-                                          VerticalContentAlignment="Center"/>
-                            </StackPanel>
-                        </GroupBox>
+                     
                     </Grid>
-                    
-                    <!--<StackPanel Orientation="Horizontal"
-                            Margin="10 5 5 5">
-
-                        <CheckBox Content="전압"
-                                  Style="{StaticResource checkboxType}"
-                                  IsChecked="{Binding IsChecked}"
-                                  FontSize="{StaticResource FontSizeRegular}" 
-                                  Margin="0 0 10 0"
-                                  HorizontalAlignment="Right"
-                                  VerticalContentAlignment="Center"/>
-
-                        <CheckBox Content="전류"
-                                  Style="{StaticResource checkboxType}"
-                                  IsChecked="{Binding IsChecked}"
-                                  FontSize="{StaticResource FontSizeRegular}" 
-                                  Margin="0 0 10 0"
-                                  HorizontalAlignment="Right"
-                                  VerticalContentAlignment="Center"/>
-
-                        <CheckBox Content="???"
-                              Style="{StaticResource checkboxType}"
-                              IsChecked="{Binding IsChecked}"
-                              FontSize="{StaticResource FontSizeRegular}" 
-                              Margin="0 0 10 0"
-                              HorizontalAlignment="Right"
-                              VerticalContentAlignment="Center"/>
-                    </StackPanel>-->
+              
 
                     <Grid Grid.Row="1"
                           Margin="0 5 0 5">

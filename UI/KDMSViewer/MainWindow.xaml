@@ -72,7 +72,7 @@
 
             <GroupBox Grid.Column="3"
                       Header="운영정보"
-                      Margin="0 0 30 0">
+                      Margin="0 5 30 0">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="{Binding ServerState}"
                                Style="{StaticResource baseTextBlock}"

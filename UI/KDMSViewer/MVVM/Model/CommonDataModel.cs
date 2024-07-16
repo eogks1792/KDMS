@@ -60,7 +60,7 @@ namespace KDMSViewer.Model
                 TreeDataModel subs = new TreeDataModel();
                 subs.Type = TreeTypeCode.SUBS;
                 subs.Id = substation.Stid;
-                subs.Name = substation.Name ?? string.Empty;
+                subs.Name = substation.Name!.Trim() ?? string.Empty;
                 subs.IsVisible = Visibility.Collapsed;
 
                 foreach (var distributionline in Distributionlines.Where(p => p.StFk == substation.Stid))
@@ -70,7 +70,7 @@ namespace KDMSViewer.Model
                     dl.Id = distributionline.Dlid;
                     //dl.SubsId = subs.Id;
                     //dl.SubsName = subs.Name;
-                    dl.Name = distributionline.Name ?? string.Empty;
+                    dl.Name = distributionline.Name!.Trim() ?? string.Empty;
                     dl.IsVisible = Visibility.Collapsed;
                     subs.DataModels.Add(dl);
 

@@ -36,6 +36,21 @@ namespace KDMSServer.ViewModel
         [ObservableProperty]
         private bool _isDBConnetion = false;
 
+        [ObservableProperty]
+        private string _loginId = "id";
+        [ObservableProperty]
+        private string _loginPwd = "password";
+        [ObservableProperty]
+        private string _scanPort = "12345";
+        [ObservableProperty]
+        private string _controlPort = "12345";
+        [ObservableProperty]
+        private string _eventPort = "12345";
+        [ObservableProperty]
+        private string _primeIP = "";
+        [ObservableProperty]
+        private string _backupIP = "";
+
         public string connectionString { get; set; }
 
         [ObservableProperty]
@@ -74,6 +89,20 @@ namespace KDMSServer.ViewModel
                 UserId = connectionString.Split(';')[3].Replace("User=", "");
                 UserPwd = connectionString.Split(';')[4].Replace("Password=", "");
             }
+
+            var LogintInfoSection = _configuration.GetSection("LoginInfo");
+            LoginId = LogintInfoSection.GetSection("LoginId").Value!;
+            LoginPwd = LogintInfoSection.GetSection("LoginPwd").Value!;
+
+            var ChannelInfoSection = _configuration.GetSection("ChannelInfo");
+            ScanPort = ChannelInfoSection.GetSection("Scan").Value!;
+            ControlPort = ChannelInfoSection.GetSection("Control").Value!;
+            EventPort = ChannelInfoSection.GetSection("Event").Value!;
+
+            var ServerIpInfoSection = _configuration.GetSection("ServerInfo");
+            PrimeIP = ServerIpInfoSection.GetSection("PrimeServer").Value!;
+            BackupIP = ServerIpInfoSection.GetSection("BackupServer").Value!;
+
             _worker.Init();
             Manualtime = DateTime.Now;
         }
