@@ -49,7 +49,7 @@ namespace KDMSServer.Model
 
             Task.Run(() =>
             {
-                StatisticsDataWorker();
+                SchudleDataWorker();
             });
         }
 
@@ -228,7 +228,7 @@ namespace KDMSServer.Model
             //}
         }
 
-        private void StatisticsDataWorker()
+        private void SchudleDataWorker()
         {
             Thread.Sleep(2500);
 

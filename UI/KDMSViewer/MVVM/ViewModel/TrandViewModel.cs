@@ -9,10 +9,12 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace KDMSViewer.ViewModel
 {
@@ -27,7 +29,10 @@ namespace KDMSViewer.ViewModel
         private TreeDataModel _treeSelected;
 
         [ObservableProperty]
-        private ObservableCollection<HistoryMinDatum> _pointItems;
+        private int _itemCount;
+
+        [ObservableProperty]
+        private List<ChartPointDataModel> _pointItems;
 
         [ObservableProperty]
         private ObservableCollection<ChartModel> _seriesItems;
@@ -61,7 +66,30 @@ namespace KDMSViewer.ViewModel
         [ObservableProperty]
         private bool _voltageC = false;
 
-      
+        [ObservableProperty]
+        private bool _minDataCheck = true;
+        [ObservableProperty]
+        private bool _dayStatCheck = false;
+        [ObservableProperty]
+        private bool _statisticsMinCheck = false;
+        [ObservableProperty]
+        private bool _statisticsHourCheck = false;
+        [ObservableProperty]
+        private bool _statisticsDayCheck = false;
+        [ObservableProperty]
+        private bool _statisticsMonthCheck = false;
+        [ObservableProperty]
+        private bool _statisticsYearCheck = false;
+
+        [ObservableProperty]
+        private Visibility _realVisibility = Visibility.Visible;
+
+        [ObservableProperty]
+        private Visibility _statisticalVisibility = Visibility.Collapsed;
+
+        [ObservableProperty]
+        private Visibility _statisticalMinVisibility = Visibility.Collapsed;
+
         [ObservableProperty]
         private DateTime _fromDate;
 
@@ -69,12 +97,15 @@ namespace KDMSViewer.ViewModel
         private DateTime _toDate;
 
         [ObservableProperty]
-        private DateTime _fromTime;
+        public string _timeEditMask = CultureInfo.CurrentCulture.DateTimeFormat.LongTimePattern;
 
         [ObservableProperty]
-        private DateTime _toTime;
+        private DateTime _fromTime = Convert.ToDateTime(DateTime.Now.ToString("HH:00:00"));
 
-      
+        [ObservableProperty]
+        private DateTime _toTime = Convert.ToDateTime(DateTime.Now.AddHours(1).ToString("HH:00:00"));
+
+
         public TrandViewModel(DataWorker worker)
         {
             _worker = worker;
@@ -96,114 +127,156 @@ namespace KDMSViewer.ViewModel
             string name = string.Empty;
             string check = string.Empty;
             // 체크된 항목된 가져오도록 처리
-            name = "current";
-            if (CurrentA)
+
+            if (MinDataCheck)
             {
-                check = $"{name}_a";
-                //retList.AddRange(chartDatas.Where(p => p.PointName.Contains(check)).ToList());
-                retList.AddRange(PointItems.Select(p => new ChartPointDataModel
+                name = "CURRENT";
+                if (CurrentA)
                 {
-                    CeqId = p.Ceqid,
-                    Name = p.Name ?? string.Empty,
-                    PointName = check,
-                    PointValue = p.CurrentA ?? 0.0f,
-                    UpdateTime = p.SaveTime
+                    check = $"{name}_A";
+                    retList.AddRange(PointItems.Where(p => p.PointName.Contains(check)).ToList());
+                    
+                }
+                if (CurrentB)
+                {
+                    check = $"{name}_B";
+                    retList.AddRange(PointItems.Where(p => p.PointName.Contains(check)).ToList());
+                }
+                if (CurrentC)
+                {
+                    check = $"{name}_C";
+                    retList.AddRange(PointItems.Where(p => p.PointName.Contains(check)).ToList());
+                }
+                if (CurrentN)
+                {
+                    check = $"{name}_N";
+                    retList.AddRange(PointItems.Where(p => p.PointName.Contains(check)).ToList());
+                }
 
-                }).ToList());
+                name = "VOLTAGE";
+                if (VoltageA)
+                {
+                    check = $"{name}_A";
+                    retList.AddRange(PointItems.Where(p => p.PointName.Contains(check)).ToList());
+                }
+                if (VoltageB)
+                {
+                    check = $"{name}_B";
+                    retList.AddRange(PointItems.Where(p => p.PointName.Contains(check)).ToList());
+                }
+                if (VoltageC)
+                {
+                    check = $"{name}_C";
+                    retList.AddRange(PointItems.Where(p => p.PointName.Contains(check)).ToList());
+                }
             }
-            if (CurrentB)
+            else
             {
-                check = $"{name}_b";
-                //retList.AddRange(chartDatas.Where(p => p.PointName.Contains(check)).ToList());
-                retList.AddRange(PointItems.Select(p => new ChartPointDataModel
+                if(StatisticsMinCheck)
                 {
-                    CeqId = p.Ceqid,
-                    Name = p.Name ?? string.Empty,
-                    PointName = check,
-                    PointValue = p.CurrentB ?? 0.0f,
-                    UpdateTime = p.SaveTime
-
-                }).ToList());
-            }
-            if (CurrentC)
-            {
-                check = $"{name}_c";
-                //retList.AddRange(chartDatas.Where(p => p.PointName.Contains(check)).ToList());
-                retList.AddRange(PointItems.Select(p => new ChartPointDataModel
+                    if (Average)
+                    {
+                        name = "AVERAGE_CURRENT";
+                        if (CurrentA)
+                        {
+                            check = $"{name}_A";
+                            retList.AddRange(PointItems.Where(p => p.PointName.Contains(check)).ToList());
+                        }
+                        if (CurrentB)
+                        {
+                            check = $"{name}_B";
+                            retList.AddRange(PointItems.Where(p => p.PointName.Contains(check)).ToList());
+                        }
+                        if (CurrentC)
+                        {
+                            check = $"{name}_C";
+                            retList.AddRange(PointItems.Where(p => p.PointName.Contains(check)).ToList());
+                        }
+                        if (CurrentN)
+                        {
+                            check = $"{name}_N";
+                            retList.AddRange(PointItems.Where(p => p.PointName.Contains(check)).ToList());
+                        }
+                    }
+                }
+                else
                 {
-                    CeqId = p.Ceqid,
-                    Name = p.Name ?? string.Empty,
-                    PointName = check,
-                    PointValue = p.CurrentC ?? 0.0f,
-                    UpdateTime = p.SaveTime
+                    if(Average)
+                    {
+                        name = "AVERAGE_CURRENT";
+                        if (CurrentA)
+                        {
+                            check = $"{name}_A";
+                            retList.AddRange(PointItems.Where(p => p.PointName.Contains(check)).ToList());
+                        }
+                        if (CurrentB)
+                        {
+                            check = $"{name}_B";
+                            retList.AddRange(PointItems.Where(p => p.PointName.Contains(check)).ToList());
+                        }
+                        if (CurrentC)
+                        {
+                            check = $"{name}_C";
+                            retList.AddRange(PointItems.Where(p => p.PointName.Contains(check)).ToList());
+                        }
+                        if (CurrentN)
+                        {
+                            check = $"{name}_N";
+                            retList.AddRange(PointItems.Where(p => p.PointName.Contains(check)).ToList());
+                        }
+                    }
 
-                }).ToList());
+                    if(Max)
+                    {
+                        name = "MAX_CURRENT";
+                        if (CurrentA)
+                        {
+                            check = $"{name}_A";
+                            retList.AddRange(PointItems.Where(p => p.PointName.Contains(check)).ToList());
+                        }
+                        if (CurrentB)
+                        {
+                            check = $"{name}_B";
+                            retList.AddRange(PointItems.Where(p => p.PointName.Contains(check)).ToList());
+                        }
+                        if (CurrentC)
+                        {
+                            check = $"{name}_C";
+                            retList.AddRange(PointItems.Where(p => p.PointName.Contains(check)).ToList());
+                        }
+                        if (CurrentN)
+                        {
+                            check = $"{name}_N";
+                            retList.AddRange(PointItems.Where(p => p.PointName.Contains(check)).ToList());
+                        }
+                    }
+
+                    if(Min)
+                    {
+                        name = "MIN_CURRENT";
+                        if (CurrentA)
+                        {
+                            check = $"{name}_A";
+                            retList.AddRange(PointItems.Where(p => p.PointName.Contains(check)).ToList());
+                        }
+                        if (CurrentB)
+                        {
+                            check = $"{name}_B";
+                            retList.AddRange(PointItems.Where(p => p.PointName.Contains(check)).ToList());
+                        }
+                        if (CurrentC)
+                        {
+                            check = $"{name}_C";
+                            retList.AddRange(PointItems.Where(p => p.PointName.Contains(check)).ToList());
+                        }
+                        if (CurrentN)
+                        {
+                            check = $"{name}_N";
+                            retList.AddRange(PointItems.Where(p => p.PointName.Contains(check)).ToList());
+                        }
+                    }
+                }
             }
-            if (CurrentN)
-            {
-                check = $"{name}_n";
-                //retList.AddRange(chartDatas.Where(p => p.PointName.Contains(check)).ToList());
-                retList.AddRange(PointItems.Select(p => new ChartPointDataModel
-                {
-                    CeqId = p.Ceqid,
-                    Name = p.Name ?? string.Empty,
-                    PointName = check,
-                    PointValue = p.CurrentN ?? 0.0f,
-                    UpdateTime = p.SaveTime
-
-                }).ToList());
-            }
-
-            name = "voltage";
-            if (VoltageA)
-            {
-                check = $"{name}_a";
-                //retList.AddRange(chartDatas.Where(p => p.PointName.Contains(check)).ToList());
-                retList.AddRange(PointItems.Select(p => new ChartPointDataModel
-                {
-                    CeqId = p.Ceqid,
-                    Name = p.Name ?? string.Empty,
-                    PointName = check,
-                    PointValue = p.VoltageA ?? 0.0f,
-                    UpdateTime = p.SaveTime
-
-                }).ToList());
-            }
-            if (VoltageB)
-            {
-                check = $"{name}_b";
-                //retList.AddRange(chartDatas.Where(p => p.PointName.Contains(check)).ToList());
-                retList.AddRange(PointItems.Select(p => new ChartPointDataModel
-                {
-                    CeqId = p.Ceqid,
-                    Name = p.Name ?? string.Empty,
-                    PointName = check,
-                    PointValue = p.VoltageB ?? 0.0f,
-                    UpdateTime = p.SaveTime
-
-                }).ToList());
-            }
-            if (VoltageC)
-            {
-                check = $"{name}_c";
-                //retList.AddRange(chartDatas.Where(p => p.PointName.Contains(check)).ToList());
-                retList.AddRange(PointItems.Select(p => new ChartPointDataModel
-                {
-                    CeqId = p.Ceqid,
-                    Name = p.Name ?? string.Empty,
-                    PointName = check,
-                    PointValue = p.VoltageC ?? 0.0f,
-                    UpdateTime = p.SaveTime
-
-                }).ToList());
-            }
-
-       
-   
-
-          
-
-          
 
             return retList;
         }
@@ -223,6 +296,38 @@ namespace KDMSViewer.ViewModel
             CurrentC = false;
             CurrentN = false;
         }
+        public void OnCurrentAChecked(object sender, RoutedEventArgs e)
+        {
+            ChartInit();
+        }
+        public void OnCurrentAUnChecked(object sender, RoutedEventArgs e)
+        {
+            ChartInit();
+        }
+        public void OnCurrentBChecked(object sender, RoutedEventArgs e)
+        {
+            ChartInit();
+        }
+        public void OnCurrentBUnChecked(object sender, RoutedEventArgs e)
+        {
+            ChartInit();
+        }
+        public void OnCurrentCChecked(object sender, RoutedEventArgs e)
+        {
+            ChartInit();
+        }
+        public void OnCurrentCUnChecked(object sender, RoutedEventArgs e)
+        {
+            ChartInit();
+        }
+        public void OnCurrentNChecked(object sender, RoutedEventArgs e)
+        {
+            ChartInit();
+        }
+        public void OnCurrentNUnChecked(object sender, RoutedEventArgs e)
+        {
+            ChartInit();
+        }
 
         public void OnVoltageChecked(object sender, RoutedEventArgs e)
         {
@@ -238,45 +343,80 @@ namespace KDMSViewer.ViewModel
             VoltageC = false;
         }
 
-        public void OnPowerChecked(object sender, RoutedEventArgs e)
+        public void OnVoltageAChecked(object sender, RoutedEventArgs e)
         {
-            
+            ChartInit();
+        }
+        public void OnVoltageAUnChecked(object sender, RoutedEventArgs e)
+        {
+            ChartInit();
+        }
+        public void OnVoltageBChecked(object sender, RoutedEventArgs e)
+        {
+            ChartInit();
+        }
+        public void OnVoltageBUnChecked(object sender, RoutedEventArgs e)
+        {
+            ChartInit();
+        }
+        public void OnVoltageCChecked(object sender, RoutedEventArgs e)
+        {
+            ChartInit();
+        }
+        public void OnVoltageCUnChecked(object sender, RoutedEventArgs e)
+        {
+            ChartInit();
         }
 
-        public void OnPowerUnChecked(object sender, RoutedEventArgs e)
+        public void OnTypeChecked(object sender, RoutedEventArgs e)
         {
-          
+            Average = true;
+            Max = true;
+            Min = true;
         }
 
-        public void OnPowerFactorChecked(object sender, RoutedEventArgs e)
+        public void OnTypeUnChecked(object sender, RoutedEventArgs e)
         {
-           
+            Average = false;
+            Max = false;
+            Min = false;
         }
 
-        public void OnPowerFactorUnChecked(object sender, RoutedEventArgs e)
+        public void OnAverageChecked(object sender, RoutedEventArgs e)
         {
-           
+            ChartInit();
         }
 
-        public void OnFaultCurrentChecked(object sender, RoutedEventArgs e)
+        public void OnAverageUnChecked(object sender, RoutedEventArgs e)
         {
-            
+            ChartInit();
         }
 
-        public void OnFaultCurrentUnChecked(object sender, RoutedEventArgs e)
+        public void OnMaxChecked(object sender, RoutedEventArgs e)
         {
-           
+            ChartInit();
         }
 
-        private void GetData()
+        public void OnMaxUnChecked(object sender, RoutedEventArgs e)
         {
-            _worker.GetTrandData(FromDate, ToDate);
+            ChartInit();
+        }
+
+        public void OnMinChecked(object sender, RoutedEventArgs e)
+        {
+            ChartInit();
+        }
+
+        public void OnMinUnChecked(object sender, RoutedEventArgs e)
+        {
+            ChartInit();
+        }
+
+        private void ChartInit()
+        {
             if (PointItems == null)
                 return;
 
-            // 날짜 데이터 범위 
-            // 체크된 변전소, DL, 스위치 
-            // 데이터 가져와 화면에 표시
             SeriesItems = new ObservableCollection<ChartModel>();
             var chartDatas = CheckItemList();
             if (chartDatas.Count > 0)
@@ -303,14 +443,207 @@ namespace KDMSViewer.ViewModel
             }
         }
 
+        private void GetData()
+        {
+            if(TreeSelected == null)
+            {
+                MessageBox.Show("선택된 데이터가 없습니다. \n\r개페기 및 다회로 스위치를 선택하세요.", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            if (TreeSelected.Type != TreeTypeCode.EQUIPMENT)
+            {
+                MessageBox.Show("선택된 데이터는 개페기 및 다회로 스위치가 아닙니다.", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            PointItems = new List<ChartPointDataModel>();
+            var ceqList = new List<long>
+            {
+                TreeSelected.Id
+            };
+            
+            if (MinDataCheck)
+            {
+                _worker.GetTrandData(ceqList, (int)SearchTypeCode.MINDATA, FromDate, ToDate, FromTime, ToTime);
+            }
+            else if (DayStatCheck)
+            {
+                _worker.GetTrandData(ceqList, (int)SearchTypeCode.DAYSTATDATA, FromDate, ToDate);
+            }
+            else if (StatisticsMinCheck)
+            {
+                _worker.GetTrandData(ceqList, (int)SearchTypeCode.STATISTICSMIN, FromDate, ToDate);
+            }
+            else if (StatisticsHourCheck)
+            {
+                _worker.GetTrandData(ceqList, (int)SearchTypeCode.STATISTICSHOUR, FromDate, ToDate);
+            }
+            else if (StatisticsDayCheck)
+            {
+                _worker.GetTrandData(ceqList, (int)SearchTypeCode.STATISTICSDAY, FromDate, ToDate);
+            }
+            else if (StatisticsMonthCheck)
+            {
+                _worker.GetTrandData(ceqList, (int)SearchTypeCode.STATISTICSMONTH, FromDate, ToDate);
+            }
+            else if (StatisticsYearCheck)
+            {
+                _worker.GetTrandData(ceqList, (int)SearchTypeCode.STATISTICSYEAR, FromDate, ToDate);
+            }
+
+            ItemCount = PointItems.Count;
+            TypeCheck = true;
+            TypeCheck = false;
+            CurrentCheck = true;
+            CurrentCheck = false;
+            VoltageCheck = true;
+            VoltageCheck = false;
+
+            //// 날짜 데이터 범위 
+            //// 체크된 변전소, DL, 스위치 
+            //// 데이터 가져와 화면에 표시
+            //SeriesItems = new ObservableCollection<ChartModel>();
+            //var chartDatas = CheckItemList();
+            //if (chartDatas.Count > 0)
+            //{
+            //    var distintPoints = chartDatas.Select(p => new { Name = $"{p.CeqId}({p.PointName})", DisPlayName = $"{p.Name} ({p.PointName})" }).Distinct().ToList();
+            //    foreach (var data in distintPoints)
+            //    {
+            //        var findDatas = chartDatas.Where(p => $"{p.CeqId}({p.PointName})" == data.Name).ToList();
+            //        if (findDatas.Count > 0)
+            //        {
+            //            var dataList = findDatas.Select(p => new ChartDateModel
+            //            {
+            //                Date = p.UpdateTime,
+            //                Value = p.PointValue
+            //            }).ToList();
+
+            //            SeriesItems.Add(new ChartModel()
+            //            {
+            //                Name = data.DisPlayName,
+            //                Datas = dataList
+            //            });
+            //        }
+            //    }
+            //}
+        }
+
         [RelayCommand]
         private async void Inquiry()
         {
             await Task.Run(() =>
             {
-                IsInquiry = false;
                 GetData();
             });
         }
+
+        [RelayCommand]
+        private void MinData()
+        {
+            CurrentCheck = true;
+            CurrentCheck = false;
+            VoltageCheck = true;
+            VoltageCheck = false;
+            PointItems = new List<ChartPointDataModel>();
+            ItemCount = 0;
+
+            StatisticalVisibility = Visibility.Collapsed;
+            RealVisibility = Visibility.Visible;
+        }
+
+        [RelayCommand]
+        private void DayStat()
+        {
+            TypeCheck = true;
+            TypeCheck = false;
+            CurrentCheck = true;
+            CurrentCheck = false;
+            PointItems = new List<ChartPointDataModel>();
+            ItemCount = 0;
+
+            StatisticalVisibility = Visibility.Visible;
+            StatisticalMinVisibility = Visibility.Visible;
+            RealVisibility = Visibility.Collapsed;
+        }
+
+        [RelayCommand]
+        private void StatisticsMin()
+        {
+            TypeCheck = true;
+            TypeCheck = false;
+            CurrentCheck = true;
+            CurrentCheck = false;
+            PointItems = new List<ChartPointDataModel>();
+            ItemCount = 0;
+
+            StatisticalVisibility = Visibility.Visible;
+            StatisticalMinVisibility = Visibility.Collapsed;
+            RealVisibility = Visibility.Collapsed;
+        }
+
+        [RelayCommand]
+        private void StatisticsHour()
+        {
+            TypeCheck = true;
+            TypeCheck = false;
+            CurrentCheck = true;
+            CurrentCheck = false;
+            PointItems = new List<ChartPointDataModel>();
+            ItemCount = 0;
+
+            StatisticalVisibility = Visibility.Visible;
+            StatisticalMinVisibility = Visibility.Visible;
+            RealVisibility = Visibility.Collapsed;
+        }
+
+        [RelayCommand]
+        private void StatisticsDay()
+        {
+            TypeCheck = true;
+            TypeCheck = false;
+            CurrentCheck = true;
+            CurrentCheck = false;
+            PointItems = new List<ChartPointDataModel>();
+            ItemCount = 0;
+
+            StatisticalVisibility = Visibility.Visible;
+            StatisticalMinVisibility = Visibility.Visible;
+            RealVisibility = Visibility.Collapsed;
+        }
+
+        [RelayCommand]
+        private void StatisticsMonth()
+        {
+            TypeCheck = true;
+            TypeCheck = false;
+            CurrentCheck = true;
+            CurrentCheck = false;
+            PointItems = new List<ChartPointDataModel>();
+            ItemCount = 0;
+
+            StatisticalVisibility = Visibility.Visible;
+            StatisticalMinVisibility = Visibility.Visible;
+            RealVisibility = Visibility.Collapsed;
+        }
+
+        [RelayCommand]
+        private void StatisticsYear()
+        {
+            TypeCheck = true;
+            TypeCheck = false;
+            CurrentCheck = true;
+            CurrentCheck = false;
+            PointItems = new List<ChartPointDataModel>();
+            ItemCount = 0;
+
+            StatisticalVisibility = Visibility.Visible;
+            StatisticalMinVisibility = Visibility.Visible;
+            RealVisibility = Visibility.Collapsed;
+        }
+
+
+
+
     }
 }

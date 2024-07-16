@@ -7,7 +7,7 @@
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" 
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="800" d:DesignWidth="1800">
 
     <Grid Margin="10 0 0 0">
         <Grid.RowDefinitions>
@@ -17,21 +17,23 @@
             <RowDefinition Height="45"/>
             <RowDefinition Height="45"/>
             <RowDefinition Height="45"/>
-            <RowDefinition Height="30"/>
-            <RowDefinition Height="40"/>
+            <RowDefinition Height="45"/>
+            <RowDefinition Height="45"/>
+            <RowDefinition Height="45"/>
+            <RowDefinition Height="45"/>
             <RowDefinition Height="45"/>
             <RowDefinition />
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="300"/>
-            <ColumnDefinition />
-            <ColumnDefinition Width="4*"/>
+            <ColumnDefinition Width="450"/>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
         <TextBlock Grid.Row="0" 
                    Grid.Column="0"
-                   Grid.ColumnSpan="2"
                    Text="스케줄 정보"
                    TextDecorations="Underline"
                    FontWeight="Bold"
@@ -39,39 +41,84 @@
                    FontSize="{StaticResource FontSizeMiddle}"
                    Style="{StaticResource baseTextBlock}"/>
 
-        <!--<TextBlock Grid.Row="1" Grid.Column="0"
+        <TextBlock Grid.Row="0" 
+                   Grid.Column="1"
+                   Grid.ColumnSpan="2"
+                   Text="스케줄 시간"
+                   FontWeight="Bold"
+                   Margin="5 0 0 0"
+                   FontSize="{StaticResource FontSizeMiddle}"
+                   Style="{StaticResource baseTextBlock}"/>
+
+        <TextBlock Grid.Row="0" 
+                   Grid.Column="2"
+                   Text="스케줄 주기"
+                   FontWeight="Bold"
+                   Margin="5 0 0 0"
+                   FontSize="{StaticResource FontSizeMiddle}"
+                   Style="{StaticResource baseTextBlock}"/>
+
+        <TextBlock Grid.Row="0" 
+                   Grid.Column="3"
+                   Text="스케줄 설명"
+                   FontWeight="Bold"
+                   Margin="5 0 0 0"
+                   FontSize="{StaticResource FontSizeMiddle}"
+                   Style="{StaticResource baseTextBlock}"/>
+
+        <TextBlock Grid.Row="1" Grid.Column="0"
+                   Text="HISTORY_MIN_DATA [1분 실시간]"
                    Margin="5 5 0 5"
-                   Text="BI 계측 주기 (분)"
                    Style="{StaticResource baseTextBlock}"/>
         <TextBlock Grid.Row="2" Grid.Column="0"
+                   Text="HISTORY_DAYSTAT_DATA [1일 통계(1분활용)]"
                    Margin="5 5 0 5"
-                   Text="BO 계측 주기 (분)"
                    Style="{StaticResource baseTextBlock}"/>
         <TextBlock Grid.Row="3" Grid.Column="0"
+                   Text="STATISTICS_15MIN [15분 실시간(평균부하전류)]"
                    Margin="5 5 0 5"
-                   Text="AI 계측 주기 (분)"
                    Style="{StaticResource baseTextBlock}"/>
         <TextBlock Grid.Row="4" Grid.Column="0"
+                   Text="STATISTICS_HOUR [시간 통계(15분활용)]"
                    Margin="5 5 0 5"
-                   Text="AO 계측 주기 (분)"
                    Style="{StaticResource baseTextBlock}"/>
         <TextBlock Grid.Row="5" Grid.Column="0"
-                   Margin="5 5 20 5"
-                   Text="COUNTER 계측 주기 (분)"
-                   Style="{StaticResource baseTextBlock}"/>-->
+                   Text="STATISTICS_DAY [일 통계(시활용)]"
+                   Margin="5 5 0 5"
+                   Style="{StaticResource baseTextBlock}"/>
+        <TextBlock Grid.Row="6" Grid.Column="0"
+                   Text="STATISTICS_MONTH [월 통계(일활용)]"
+                   Margin="5 5 0 5"
+                   Style="{StaticResource baseTextBlock}"/>
+        <TextBlock Grid.Row="7" Grid.Column="0"
+                   Text="STATISTICS_YEAR [년 통계(월활용)]"
+                   Margin="5 5 0 5"
+                   Style="{StaticResource baseTextBlock}"/>
+        <TextBlock Grid.Row="8" Grid.Column="0"
+                   Text="HISTORY_FI_ALARM [알람 실시간]"
+                   Margin="5 5 0 5"
+                   Style="{StaticResource baseTextBlock}"/>
+        <TextBlock Grid.Row="9" Grid.Column="0"
+                   Text="HISTORY_COMM_STATE [통신 성공률]"
+                   Margin="5 5 0 5"
+                   Style="{StaticResource baseTextBlock}"/>
+        <TextBlock Grid.Row="10" Grid.Column="0"
+                   Text="HISTORY_COMM_STATE_LOG [통신상태 이력]"
+                   Margin="5 5 0 5"
+                   Style="{StaticResource baseTextBlock}"/>
 
         <TextBox Grid.Row="1" Grid.Column="1"
-                 Text="{Binding BiTime}"
+                 Text="{Binding HisMinTime}"
                  TextAlignment="Right"
                  Style="{StaticResource baseTextBox}">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="PreviewTextInput">
                     <i:CallMethodAction TargetObject="{Binding}" MethodName="OnTextInput" />
                 </i:EventTrigger>
-            </i:Interaction.Triggers>   
+            </i:Interaction.Triggers>
         </TextBox>
         <TextBox Grid.Row="2" Grid.Column="1"
-                 Text="{Binding BoTime}"
+                 Text="{Binding HisStatTime}"
                  TextAlignment="Right"
                  Style="{StaticResource baseTextBox}">
             <i:Interaction.Triggers>
@@ -81,7 +128,7 @@
             </i:Interaction.Triggers>
         </TextBox>
         <TextBox Grid.Row="3" Grid.Column="1"
-                 Text="{Binding AiTime}"
+                 Text="{Binding StatMinTime}"
                  TextAlignment="Right"
                  Style="{StaticResource baseTextBox}">
             <i:Interaction.Triggers>
@@ -91,7 +138,7 @@
             </i:Interaction.Triggers>
         </TextBox>
         <TextBox Grid.Row="4" Grid.Column="1"
-                 Text="{Binding AoTime}"
+                 Text="{Binding StatHourTime}"
                  TextAlignment="Right"
                  Style="{StaticResource baseTextBox}">
             <i:Interaction.Triggers>
@@ -101,7 +148,59 @@
             </i:Interaction.Triggers>
         </TextBox>
         <TextBox Grid.Row="5" Grid.Column="1"
-                 Text="{Binding CounterTime}"
+                 Text="{Binding StatDayTime}"
+                 TextAlignment="Right"
+                 Style="{StaticResource baseTextBox}">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="PreviewTextInput">
+                    <i:CallMethodAction TargetObject="{Binding}" MethodName="OnTextInput" />
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </TextBox>
+        <TextBox Grid.Row="6" Grid.Column="1"
+                 Text="{Binding StatMonthTime}"
+                 TextAlignment="Right"
+                 Style="{StaticResource baseTextBox}">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="PreviewTextInput">
+                    <i:CallMethodAction TargetObject="{Binding}" MethodName="OnTextInput" />
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </TextBox>
+        <TextBox Grid.Row="7" Grid.Column="1"
+                 Text="{Binding StatYearTime}"
+                 TextAlignment="Right"
+                 Style="{StaticResource baseTextBox}">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="PreviewTextInput">
+                    <i:CallMethodAction TargetObject="{Binding}" MethodName="OnTextInput" />
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </TextBox>
+        <TextBox Grid.Row="8" Grid.Column="1"
+                 IsEnabled="False"
+                 Text="{Binding HisFiTime}"
+                 TextAlignment="Right"
+                 Style="{StaticResource baseTextBox}">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="PreviewTextInput">
+                    <i:CallMethodAction TargetObject="{Binding}" MethodName="OnTextInput" />
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </TextBox>
+        <TextBox Grid.Row="9" Grid.Column="1"
+                 Text="{Binding HisCommTime}"
+                 TextAlignment="Right"
+                 Style="{StaticResource baseTextBox}">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="PreviewTextInput">
+                    <i:CallMethodAction TargetObject="{Binding}" MethodName="OnTextInput" />
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </TextBox>
+        <TextBox Grid.Row="10" Grid.Column="1"
+                 IsEnabled="False"
+                 Text="{Binding HisCommLogTime}"
                  TextAlignment="Right"
                  Style="{StaticResource baseTextBox}">
             <i:Interaction.Triggers>
@@ -111,47 +210,165 @@
             </i:Interaction.Triggers>
         </TextBox>
 
-        <TextBlock Grid.Row="7" 
-                   Grid.Column="0"
-                   Grid.ColumnSpan="2"
-                   Text="통계데이터 저장 시간"
-                   TextDecorations="Underline"
-                   FontWeight="Bold"
-                   Margin="5 0 0 0"
-                   FontSize="{StaticResource FontSizeMiddle}"
-                   Style="{StaticResource baseTextBlock}"/>
+        <ComboBox Grid.Row="1"
+                  Grid.Column="2"
+                  Margin="5"
+                  FontSize="{StaticResource FontSizeMiddle}"
+                  ItemsSource="{Binding SchduleTypes}"
+                  DisplayMemberPath="Name"
+                  SelectedValue="{Binding HisMinInterval}"
+                  SelectedValuePath="SchduleType1"/>
+        <ComboBox Grid.Row="2"
+                  Grid.Column="2"
+                  Margin="5"
+                  FontSize="{StaticResource FontSizeMiddle}"
+                  ItemsSource="{Binding SchduleTypes}"
+                  DisplayMemberPath="Name"
+                  SelectedValue="{Binding HisStatInterval}"
+                  SelectedValuePath="SchduleType1"/>
+        <ComboBox Grid.Row="3"
+                  Grid.Column="2"
+                  Margin="5"
+                  FontSize="{StaticResource FontSizeMiddle}"
+                  ItemsSource="{Binding SchduleTypes}"
+                  DisplayMemberPath="Name"
+                  SelectedValue="{Binding StatMinInterval}"
+                  SelectedValuePath="SchduleType1"/>
+        <ComboBox Grid.Row="4"
+                  Grid.Column="2"
+                  Margin="5"
+                  FontSize="{StaticResource FontSizeMiddle}"
+                  ItemsSource="{Binding SchduleTypes}"
+                  DisplayMemberPath="Name"
+                  SelectedValue="{Binding StatHourInterval}"
+                  SelectedValuePath="SchduleType1"/>
+        <ComboBox Grid.Row="5"
+                  Grid.Column="2"
+                  Margin="5"
+                  FontSize="{StaticResource FontSizeMiddle}"
+                  ItemsSource="{Binding SchduleTypes}"
+                  DisplayMemberPath="Name"
+                  SelectedValue="{Binding StatDayInterval}"
+                  SelectedValuePath="SchduleType1"/>
+        <ComboBox Grid.Row="6"
+                  Grid.Column="2"
+                  Margin="5"
+                  FontSize="{StaticResource FontSizeMiddle}"
+                  ItemsSource="{Binding SchduleTypes}"
+                  DisplayMemberPath="Name"
+                  SelectedValue="{Binding StatMonthInterval}"
+                  SelectedValuePath="SchduleType1"/>
+        <ComboBox Grid.Row="7"
+                  Grid.Column="2"
+                  Margin="5"
+                  FontSize="{StaticResource FontSizeMiddle}"
+                  ItemsSource="{Binding SchduleTypes}"
+                  DisplayMemberPath="Name"
+                  SelectedValue="{Binding StatYearInterval}"
+                  SelectedValuePath="SchduleType1"/>
+        <ComboBox Grid.Row="8"
+                  Grid.Column="2"
+                  Margin="5"
+                  IsEnabled="False"
+                  FontSize="{StaticResource FontSizeMiddle}"
+                  ItemsSource="{Binding SchduleTypes}"
+                  DisplayMemberPath="Name"
+                  SelectedValue="{Binding HisFiInterval}"
+                  SelectedValuePath="SchduleType1"/>
+        <ComboBox Grid.Row="9"
+                  Grid.Column="2"
+                  Margin="5"
+                  FontSize="{StaticResource FontSizeMiddle}"
+                  ItemsSource="{Binding SchduleTypes}"
+                  DisplayMemberPath="Name"
+                  SelectedValue="{Binding HisCommInterval}"
+                  SelectedValuePath="SchduleType1"/>
+        <ComboBox Grid.Row="10"
+                  Grid.Column="2"
+                  IsEnabled="False"
+                  Margin="5"
+                  FontSize="{StaticResource FontSizeMiddle}"
+                  ItemsSource="{Binding SchduleTypes}"
+                  DisplayMemberPath="Name"
+                  SelectedValue="{Binding HisCommLogInterval}"
+                  SelectedValuePath="SchduleType1"/>
 
-        <TextBlock Grid.Row="8" Grid.Column="0"
-                   Margin="5 10 10 5"
-                   Text="1일 통계(일)"
-                   Style="{StaticResource baseTextBlock}"/>
 
-        <dxe:ButtonEdit Grid.Row="8"
-                        Grid.Column="1"
-                        Margin="10 10 10 0"
-                        AllowDefaultButton="False"
-                        EditValue="{Binding StatisticalTime}" 
-                        Mask="{Binding TimeEditMask}"
-                        MaskType="DateTime"
-                        DisplayFormatString="{Binding TimeEditMask}"
-                        FontSize="{StaticResource FontSizeRegular}"
-                        MaskUseAsDisplayFormat="True">
-            <dxe:ButtonEdit.Buttons>
-                <dxe:SpinButtonInfo IsDefaultButton="True" />
-            </dxe:ButtonEdit.Buttons>
-        </dxe:ButtonEdit>
+        <TextBox Grid.Row="1" Grid.Column="3"
+                 Text="{Binding HisMinDesc}"
+                 Width="500"
+                 Margin="5 5 0 5"
+                 HorizontalAlignment="Left"
+                 Style="{StaticResource baseTextBox}"/>
+        <TextBox Grid.Row="2" Grid.Column="3"
+                 Text="{Binding HisStatDesc}"
+                 Width="500"
+                 Margin="5 5 0 5"
+                 HorizontalAlignment="Left"
+                 Style="{StaticResource baseTextBox}"/>
+        <TextBox Grid.Row="3" Grid.Column="3"
+                 Text="{Binding StatMinDesc}"
+                 Width="500"
+                 Margin="5 5 0 5"
+                 HorizontalAlignment="Left"
+                 Style="{StaticResource baseTextBox}"/>
+        <TextBox Grid.Row="4" Grid.Column="3"
+                 Text="{Binding StatHourDesc}"
+                 Width="500"
+                 Margin="5 5 0 5"
+                 HorizontalAlignment="Left"
+                 Style="{StaticResource baseTextBox}"/>
+        <TextBox Grid.Row="5" Grid.Column="3"
+                 Text="{Binding StatDayDesc}"
+                 Width="500"
+                 Margin="5 5 0 5"
+                 HorizontalAlignment="Left"
+                 Style="{StaticResource baseTextBox}"/>
+        <TextBox Grid.Row="6" Grid.Column="3"
+                 Text="{Binding StatMonthDesc}"
+                 Width="500"
+                 Margin="5 5 0 5"
+                 HorizontalAlignment="Left"
+                 Style="{StaticResource baseTextBox}"/>
+        <TextBox Grid.Row="7" Grid.Column="3"
+                 Text="{Binding StatYearDesc}"
+                 Width="500"
+                 Margin="5 5 0 5"
+                 HorizontalAlignment="Left"
+                 Style="{StaticResource baseTextBox}"/>
+        <TextBox Grid.Row="8" Grid.Column="3"
+                 IsEnabled="False"
+                 Text="{Binding HisFiDesc}"
+                 Width="500"
+                 Margin="5 5 0 5"
+                 HorizontalAlignment="Left"
+                 Style="{StaticResource baseTextBox}"/>
+        <TextBox Grid.Row="9" Grid.Column="3"
+                 Text="{Binding HisCommDesc}"
+                 Width="500"
+                 Margin="5 5 0 5"
+                 HorizontalAlignment="Left"
+                 Style="{StaticResource baseTextBox}"/>
+        <TextBox Grid.Row="10" Grid.Column="3"
+                 IsEnabled="False"
+                 Text="{Binding HisCommLogDesc}"
+                 Width="500"
+                 Margin="5 5 0 5"
+                 HorizontalAlignment="Left"
+                 Style="{StaticResource baseTextBox}"/>
+        
 
-        <DockPanel Grid.Row="10"
-               Grid.Column="2"
-               LastChildFill="False"
-               Margin="0,5,0,5">
+        <DockPanel Grid.Row="12"
+                   Grid.ColumnSpan="4"
+                   LastChildFill="False"
+                   Margin="0,5,0,5">
 
             <Button DockPanel.Dock="Right"
-                Content="저장"
-                Width="80"
-                Height="40"
-                Style="{StaticResource btnMainType}"
-                Command="{Binding SaveCommand}"
+                    Content="저장"
+                    Width="80"
+                    Height="40"
+                    Style="{StaticResource btnMainType}"
+                    Command="{Binding SaveCommand}"
                     Tag="1"/>
         </DockPanel>
     </Grid>

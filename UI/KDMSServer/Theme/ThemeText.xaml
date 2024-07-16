@@ -74,7 +74,7 @@
 
     <Style TargetType="{x:Type TextBox}"
            x:Key="baseTextBox">
-        <Setter Property="Margin" Value="0 5 10 5" />
+        <Setter Property="Margin" Value="0 5 5 5" />
         <Setter Property="TextAlignment" Value="Left" />
         <Setter Property="BorderBrush" Value="Gray" />
         <Setter Property="BorderThickness" Value="1" />

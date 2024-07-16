@@ -42,14 +42,11 @@ namespace KDMSViewer.Features
                 var response = new Response { Result = false };
                 try
                 {
-                    _logger.Information("데이터 가져오기 시작");
-                    var datas = _commonData.SwitchDataLoad(request.CeqList, request.FromDate, request.ToDate);
+                    var datas = _commonData.SwitchDataLoad(request.CeqList, request.FromDate, request.ToDate, request.FromTime, request.ToTime);
                     if(datas != null && datas.Count > 0) 
                     {
                         response.datas = datas;
                         response.Result = true;
-
-                        _logger.Information("데이터 가져오기 완료");
                     }
                     else
                     {

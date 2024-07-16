@@ -38,17 +38,7 @@ namespace KDMSViewer.Model
         COUNTER,
     }
 
-    public enum SchduleCode
-    {
-        BI = 1,
-        BO,
-        AI,
-        AO,
-        COUNTER,
-        STATISTICS
-    }
-
-    public enum StorageCode
+    public enum ProcDataCode
     {
         HISTORY_MIN_DATA = 1,
         HISTORY_DAYSTAT_DATA,
@@ -61,4 +51,6 @@ namespace KDMSViewer.Model
         HISTORY_COMM_STATE,
         HISTORY_COMM_STATE_LOG,
     }
+
+
 }

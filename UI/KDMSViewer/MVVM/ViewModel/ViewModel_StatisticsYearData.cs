@@ -12,6 +12,6 @@ namespace KDMSViewer.ViewModel
     public partial class ViewModel_StatisticsYearData : ObservableObject
     {
         [ObservableProperty]
-        private ObservableCollection<StatisticsYear> _pointItems;
+        private List<StatisticsYear> _pointItems = new List<StatisticsYear>();
     }
 }

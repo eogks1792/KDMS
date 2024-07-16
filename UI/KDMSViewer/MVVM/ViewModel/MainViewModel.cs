@@ -25,59 +25,59 @@ namespace KDMSViewer.ViewModel
         [ObservableProperty]
         private string _dBState = string.Empty;
 
-        [ObservableProperty]
-        private int _biCount = 0;
+        //[ObservableProperty]
+        //private int _biCount = 0;
 
-        [ObservableProperty]
-        private int _aiCount = 0;
+        //[ObservableProperty]
+        //private int _aiCount = 0;
 
-        [ObservableProperty]
-        private int _alarmCount = 0;
+        //[ObservableProperty]
+        //private int _alarmCount = 0;
 
-        [ObservableProperty]
-        private string _scheduleMeasureBIBO = string.Empty;
+        //[ObservableProperty]
+        //private string _scheduleMeasureBIBO = string.Empty;
 
         //[ObservableProperty]
         //private string _scheduleMeasureBO = string.Empty;
 
-        [ObservableProperty]
-        private string _scheduleMeasureAIAO = string.Empty;
+        //[ObservableProperty]
+        //private string _scheduleMeasureAIAO = string.Empty;
+
+        ////[ObservableProperty]
+        ////private string _scheduleMeasureAO = string.Empty;
 
         //[ObservableProperty]
-        //private string _scheduleMeasureAO = string.Empty;
+        //private string _scheduleMeasureCounter = string.Empty;
 
-        [ObservableProperty]
-        private string _scheduleMeasureCounter = string.Empty;
-
-        [ObservableProperty]
-        private string _scheduleDelete = string.Empty;
+        //[ObservableProperty]
+        //private string _scheduleDelete = string.Empty;
 
         //[ObservableProperty]
         //private string _storagePeriodData = string.Empty;
 
-        [ObservableProperty]
-        private string _sPRealMinData = string.Empty;
-        [ObservableProperty]
-        private string _sPDayStatData = string.Empty;
-        [ObservableProperty]
-        private string _sPStatMinData = string.Empty;
-        [ObservableProperty]
-        private string _sPStatHourData = string.Empty;
-        [ObservableProperty]
-        private string _sPStatDayData = string.Empty;
-        [ObservableProperty]
-        private string _sPStatMonthData = string.Empty;
-        [ObservableProperty]
-        private string _sPStatYearData = string.Empty;
-        [ObservableProperty]
-        private string _sPFiData = string.Empty;
-        [ObservableProperty]
-        private string _sPCommData = string.Empty;
-        [ObservableProperty]
-        private string _sPCommLogData = string.Empty;
+        //[ObservableProperty]
+        //private string _sPRealMinData = string.Empty;
+        //[ObservableProperty]
+        //private string _sPDayStatData = string.Empty;
+        //[ObservableProperty]
+        //private string _sPStatMinData = string.Empty;
+        //[ObservableProperty]
+        //private string _sPStatHourData = string.Empty;
+        //[ObservableProperty]
+        //private string _sPStatDayData = string.Empty;
+        //[ObservableProperty]
+        //private string _sPStatMonthData = string.Empty;
+        //[ObservableProperty]
+        //private string _sPStatYearData = string.Empty;
+        //[ObservableProperty]
+        //private string _sPFiData = string.Empty;
+        //[ObservableProperty]
+        //private string _sPCommData = string.Empty;
+        //[ObservableProperty]
+        //private string _sPCommLogData = string.Empty;
 
-        [ObservableProperty]
-        private string _storagePeriodStatistics = string.Empty;
+        //[ObservableProperty]
+        //private string _storagePeriodStatistics = string.Empty;
 
         [ObservableProperty]
         private string _mainEnabled = "1";

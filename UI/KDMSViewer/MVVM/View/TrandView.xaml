@@ -72,7 +72,7 @@
                     <TextBlock Margin="20 0 0 0"
                                FontSize="{StaticResource FontSizeSmall}">
                         <TextBlock.Text>
-                            <MultiBinding StringFormat="{}{0} + {1}">
+                            <MultiBinding StringFormat="{}선택:{0} CNT:{1}">
                                 <Binding Path="TreeSelected.Name" />
                                 <Binding Path="ItemCount" />
                             </MultiBinding>
@@ -87,7 +87,7 @@
 
                     <RadioButton Content="일일 통계 데이터"
                                  Height="auto"
-                                 IsChecked="{Binding MinDataCheck}"
+                                 IsChecked="{Binding DayStatCheck}"
                                  Style="{StaticResource MenuButtonTheme}"
                                  Command="{Binding DayStatCommand}"/>
 
@@ -97,7 +97,7 @@
                                  Style="{StaticResource MenuButtonTheme}"
                                  Command="{Binding StatisticsMinCommand}"/>
 
-                    <RadioButton Content="시간 통게 데이터"
+                    <RadioButton Content="시간 통계 데이터"
                                  Height="auto"
                                  IsChecked="{Binding StatisticsHourCheck}"
                                  Style="{StaticResource MenuButtonTheme}"
@@ -133,7 +133,7 @@
 
         <Grid Grid.Column="2">
             <Grid.RowDefinitions>
-                <RowDefinition Height="auto"/>
+                <RowDefinition Height="90"/>
                 <RowDefinition />
             </Grid.RowDefinitions>
 
@@ -143,194 +143,280 @@
                     BorderThickness="1"
                     CornerRadius="0 10 0 0">
 
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition />
-                        <RowDefinition />
-                    </Grid.RowDefinitions>
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
 
-                    <Grid Grid.Row="0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+                    <GroupBox Grid.Column="0"
+                                  Margin="5 0 5 0"
+                                  Visibility="{Binding StatisticalVisibility}">
+                        <GroupBox.Header>
+                            <CheckBox Content="타입"
+                                          Style="{StaticResource checkboxType}"
+                                          IsChecked="{Binding TypeCheck}"
+                                          FontSize="{StaticResource FontSizeRegular}" 
+                                          Margin="0 0 10 0"
+                                          HorizontalAlignment="Right"
+                                          VerticalContentAlignment="Center">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Checked">
+                                        <i:CallMethodAction TargetObject="{Binding}" MethodName="OnTypeChecked" />
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="Unchecked">
+                                        <i:CallMethodAction TargetObject="{Binding}" MethodName="OnTypeUnChecked" />
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </CheckBox>
+                        </GroupBox.Header>
 
-                        <GroupBox Grid.Column="0"
+                        <StackPanel Orientation="Horizontal"
+                                        Margin="10 0 5 0">
+                            <CheckBox Content="평균"
+                                          Style="{StaticResource checkboxType}"
+                                          IsChecked="{Binding Average}"
+                                          FontSize="{StaticResource FontSizeRegular}" 
+                                          Margin="0 0 10 0"
+                                          HorizontalAlignment="Right"
+                                          VerticalContentAlignment="Center">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Checked">
+                                        <i:CallMethodAction TargetObject="{Binding}" MethodName="OnAverageChecked" />
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="Unchecked">
+                                        <i:CallMethodAction TargetObject="{Binding}" MethodName="OnAverageUnChecked" />
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </CheckBox>
+
+                            <CheckBox Content="최대"
+                                          Style="{StaticResource checkboxType}"
+                                          IsChecked="{Binding Max}"
+                                          FontSize="{StaticResource FontSizeRegular}" 
+                                          Margin="0 0 10 0"
+                                          HorizontalAlignment="Right"
+                                          VerticalContentAlignment="Center"
+                                          Visibility="{Binding StatisticalMinVisibility}">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Checked">
+                                        <i:CallMethodAction TargetObject="{Binding}" MethodName="OnMaxChecked" />
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="Unchecked">
+                                        <i:CallMethodAction TargetObject="{Binding}" MethodName="OnMaxUnChecked" />
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </CheckBox>
+
+                            <CheckBox Content="최소"
+                                      Style="{StaticResource checkboxType}"
+                                      IsChecked="{Binding Min}"
+                                      FontSize="{StaticResource FontSizeRegular}" 
+                                      Margin="0 0 10 0"
+                                      HorizontalAlignment="Right"
+                                      VerticalContentAlignment="Center"
+                                      Visibility="{Binding StatisticalMinVisibility}">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Checked">
+                                        <i:CallMethodAction TargetObject="{Binding}" MethodName="OnMinChecked" />
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="Unchecked">
+                                        <i:CallMethodAction TargetObject="{Binding}" MethodName="OnMinUnChecked" />
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </CheckBox>
+                        </StackPanel>
+                    </GroupBox>
+
+
+                    <GroupBox Grid.Column="1"
                                   Margin="5 0 5 0">
-                            <GroupBox.Header>
-                                <CheckBox Content="타입"
+                        <GroupBox.Header>
+                            <CheckBox Content="전류"
                                           Style="{StaticResource checkboxType}"
                                           IsChecked="{Binding CurrentCheck}"
                                           FontSize="{StaticResource FontSizeRegular}" 
                                           Margin="0 0 10 0"
                                           HorizontalAlignment="Right"
                                           VerticalContentAlignment="Center">
-                                    <i:Interaction.Triggers>
-                                        <i:EventTrigger EventName="Checked">
-                                            <i:CallMethodAction TargetObject="{Binding}" MethodName="OnCurrentChecked" />
-                                        </i:EventTrigger>
-                                        <i:EventTrigger EventName="Unchecked">
-                                            <i:CallMethodAction TargetObject="{Binding}" MethodName="OnCurrentUnChecked" />
-                                        </i:EventTrigger>
-                                    </i:Interaction.Triggers>
-                                </CheckBox>
-                            </GroupBox.Header>
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Checked">
+                                        <i:CallMethodAction TargetObject="{Binding}" MethodName="OnCurrentChecked" />
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="Unchecked">
+                                        <i:CallMethodAction TargetObject="{Binding}" MethodName="OnCurrentUnChecked" />
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </CheckBox>
+                        </GroupBox.Header>
 
-                            <StackPanel Orientation="Horizontal"
-                                        Margin="10 5 5 5">
-                                <CheckBox Content="평균"
+                        <StackPanel Orientation="Horizontal"
+                                        Margin="10 0 5 0">
+                            <CheckBox Content="A"
                                           Style="{StaticResource checkboxType}"
                                           IsChecked="{Binding CurrentA}"
-                                          FontSize="{StaticResource FontSizeRegular}" 
-                                          Margin="0 0 10 0"
-                                          HorizontalAlignment="Right"
-                                          VerticalContentAlignment="Center"/>
-
-                                <CheckBox Content="최대"
-                                          Style="{StaticResource checkboxType}"
-                                          IsChecked="{Binding CurrentB}"
-                                          FontSize="{StaticResource FontSizeRegular}" 
-                                          Margin="0 0 10 0"
-                                          HorizontalAlignment="Right"
-                                          VerticalContentAlignment="Center"/>
-
-                                <CheckBox Content="최소"
-                                          Style="{StaticResource checkboxType}"
-                                          IsChecked="{Binding CurrentC}"
-                                          FontSize="{StaticResource FontSizeRegular}" 
-                                          Margin="0 0 10 0"
-                                          HorizontalAlignment="Right"
-                                          VerticalContentAlignment="Center"/>
-                            </StackPanel>
-                        </GroupBox>
-
-
-                        <GroupBox Grid.Column="1"
-                                  Margin="5 0 5 0">
-                            <GroupBox.Header>
-                                <CheckBox Content="전류"
-                                          Style="{StaticResource checkboxType}"
-                                          IsChecked="{Binding CurrentCheck}"
                                           FontSize="{StaticResource FontSizeRegular}" 
                                           Margin="0 0 10 0"
                                           HorizontalAlignment="Right"
                                           VerticalContentAlignment="Center">
-                                    <i:Interaction.Triggers>
-                                        <i:EventTrigger EventName="Checked">
-                                            <i:CallMethodAction TargetObject="{Binding}" MethodName="OnCurrentChecked" />
-                                        </i:EventTrigger>
-                                        <i:EventTrigger EventName="Unchecked">
-                                            <i:CallMethodAction TargetObject="{Binding}" MethodName="OnCurrentUnChecked" />
-                                        </i:EventTrigger>
-                                    </i:Interaction.Triggers>
-                                </CheckBox>
-                            </GroupBox.Header>
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Checked">
+                                        <i:CallMethodAction TargetObject="{Binding}" MethodName="OnCurrentAChecked" />
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="Unchecked">
+                                        <i:CallMethodAction TargetObject="{Binding}" MethodName="OnCurrentAUnChecked" />
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </CheckBox>
 
-                            <StackPanel Orientation="Horizontal"
-                                        Margin="10 5 5 5">
-                                <CheckBox Content="A"
-                                          Style="{StaticResource checkboxType}"
-                                          IsChecked="{Binding CurrentA}"
-                                          FontSize="{StaticResource FontSizeRegular}" 
-                                          Margin="0 0 10 0"
-                                          HorizontalAlignment="Right"
-                                          VerticalContentAlignment="Center"/>
-
-                                <CheckBox Content="B"
+                            <CheckBox Content="B"
                                           Style="{StaticResource checkboxType}"
                                           IsChecked="{Binding CurrentB}"
                                           FontSize="{StaticResource FontSizeRegular}" 
                                           Margin="0 0 10 0"
                                           HorizontalAlignment="Right"
-                                          VerticalContentAlignment="Center"/>
+                                          VerticalContentAlignment="Center">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Checked">
+                                        <i:CallMethodAction TargetObject="{Binding}" MethodName="OnCurrentBChecked" />
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="Unchecked">
+                                        <i:CallMethodAction TargetObject="{Binding}" MethodName="OnCurrentBUnChecked" />
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </CheckBox>
 
-                                <CheckBox Content="C"
+                            <CheckBox Content="C"
                                           Style="{StaticResource checkboxType}"
                                           IsChecked="{Binding CurrentC}"
                                           FontSize="{StaticResource FontSizeRegular}" 
                                           Margin="0 0 10 0"
                                           HorizontalAlignment="Right"
-                                          VerticalContentAlignment="Center"/>
+                                          VerticalContentAlignment="Center">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Checked">
+                                        <i:CallMethodAction TargetObject="{Binding}" MethodName="OnCurrentCChecked" />
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="Unchecked">
+                                        <i:CallMethodAction TargetObject="{Binding}" MethodName="OnCurrentCUnChecked" />
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </CheckBox>
 
-                                <CheckBox Content="N"
+                            <CheckBox Content="N"
                                           Style="{StaticResource checkboxType}"
                                           IsChecked="{Binding CurrentN}"
                                           FontSize="{StaticResource FontSizeRegular}" 
                                           Margin="0 0 10 0"
                                           HorizontalAlignment="Right"
-                                          VerticalContentAlignment="Center"/>
-                            </StackPanel>
-                        </GroupBox>
+                                          VerticalContentAlignment="Center">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Checked">
+                                        <i:CallMethodAction TargetObject="{Binding}" MethodName="OnCurrentNChecked" />
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="Unchecked">
+                                        <i:CallMethodAction TargetObject="{Binding}" MethodName="OnCurrentNUnChecked" />
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </CheckBox>
+                        </StackPanel>
+                    </GroupBox>
 
-                        <GroupBox Grid.Column="2"
-                                  Margin="0 0 5 0">
-                            <GroupBox.Header>
-                                <CheckBox Content="전압"
+                    <GroupBox Grid.Column="2"
+                                  Margin="0 0 5 0"
+                                  Visibility="{Binding RealVisibility}">
+                        <GroupBox.Header>
+                            <CheckBox Content="전압"
                                           Style="{StaticResource checkboxType}"
                                           IsChecked="{Binding VoltageCheck}"
                                           FontSize="{StaticResource FontSizeRegular}" 
                                           Margin="0 0 10 0"
                                           HorizontalAlignment="Right"
                                           VerticalContentAlignment="Center">
-                                    <i:Interaction.Triggers>
-                                        <i:EventTrigger EventName="Checked">
-                                            <i:CallMethodAction TargetObject="{Binding}" MethodName="OnVoltageChecked" />
-                                        </i:EventTrigger>
-                                        <i:EventTrigger EventName="Unchecked">
-                                            <i:CallMethodAction TargetObject="{Binding}" MethodName="OnVoltageUnChecked" />
-                                        </i:EventTrigger>
-                                    </i:Interaction.Triggers>
-                                </CheckBox>
-                            </GroupBox.Header>
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Checked">
+                                        <i:CallMethodAction TargetObject="{Binding}" MethodName="OnVoltageChecked" />
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="Unchecked">
+                                        <i:CallMethodAction TargetObject="{Binding}" MethodName="OnVoltageUnChecked" />
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </CheckBox>
+                        </GroupBox.Header>
 
-                            <StackPanel Orientation="Horizontal"
-                                        Margin="10 5 5 5">
-                                <CheckBox Content="A"
+                        <StackPanel Orientation="Horizontal"
+                                        Margin="10 0 5 0">
+                            <CheckBox Content="A"
                                           Style="{StaticResource checkboxType}"
                                           IsChecked="{Binding VoltageA}"
                                           FontSize="{StaticResource FontSizeRegular}" 
                                           Margin="0 0 10 0"
                                           HorizontalAlignment="Right"
-                                          VerticalContentAlignment="Center"/>
+                                          VerticalContentAlignment="Center">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Checked">
+                                        <i:CallMethodAction TargetObject="{Binding}" MethodName="OnVoltageAChecked" />
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="Unchecked">
+                                        <i:CallMethodAction TargetObject="{Binding}" MethodName="OnVoltageAUnChecked" />
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </CheckBox>
 
-                                <CheckBox Content="B"
+                            <CheckBox Content="B"
                                           Style="{StaticResource checkboxType}"
                                           IsChecked="{Binding VoltageB}"
                                           FontSize="{StaticResource FontSizeRegular}" 
                                           Margin="0 0 10 0"
                                           HorizontalAlignment="Right"
-                                          VerticalContentAlignment="Center"/>
+                                          VerticalContentAlignment="Center">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Checked">
+                                        <i:CallMethodAction TargetObject="{Binding}" MethodName="OnVoltageBChecked" />
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="Unchecked">
+                                        <i:CallMethodAction TargetObject="{Binding}" MethodName="OnVoltageBUnChecked" />
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </CheckBox>
 
-                                <CheckBox Content="C"
+                            <CheckBox Content="C"
                                           Style="{StaticResource checkboxType}"
                                           IsChecked="{Binding VoltageC}"
                                           FontSize="{StaticResource FontSizeRegular}" 
                                           Margin="0 0 10 0"
                                           HorizontalAlignment="Right"
-                                          VerticalContentAlignment="Center"/>
-                            </StackPanel>
-                        </GroupBox>
+                                          VerticalContentAlignment="Center">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Checked">
+                                        <i:CallMethodAction TargetObject="{Binding}" MethodName="OnVoltageCChecked" />
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="Unchecked">
+                                        <i:CallMethodAction TargetObject="{Binding}" MethodName="OnVoltageCUnChecked" />
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </CheckBox>
+                        </StackPanel>
+                    </GroupBox>
 
-                     
-                    </Grid>
-              
 
-                    <Grid Grid.Row="1"
-                          Margin="0 5 0 5">
+                    <Grid Grid.Column="3"
+                              Margin="0 25 0 5">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto"/>
                             <ColumnDefinition />
                             <ColumnDefinition Width="195"/>
                             <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
                             <ColumnDefinition Width="195"/>
+                            <ColumnDefinition Width="auto"/>
                             <ColumnDefinition Width="30"/>
                             <ColumnDefinition Width="auto"/>
                         </Grid.ColumnDefinitions>
 
                         <dxe:DateEdit Grid.Row="0" 
-                                      Grid.Column="2"
+                                      Grid.Column="1"
                                       Margin="5"
                                       HorizontalContentAlignment="Center"
                                       FontSize="{StaticResource FontSizeRegular}"
@@ -339,25 +425,21 @@
                                       ShowClearButton="False"
                                       MaxValue="{Binding ToDate}"/>
 
-                        <!--<DatePicker Grid.Column="2"
-                                    Margin="5 0 5 0"
-                                    FontSize="{StaticResource FontSizeRegular}"
-                                    Height="35"
-                                    SelectedDateFormat="Short"
-                                    SelectedDate="{Binding FromDate}"
-                                    Style="{StaticResource DatePickerIconResizingStyle}" />-->
-
-
-                        <!--<xctk:DateTimePicker Grid.Column="2"
-                                            Margin="5 0 5 0"
-                                            FontSize="{StaticResource FontSizeRegular}"
-                                            Height="30"
-                                            TextAlignment="Center"
-                                            Value="{Binding FromDate}"
-                                            Format="Custom" 
-                                            FormatString="yyyy-MM-dd"
-                                            TimeFormat="Custom"
-                                            TimeFormatString="HH:mm" />-->
+                        <dxe:ButtonEdit Grid.Row="0"
+                                        Grid.Column="2"
+                                        Margin="5"
+                                        AllowDefaultButton="False"
+                                        EditValue="{Binding FromTime}" 
+                                        Mask="{Binding TimeEditMask}"
+                                        MaskType="DateTime"
+                                        DisplayFormatString="{Binding TimeEditMask}"
+                                        FontSize="{StaticResource FontSizeRegular}"
+                                        MaskUseAsDisplayFormat="True"
+                                        Visibility="{Binding RealVisibility}">
+                            <dxe:ButtonEdit.Buttons>
+                                <dxe:SpinButtonInfo IsDefaultButton="True" />
+                            </dxe:ButtonEdit.Buttons>
+                        </dxe:ButtonEdit>
 
                         <TextBlock Grid.Column="3" 
                                    Margin="5 0 5 0"
@@ -375,34 +457,31 @@
                                       ShowClearButton="False"
                                       MinValue="{Binding FromDate}"/>
 
-                        <!--<DatePicker Grid.Column="4"  
-                                    Margin="5 0 5 0"
+                        <dxe:ButtonEdit Grid.Row="0"
+                                        Grid.Column="5"
+                                        Margin="5"
+                                        AllowDefaultButton="False"
+                                        EditValue="{Binding ToTime}" 
+                                        Mask="{Binding TimeEditMask}"
+                                        MaskType="DateTime"
+                                        DisplayFormatString="{Binding TimeEditMask}"
+                                        FontSize="{StaticResource FontSizeRegular}"
+                                        MaskUseAsDisplayFormat="True"
+                                        Visibility="{Binding RealVisibility}">
+                            <dxe:ButtonEdit.Buttons>
+                                <dxe:SpinButtonInfo IsDefaultButton="True" />
+                            </dxe:ButtonEdit.Buttons>
+                        </dxe:ButtonEdit>
+
+                        <Button Grid.Column="7"
+                                    Margin="0 0 5 0"
+                                    Width="80"
+                                    Height="40"
+                                    Content="조회"
                                     FontSize="{StaticResource FontSizeRegular}"
-                                    Height="35"
-                                    SelectedDateFormat="Short"
-                                    SelectedDate="{Binding ToDate}"
-                                    Style="{StaticResource DatePickerIconResizingStyle}" />-->
-
-                        <!--<xctk:DateTimePicker Grid.Column="4"  
-                                            Margin="5 0 5 0"
-                                            FontSize="{StaticResource FontSizeRegular}"
-                                            Height="30"
-                                            TextAlignment="Center"
-                                            Value="{Binding ToDate}" 
-                                            Format="Custom" 
-                                            FormatString="yyyy-MM-dd"
-                                            TimeFormat="Custom"
-                                            TimeFormatString="HH:mm" />-->
-
-                        <Button Grid.Column="6"
-                                Margin="0 5 5 5"
-                                Width="80"
-                                Height="40"
-                                Content="조회"
-                                FontSize="{StaticResource FontSizeRegular}"
-                                Style="{StaticResource btnMainType}"
-                                Command="{Binding InquiryCommand}"
-                                Tag="1"/>
+                                    Style="{StaticResource btnMainType}"
+                                    Command="{Binding InquiryCommand}"
+                                    Tag="1"/>
                     </Grid>
                 </Grid>
             </Border>

@@ -12,6 +12,6 @@ namespace KDMSViewer.ViewModel
     public partial class ViewModel_StatisticsHourData : ObservableObject
     {
         [ObservableProperty]
-        private ObservableCollection<StatisticsHour> _pointItems;
+        private List<StatisticsHour> _pointItems = new List<StatisticsHour>();
     }
 }

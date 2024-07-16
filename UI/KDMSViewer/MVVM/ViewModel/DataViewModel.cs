@@ -102,8 +102,11 @@ namespace KDMSViewer.ViewModel
         [ObservableProperty]
         private ObservableCollection<ChartModel> _seriesItems;
 
+
         [ObservableProperty]
         private INotifyPropertyChanged _childViewModel;
+
+        private List<long> CheckItems { get; set; }
 
         //public LoadingView view { get; set; }
 
@@ -126,6 +129,25 @@ namespace KDMSViewer.ViewModel
             TreeItems = new ObservableCollection<TreeDataModel>(_worker.TreeDatas);
         }
 
+        private void GetTreeItemCheckData(ObservableCollection<TreeDataModel> TreeItems)
+        {
+            foreach (var item in TreeItems)
+            {
+                if (item.IsChecked)
+                {
+                    if (item.Type == TreeTypeCode.EQUIPMENT)
+                    {
+                        CheckItems.Add(item.Id);
+                    }
+                }
+                else
+                {
+                    if (item.DataModels.Count > 0)
+                        GetTreeItemCheckData(item.DataModels);
+                }
+            }
+        }
+
         private void GetData()
         {
             //Application.Current.Dispatcher.Invoke(() =>
@@ -134,6 +156,13 @@ namespace KDMSViewer.ViewModel
             //    view.Owner = Application.Current.MainWindow;
             //    view.Show();
             //});
+            CheckItems = new List<long>();
+            GetTreeItemCheckData(TreeItems);
+            if (CheckItems.Count <= 0)
+            {
+                MessageBox.Show("선택된 데이터가 없습니다.", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
 
             // 데이터 취득 처리
             if (RealDataCheck)
@@ -141,41 +170,41 @@ namespace KDMSViewer.ViewModel
                 // 실시간 데이터
                 if (SwitchCheck)
                 {
-                    _worker.GetSearchData((int)SearchTypeCode.MINDATA, FromDate, ToDate);
+                    _worker.GetSearchData(CheckItems, (int)SearchTypeCode.MINDATA, FromDate, ToDate, FromTime, ToTime);
                 }
                 else if (FiCheck)
                 {
-                    _worker.GetSearchData((int)SearchTypeCode.FIALARM, FromDate, ToDate);
+                    _worker.GetSearchData(CheckItems, (int)SearchTypeCode.FIALARM, FromDate, ToDate, FromTime, ToTime);
                 }
             }
             else if (StatisticalCheck)
             {
                 if (DayCheck)
                 {
-                    _worker.GetSearchData((int)SearchTypeCode.DAYSTATDATA, FromDate, ToDate);
+                    _worker.GetSearchData(CheckItems, (int)SearchTypeCode.DAYSTATDATA, FromDate, ToDate);
                 }
                 else
                 {
                     // 통계 데이터
                     if (StatisticMinCheck)
                     {
-                        _worker.GetSearchData((int)SearchTypeCode.STATISTICSMIN, FromDate, ToDate);
+                        _worker.GetSearchData(CheckItems, (int)SearchTypeCode.STATISTICSMIN, FromDate, ToDate);
                     }
                     else if (StatisticHourCheck)
                     {
-                        _worker.GetSearchData((int)SearchTypeCode.STATISTICSHOUR, FromDate, ToDate);
+                        _worker.GetSearchData(CheckItems, (int)SearchTypeCode.STATISTICSHOUR, FromDate, ToDate);
                     }
                     else if (StatisticDayCheck)
                     {
-                        _worker.GetSearchData((int)SearchTypeCode.STATISTICSDAY, FromDate, ToDate);
+                        _worker.GetSearchData(CheckItems, (int)SearchTypeCode.STATISTICSDAY, FromDate, ToDate);
                     }
                     else if (StatisticMonthCheck)
                     {
-                        _worker.GetSearchData((int)SearchTypeCode.STATISTICSMONTH, FromDate, ToDate);
+                        _worker.GetSearchData(CheckItems, (int)SearchTypeCode.STATISTICSMONTH, FromDate, ToDate);
                     }
                     else if (StatisticYearCheck)
                     {
-                        _worker.GetSearchData((int)SearchTypeCode.STATISTICSYEAR, FromDate, ToDate);
+                        _worker.GetSearchData(CheckItems, (int)SearchTypeCode.STATISTICSYEAR, FromDate, ToDate);
                     }
                 }
             }
@@ -183,11 +212,11 @@ namespace KDMSViewer.ViewModel
             {
                 if (CommDayCheck)
                 {
-                    _worker.GetSearchData((int)SearchTypeCode.COMMSTATE, FromDate, ToDate);
+                    _worker.GetSearchData(CheckItems, (int)SearchTypeCode.COMMSTATE, FromDate, ToDate);
                 }
                 else if (CommLogCheck)
                 {
-                    _worker.GetSearchData((int)SearchTypeCode.COMMSTATELOG, FromDate, ToDate);
+                    _worker.GetSearchData(CheckItems, (int)SearchTypeCode.COMMSTATELOG, FromDate, ToDate);
                 }
             }
 
@@ -363,7 +392,7 @@ namespace KDMSViewer.ViewModel
                             }
                             else if (FiCheck)
                             {
-                                var dataList = (ObservableCollection<HistoryFiAlarm>)_worker.GetPointItems((int)SearchTypeCode.FIALARM);
+                                var dataList = (List<HistoryFiAlarm>)_worker.GetPointItems((int)SearchTypeCode.FIALARM);
                                 if (dataList == null || dataList?.Count <= 0)
                                 {
                                     outputFile.Close();
@@ -385,7 +414,7 @@ namespace KDMSViewer.ViewModel
                         {
                             if (DayCheck)
                             {
-                                var dataList = (ObservableCollection<HistoryDaystatDatum>)_worker.GetPointItems((int)SearchTypeCode.DAYSTATDATA);
+                                var dataList = (List<HistoryDaystatDatum>)_worker.GetPointItems((int)SearchTypeCode.DAYSTATDATA);
                                 if (dataList == null || dataList?.Count <= 0)
                                 {
                                     outputFile.Close();
@@ -412,7 +441,7 @@ namespace KDMSViewer.ViewModel
                                 // 통계 데이터
                                 if (StatisticMinCheck)
                                 {
-                                    var dataList = (ObservableCollection<Statistics15min>)_worker.GetPointItems((int)SearchTypeCode.STATISTICSMIN);
+                                    var dataList = (List<Statistics15min>)_worker.GetPointItems((int)SearchTypeCode.STATISTICSMIN);
                                     if (dataList == null || dataList?.Count <= 0)
                                     {
                                         outputFile.Close();
@@ -432,7 +461,7 @@ namespace KDMSViewer.ViewModel
                                 }
                                 else if (StatisticHourCheck)
                                 {
-                                    var dataList = (ObservableCollection<StatisticsHour>)_worker.GetPointItems((int)SearchTypeCode.STATISTICSHOUR);
+                                    var dataList = (List<StatisticsHour>)_worker.GetPointItems((int)SearchTypeCode.STATISTICSHOUR);
                                     if (dataList == null || dataList?.Count <= 0)
                                     {
                                         outputFile.Close();
@@ -456,7 +485,7 @@ namespace KDMSViewer.ViewModel
                                 }
                                 else if (StatisticDayCheck)
                                 {
-                                    var dataList = (ObservableCollection<StatisticsDay>)_worker.GetPointItems((int)SearchTypeCode.STATISTICSDAY);
+                                    var dataList = (List<StatisticsDay>)_worker.GetPointItems((int)SearchTypeCode.STATISTICSDAY);
                                     if (dataList == null || dataList?.Count <= 0)
                                     {
                                         outputFile.Close();
@@ -480,7 +509,7 @@ namespace KDMSViewer.ViewModel
                                 }
                                 else if (StatisticMonthCheck)
                                 {
-                                    var dataList = (ObservableCollection<StatisticsMonth>)_worker.GetPointItems((int)SearchTypeCode.STATISTICSMONTH);
+                                    var dataList = (List<StatisticsMonth>)_worker.GetPointItems((int)SearchTypeCode.STATISTICSMONTH);
                                     if (dataList == null || dataList?.Count <= 0)
                                     {
                                         outputFile.Close();
@@ -504,7 +533,7 @@ namespace KDMSViewer.ViewModel
                                 }
                                 else if (StatisticYearCheck)
                                 {
-                                    var dataList = (ObservableCollection<StatisticsYear>)_worker.GetPointItems((int)SearchTypeCode.STATISTICSYEAR);
+                                    var dataList = (List<StatisticsYear>)_worker.GetPointItems((int)SearchTypeCode.STATISTICSYEAR);
                                     if (dataList == null || dataList?.Count <= 0)
                                     {
                                         outputFile.Close();
@@ -532,7 +561,7 @@ namespace KDMSViewer.ViewModel
                         {
                             if (CommDayCheck)
                             {
-                                var dataList = (ObservableCollection<HistoryCommState>)_worker.GetPointItems((int)SearchTypeCode.COMMSTATE);
+                                var dataList = (List<HistoryCommState>)_worker.GetPointItems((int)SearchTypeCode.COMMSTATE);
                                 if (dataList == null || dataList?.Count <= 0)
                                 {
                                     outputFile.Close();
@@ -552,7 +581,7 @@ namespace KDMSViewer.ViewModel
                             }
                             else if (CommLogCheck)
                             {
-                                var dataList = (ObservableCollection<HistoryCommStateLog>)_worker.GetPointItems((int)SearchTypeCode.COMMSTATELOG);
+                                var dataList = (List<HistoryCommStateLog>)_worker.GetPointItems((int)SearchTypeCode.COMMSTATELOG);
                                 if (dataList == null || dataList?.Count <= 0)
                                 {
                                     outputFile.Close();

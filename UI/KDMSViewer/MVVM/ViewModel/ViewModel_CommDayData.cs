@@ -12,6 +12,6 @@ namespace KDMSViewer.ViewModel
     public partial class ViewModel_CommDayData : ObservableObject
     {
         [ObservableProperty]
-        private ObservableCollection<HistoryCommState> _pointItems;
+        private List<HistoryCommState> _pointItems = new List<HistoryCommState> ();
     }
 }

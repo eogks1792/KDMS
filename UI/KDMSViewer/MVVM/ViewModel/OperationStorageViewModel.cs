@@ -67,16 +67,16 @@ namespace KDMSViewer.ViewModel
         //[ObservableProperty]
         //private int _deleteTime = 365;
 
-        public int hisMinTime { get; set; }
-        public int hisStatTime { get; set; }
-        public int statMinTime { get; set; }
-        public int statHourTime { get; set; }
-        public int statDayTime { get; set; }
-        public int statMonthTime { get; set; }
-        public int statYearTime { get; set; }
-        public int hisFiTime { get; set; }
-        public int hisCommTime { get; set; }
-        public int hisCommLogTime { get; set; }
+        //public int hisMinTime { get; set; }
+        //public int hisStatTime { get; set; }
+        //public int statMinTime { get; set; }
+        //public int statHourTime { get; set; }
+        //public int statDayTime { get; set; }
+        //public int statMonthTime { get; set; }
+        //public int statYearTime { get; set; }
+        //public int hisFiTime { get; set; }
+        //public int hisCommTime { get; set; }
+        //public int hisCommLogTime { get; set; }
 
         //public bool realCheck { get; set; } = false;
         //public bool minuteCheck { get; set; } = false;
@@ -96,49 +96,49 @@ namespace KDMSViewer.ViewModel
             {
                 switch (storage.StorageId)
                 {
-                    case (int)StorageCode.HISTORY_MIN_DATA:
+                    case (int)ProcDataCode.HISTORY_MIN_DATA:
                         HisMinTime = Convert.ToInt32(storage.StorageValue);
                         break;
-                    case (int)StorageCode.HISTORY_DAYSTAT_DATA:
+                    case (int)ProcDataCode.HISTORY_DAYSTAT_DATA:
                         HisStatTime = Convert.ToInt32(storage.StorageValue);
                         break;
-                    case (int)StorageCode.STATISTICS_15MIN:
+                    case (int)ProcDataCode.STATISTICS_15MIN:
                         StatMinTime = Convert.ToInt32(storage.StorageValue);
                         break;
-                    case (int)StorageCode.STATISTICS_HOUR:
+                    case (int)ProcDataCode.STATISTICS_HOUR:
                         StatHourTime = Convert.ToInt32(storage.StorageValue);
                         break;
-                    case (int)StorageCode.STATISTICS_DAY:
+                    case (int)ProcDataCode.STATISTICS_DAY:
                         StatDayTime = Convert.ToInt32(storage.StorageValue);
                         break;
-                    case (int)StorageCode.STATISTICS_MONTH:
+                    case (int)ProcDataCode.STATISTICS_MONTH:
                         StatMonthTime = Convert.ToInt32(storage.StorageValue);
                         break;
-                    case (int)StorageCode.STATISTICS_YEAR:
+                    case (int)ProcDataCode.STATISTICS_YEAR:
                         StatYearTime = Convert.ToInt32(storage.StorageValue);
                         break;
-                    case (int)StorageCode.HISTORY_FI_ALARM:
+                    case (int)ProcDataCode.HISTORY_FI_ALARM:
                         HisFiTime = Convert.ToInt32(storage.StorageValue);
                         break;
-                    case (int)StorageCode.HISTORY_COMM_STATE:
+                    case (int)ProcDataCode.HISTORY_COMM_STATE:
                         HisCommTime = Convert.ToInt32(storage.StorageValue);
                         break;
-                    case (int)StorageCode.HISTORY_COMM_STATE_LOG:
+                    case (int)ProcDataCode.HISTORY_COMM_STATE_LOG:
                         HisCommLogTime = Convert.ToInt32(storage.StorageValue);
                         break;
                 }
             }
 
-            hisMinTime = HisMinTime;
-            hisStatTime = HisStatTime;
-            statMinTime = StatMinTime;
-            statHourTime = StatHourTime;
-            statDayTime = StatDayTime;
-            statMonthTime = StatMonthTime;
-            statYearTime = StatYearTime;
-            hisFiTime = HisFiTime;
-            hisCommTime = HisCommTime;
-            hisCommLogTime = HisCommLogTime;
+            //hisMinTime = HisMinTime;
+            //hisStatTime = HisStatTime;
+            //statMinTime = StatMinTime;
+            //statHourTime = StatHourTime;
+            //statDayTime = StatDayTime;
+            //statMonthTime = StatMonthTime;
+            //statYearTime = StatYearTime;
+            //hisFiTime = HisFiTime;
+            //hisCommTime = HisCommTime;
+            //hisCommLogTime = HisCommLogTime;
             //realCheck = RealCheck;
             //minuteCheck = MinuteCheck;
             //hourCheck = HourCheck;
@@ -156,16 +156,16 @@ namespace KDMSViewer.ViewModel
             //hourCheck = HourCheck;
             //dayCheck = DayCheck;
             //monthCheck = MonthCheck;
-            hisMinTime = HisMinTime;
-            hisStatTime = HisStatTime;
-            statMinTime = StatMinTime;
-            statHourTime = StatHourTime;
-            statDayTime = StatDayTime;
-            statMonthTime = StatMonthTime;
-            statYearTime = StatYearTime;
-            hisFiTime = HisFiTime;
-            hisCommTime = HisCommTime;
-            hisCommLogTime = HisCommLogTime;
+            //hisMinTime = HisMinTime;
+            //hisStatTime = HisStatTime;
+            //statMinTime = StatMinTime;
+            //statHourTime = StatHourTime;
+            //statDayTime = StatDayTime;
+            //statMonthTime = StatMonthTime;
+            //statYearTime = StatYearTime;
+            //hisFiTime = HisFiTime;
+            //hisCommTime = HisCommTime;
+            //hisCommLogTime = HisCommLogTime;
             //statisticalTime = StatisticalTime;
             //deleteTime = DeleteTime;
 

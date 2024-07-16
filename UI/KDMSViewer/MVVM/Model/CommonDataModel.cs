@@ -1,4 +1,5 @@
-﻿using KDMS.EF.Core.Contexts;
+﻿using DevExpress.Xpf.Grid;
+using KDMS.EF.Core.Contexts;
 using KDMS.EF.Core.Infrastructure.Reverse;
 using KDMS.EF.Core.Infrastructure.Reverse.Models;
 using KDMSViewer.Extensions;
@@ -201,28 +202,36 @@ namespace KDMSViewer.Model
             return treeDatas;
         }
 
-        public List<HistoryMinDatum> SwitchDataLoad(List<long> ceqList, DateTime fromDate, DateTime toDate)
+        public List<HistoryMinDatum> SwitchDataLoad(List<long> ceqList, DateTime fromDate, DateTime toDate, DateTime fromTime, DateTime toTime)
         {
             var lst = string.Join(", ", ceqList.ToArray());
             List<HistoryMinDatum> retList = new List<HistoryMinDatum>();
 
             StringBuilder sb = new StringBuilder();
-            for (DateTime st = fromDate; st < toDate; st = st.AddDays(1))
-            {
-                sb.AppendLine($"select * from history_min_data_{st.ToString("yyyyMMdd")} where ceqid in ({lst}) and save_time >= '{st.ToString("yyyy-MM-dd 00:00:00")}' and save_time <= '{st.ToString("yyyy-MM-dd 23:59:59")}'");
 
-                if (st.Day != toDate.Day)
-                    sb.AppendLine("union all");
+            if (fromDate.Day == toDate.Day)
+            {
+                sb.AppendLine($"select * from history_min_data_{fromDate.ToString("yyyyMMdd")} where ceqid in ({lst}) and save_time >= '{fromDate.ToString($"yyyy-MM-dd {fromTime.ToString("HH:mm:00")}")}'  and save_time <= '{toDate.ToString($"yyyy-MM-dd {toTime.ToString("HH:mm:59")}")}'");
+            }
+            else
+            {
+                for (DateTime st = fromDate; st < toDate; st = st.AddYears(1))
+                {
+                    if (st.Day == fromDate.Day)
+                        sb.AppendLine($"select * from history_min_data_{st.ToString("yyyyMMdd")} where ceqid in ({lst}) and save_time >= '{st.ToString($"yyyy-MM-dd {fromTime.ToString("HH:mm:00")}")}'");
+                    else if (st.Day == toDate.Day)
+                        sb.AppendLine($"select * from history_min_data_{st.ToString("yyyyMMdd")} where ceqid in ({lst}) and save_time <= '{toDate.ToString($"yyyy-MM-dd {toTime.ToString("HH:mm:59")}")}'");
+                    else
+                        sb.AppendLine($"select * from history_min_data_{st.ToString("yyyyMMdd")} where ceqid in ({lst}) and save_time >= '{st.ToString("yyyy-MM-dd 00:00:00")}' and save_time <= '{st.ToString("yyyy-MM-dd 23:59:59")}'");
+
+                    if (st.Day != toDate.Day)
+                        sb.AppendLine("union all");
+                }
             }
 
-            //string qeury = $"select * from history_min_data_{DateTime.Now.ToString("yyyyMM")}01 where save_time >= '{fromDate.ToString("yyyy-MM-dd HH:mm:ss")}' and save_time <= '{toDate.ToString("yyyy-MM-dd HH:mm:ss")}'";
-            //DataTable dt = null;
             using (MySqlMapper mapper = new MySqlMapper(_configuration))
             {
                 retList = (List<HistoryMinDatum>)mapper.ExecuteQuery<HistoryMinDatum>(sb.ToString());
-                //dt = mapper.SqlQuery<HistoryMinDatum>(sb.ToString());
-                //if (dt != null)
-                //    retList = dt.ConvertDataTable<HistoryMinDatum>();
             }
             return retList;
         }
@@ -233,7 +242,7 @@ namespace KDMSViewer.Model
             List<HistoryDaystatDatum> retList = new List<HistoryDaystatDatum>();
 
             StringBuilder sb = new StringBuilder();
-            if(fromDate.Year == toDate.Year)
+            if (fromDate.Year == toDate.Year)
             {
                 sb.AppendLine($"select * from history_daystat_data_{fromDate.ToString("yyyy")} where ceqid in ({lst}) and save_time >= '{fromDate.ToString("yyyy-MM-dd 00:00:00")}' and save_time <= '{toDate.ToString("yyyy-MM-dd 23:59:59")}'");
             }
@@ -241,7 +250,7 @@ namespace KDMSViewer.Model
             {
                 for (DateTime st = fromDate; st < toDate; st = st.AddYears(1))
                 {
-                    if(st.Year == fromDate.Year)
+                    if (st.Year == fromDate.Year)
                         sb.AppendLine($"select * from history_daystat_data_{st.ToString("yyyy")} where ceqid in ({lst}) and save_time >= '{st.ToString("yyyy-MM-dd 00:00:00")}'");
                     else if (st.Year == toDate.Year)
                         sb.AppendLine($"select * from history_daystat_data_{st.ToString("yyyy")} where ceqid in ({lst}) and save_time <= '{toDate.ToString("yyyy-MM-dd 23:00:00")}'");
@@ -262,50 +271,67 @@ namespace KDMSViewer.Model
 
         public List<HistoryFiAlarm> FiDataLoad(List<long> ceqList, DateTime fromDate, DateTime toDate)
         {
-            var lst = string.Join(", ", ceqList.ToArray());
-            return _kdmsContext.HistoryFiAlarms.Where(p => lst.Any(x => x == p.Ceqid) && p.SaveTime >= fromDate && p.SaveTime <= toDate).ToList();
+            using (var context = new KdmsContext(_configuration))
+            {
+                return context.HistoryFiAlarms.Where(p => ceqList.Any(x => x == p.Ceqid) && p.SaveTime >= fromDate && p.SaveTime <= toDate).ToList();
+            }
         }
 
         public List<Statistics15min> StatisticsMinDataLoad(List<long> ceqList, DateTime fromDate, DateTime toDate)
         {
-            var lst = string.Join(", ", ceqList.ToArray());
-            return _kdmsContext.Statistics15mins.Where(p => lst.Any(x => x == p.Ceqid) && p.SaveTime >= fromDate && p.SaveTime <= toDate).ToList();
+            using (var context = new KdmsContext(_configuration))
+            {
+                return _kdmsContext.Statistics15mins.Where(p => ceqList.Any(x => x == p.Ceqid) && p.SaveTime >= fromDate && p.SaveTime <= toDate).ToList();
+            }
         }
 
         public List<StatisticsHour> StatisticsHourDataLoad(List<long> ceqList, DateTime fromDate, DateTime toDate)
         {
-            var lst = string.Join(", ", ceqList.ToArray());
-            return _kdmsContext.StatisticsHours.Where(p => lst.Any(x => x == p.Ceqid) && p.SaveTime >= fromDate && p.SaveTime <= toDate).ToList();
+            using (var context = new KdmsContext(_configuration))
+            {
+                return _kdmsContext.StatisticsHours.Where(p => ceqList.Any(x => x == p.Ceqid) && p.SaveTime >= fromDate && p.SaveTime <= toDate).ToList();
+            }
         }
 
         public List<StatisticsDay> StatisticsDayDataLoad(List<long> ceqList, DateTime fromDate, DateTime toDate)
         {
-            var lst = string.Join(", ", ceqList.ToArray());
-            return _kdmsContext.StatisticsDays.Where(p => lst.Any(x => x == p.Ceqid) && p.SaveTime >= fromDate && p.SaveTime <= toDate).ToList();
+            using (var context = new KdmsContext(_configuration))
+            {
+                return _kdmsContext.StatisticsDays.Where(p => ceqList.Any(x => x == p.Ceqid) && p.SaveTime >= fromDate && p.SaveTime <= toDate).ToList();
+            }
         }
 
         public List<StatisticsMonth> StatisticsMonthDataLoad(List<long> ceqList, DateTime fromDate, DateTime toDate)
         {
-            var lst = string.Join(", ", ceqList.ToArray());
-            return _kdmsContext.StatisticsMonths.Where(p => lst.Any(x => x == p.Ceqid) && p.SaveTime >= fromDate && p.SaveTime <= toDate).ToList();
+            using (var context = new KdmsContext(_configuration))
+            {
+                return _kdmsContext.StatisticsMonths.Where(p => ceqList.Any(x => x == p.Ceqid) && p.SaveTime >= fromDate && p.SaveTime <= toDate).ToList();
+            }
         }
 
         public List<StatisticsYear> StatisticsYearDataLoad(List<long> ceqList, DateTime fromDate, DateTime toDate)
         {
-            var lst = string.Join(", ", ceqList.ToArray());
-            return _kdmsContext.StatisticsYears.Where(p => lst.Any(x => x == p.Ceqid) && p.SaveTime >= fromDate && p.SaveTime <= toDate).ToList();
+            using (var context = new KdmsContext(_configuration))
+            {
+                return _kdmsContext.StatisticsYears.Where(p => ceqList.Any(x => x == p.Ceqid) && p.SaveTime >= fromDate && p.SaveTime <= toDate).ToList();
+            }
         }
 
         public List<HistoryCommState> CommStateDataLoad(List<long> ceqList, DateTime fromDate, DateTime toDate)
         {
-            var lst = string.Join(", ", ceqList.ToArray());
-            return _kdmsContext.HistoryCommStates.Where(p => p.SaveTime >= fromDate && p.SaveTime <= toDate).ToList();
+            using (var context = new KdmsContext(_configuration))
+            {
+                return _kdmsContext.HistoryCommStates.Where(p => p.SaveTime >= fromDate && p.SaveTime <= toDate).ToList();
+
+            }
         }
 
         public List<HistoryCommStateLog> CommStateLogDataLoad(List<long> ceqList, DateTime fromDate, DateTime toDate)
         {
-            var lst = string.Join(", ", ceqList.ToArray());
-            return _kdmsContext.HistoryCommStateLogs.Where(p => p.SaveTime >= fromDate && p.SaveTime <= toDate).ToList();
+            using (var context = new KdmsContext(_configuration))
+            {
+                return _kdmsContext.HistoryCommStateLogs.Where(p => p.SaveTime >= fromDate && p.SaveTime <= toDate).ToList();
+            }
         }
 
         public List<AiInfo> GetAiInfo()
@@ -459,6 +485,11 @@ namespace KDMSViewer.Model
             return _kdmsContext.SchduleInfos.ToList();
         }
 
+        public List<SchduleType> GetSchduleTypes()
+        {
+            return _kdmsContext.SchduleTypes.ToList();
+        }
+
         public List<StorageInfo> GetStorageInfos()
         {
             return _kdmsContext.StorageInfos.ToList();
@@ -473,32 +504,135 @@ namespace KDMSViewer.Model
                 {
                     switch (schdule.SchduleId)
                     {
-                        case (int)SchduleCode.BI:
-                            schdule.SchduleValue = model.BiTime.ToString();
+                        case (int)ProcDataCode.HISTORY_MIN_DATA:
+                            {
+                                schdule.SchduleType = model.HisMinInterval;
+                                schdule.SchduleValue = GetDateTimeFormat(schdule.SchduleType, model.HisMinTime);
+                                schdule.Desc = model.HisMinDesc;
+                            }
                             break;
-                        case (int)SchduleCode.BO:
-                            schdule.SchduleValue = model.BoTime.ToString();
+                        case (int)ProcDataCode.HISTORY_DAYSTAT_DATA:
+                            {
+                                schdule.SchduleType = model.HisStatInterval;
+                                schdule.SchduleValue = GetDateTimeFormat(schdule.SchduleType, model.HisStatTime);// = $"yyyy-MM-dd {model.HisStatTime}";
+                                schdule.Desc = model.HisStatDesc;
+                            }
                             break;
-                        case (int)SchduleCode.AI:
-                            schdule.SchduleValue = model.AiTime.ToString();
+                        case (int)ProcDataCode.STATISTICS_15MIN:
+                            {
+                                schdule.SchduleType = model.StatMinInterval;
+                                schdule.SchduleValue = GetDateTimeFormat(schdule.SchduleType, model.StatMinTime);// = model.StatMinTime; 
+                                schdule.Desc = model.StatMinDesc;
+                            }
                             break;
-                        case (int)SchduleCode.AO:
-                            schdule.SchduleValue = model.AoTime.ToString();
+                        case (int)ProcDataCode.STATISTICS_HOUR:
+                            {
+                                schdule.SchduleType = model.StatHourInterval;
+                                schdule.SchduleValue = GetDateTimeFormat(schdule.SchduleType, model.StatHourTime);// = $"yyyy-MM-dd HH:{model.StatHourTime}";
+                                schdule.Desc = model.StatHourDesc;
+                            }
                             break;
-                        case (int)SchduleCode.COUNTER:
-                            schdule.SchduleValue = model.CounterTime.ToString();
+                        case (int)ProcDataCode.STATISTICS_DAY:
+                            {
+                                schdule.SchduleType = model.StatDayInterval;
+                                schdule.SchduleValue = GetDateTimeFormat(schdule.SchduleType, model.StatDayTime);// = $"yyyy-MM-dd {model.StatDayTime}";
+                                schdule.Desc = model.StatDayDesc;
+                            }
                             break;
-                        case (int)SchduleCode.STATISTICS:
-                            schdule.SchduleValue = model.StatisticalTime.ToString("HH:mm:ss");
+                        case (int)ProcDataCode.STATISTICS_MONTH:
+                            {
+                                schdule.SchduleType = model.StatMonthInterval;
+                                schdule.SchduleValue = GetDateTimeFormat(schdule.SchduleType, model.StatMonthTime);// = $"yyyy-MM-{model.StatMonthTime}";
+                                schdule.Desc = model.StatMonthDesc;
+                            }
+                            break;
+                        case (int)ProcDataCode.STATISTICS_YEAR:
+                            {
+                                schdule.SchduleType = model.StatYearInterval;
+                                schdule.SchduleValue = GetDateTimeFormat(schdule.SchduleType, model.StatYearTime);// = $"yyyy-{model.StatYearTime}";
+                                schdule.Desc = model.StatYearDesc;
+                            }
+                            break;
+                        case (int)ProcDataCode.HISTORY_FI_ALARM:
+                            {
+                                
+                            }
+                            break;
+                        case (int)ProcDataCode.HISTORY_COMM_STATE:
+                            {
+                                schdule.SchduleType = model.HisCommInterval;
+                                schdule.SchduleValue = GetDateTimeFormat(schdule.SchduleType, model.HisCommTime);// = $"yyyy-MM-dd {model.HisCommTime}";
+                                schdule.Desc = model.HisCommDesc;
+                            }
+                            break;
+                        case (int)ProcDataCode.HISTORY_COMM_STATE_LOG:
+                            {
+                                
+                            }
                             break;
                     }
+
+
+                    //switch (schdule.SchduleId)
+                    //{
+                    //    //    case (int)ProcDataCode.BI:
+                    //    //        schdule.SchduleValue = model.BiTime.ToString();
+                    //    //        break;
+                    //    //    case (int)ProcDataCode.BO:
+                    //    //        schdule.SchduleValue = model.BoTime.ToString();
+                    //    //        break;
+                    //    //    case (int)ProcDataCode.AI:
+                    //    //        schdule.SchduleValue = model.AiTime.ToString();
+                    //    //        break;
+                    //    //    case (int)ProcDataCode.AO:
+                    //    //        schdule.SchduleValue = model.AoTime.ToString();
+                    //    //        break;
+                    //    //    case (int)ProcDataCode.COUNTER:
+                    //    //        schdule.SchduleValue = model.CounterTime.ToString();
+                    //    //        break;
+                    //    //    case (int)ProcDataCode.STATISTICS:
+                    //    //        schdule.SchduleValue = model.StatisticalTime.ToString("HH:mm:ss");
+                    //    //        break;
+                    //    //}
+                    //}
                 }
-                DayStatCalCreate(model.StatisticalTime.ToString("HH:mm:ss"));
+
+                await _kdmsContext.SaveChangesAsync();
             }
-            
-            await _kdmsContext.SaveChangesAsync();
         }
 
+        private string GetDateTimeFormat(int schduleType, string time)
+        {
+            string retVaue = string.Empty;
+            switch(schduleType)
+            {
+                case 1:
+                    retVaue = $"yyyy-MM-dd HH:{time}";
+                    break;
+                case 2:
+                    retVaue = $"yyyy-MM-dd HH:{time}";
+                    break;
+                case 3:
+                    retVaue = $"yyyy-MM-dd {time}";
+                    break;
+                case 4:
+                    retVaue = $"yyyy-MM-{time}";
+                    break;
+                case 5:
+                    retVaue = $"yyyy-{time}";
+                    break;
+                case 6:
+                    retVaue = time;
+                    break;
+                case 7:
+                    retVaue = time;
+                    break;
+                case 8:
+                    retVaue = $"yyyy-MM-dd {time}";
+                    break;
+            }
+            return retVaue;
+        }
         public async void SetStorageInfo()
         {
             var model = App.Current.Services.GetService<OperationStorageViewModel>()!;
@@ -508,34 +642,34 @@ namespace KDMSViewer.Model
                 {
                     switch (storage.StorageId)
                     {
-                        case (int)StorageCode.HISTORY_MIN_DATA:
-                            storage.StorageValue = model.HisMinTime.ToString(); 
+                        case (int)ProcDataCode.HISTORY_MIN_DATA:
+                            storage.StorageValue = model.HisMinTime.ToString();
                             break;
-                        case (int)StorageCode.HISTORY_DAYSTAT_DATA:
+                        case (int)ProcDataCode.HISTORY_DAYSTAT_DATA:
                             storage.StorageValue = model.HisStatTime.ToString();
                             break;
-                        case (int)StorageCode.STATISTICS_15MIN:
+                        case (int)ProcDataCode.STATISTICS_15MIN:
                             storage.StorageValue = model.StatMinTime.ToString();
                             break;
-                        case (int)StorageCode.STATISTICS_HOUR:
+                        case (int)ProcDataCode.STATISTICS_HOUR:
                             storage.StorageValue = model.StatHourTime.ToString();
                             break;
-                        case (int)StorageCode.STATISTICS_DAY:
+                        case (int)ProcDataCode.STATISTICS_DAY:
                             storage.StorageValue = model.StatDayTime.ToString();
                             break;
-                        case (int)StorageCode.STATISTICS_MONTH:
+                        case (int)ProcDataCode.STATISTICS_MONTH:
                             storage.StorageValue = model.StatMonthTime.ToString();
                             break;
-                        case (int)StorageCode.STATISTICS_YEAR:
+                        case (int)ProcDataCode.STATISTICS_YEAR:
                             storage.StorageValue = model.StatYearTime.ToString();
                             break;
-                        case (int)StorageCode.HISTORY_FI_ALARM:
+                        case (int)ProcDataCode.HISTORY_FI_ALARM:
                             storage.StorageValue = model.HisFiTime.ToString();
                             break;
-                        case (int)StorageCode.HISTORY_COMM_STATE:
+                        case (int)ProcDataCode.HISTORY_COMM_STATE:
                             storage.StorageValue = model.HisCommTime.ToString();
                             break;
-                        case (int)StorageCode.HISTORY_COMM_STATE_LOG:
+                        case (int)ProcDataCode.HISTORY_COMM_STATE_LOG:
                             storage.StorageValue = model.HisCommLogTime.ToString();
                             break;
                     }
@@ -545,26 +679,26 @@ namespace KDMSViewer.Model
             await _kdmsContext.SaveChangesAsync();
         }
 
-        public void DayStatCalCreate(string date)
-        {
-            string query = "drop EVENT IF exists min_data_calculation_event;";
+        //public void DayStatCalCreate(string date)
+        //{
+        //    string query = "drop EVENT IF exists min_data_calculation_event;";
 
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine("CREATE EVENT IF NOT EXISTS min_data_calculation_event");
-            sb.AppendLine("ON SCHEDULE EVERY '1' day");
-            sb.AppendLine($"STARTS concat(curdate(), ' {date}')");
-            sb.AppendLine("COMMENT '매일 1회 지정된 시간에 실행하는 프로시저'");
-            sb.AppendLine("DO");
-            sb.AppendLine("call kdms.min_data_calculation(curdate());");
+        //    StringBuilder sb = new StringBuilder();
+        //    sb.AppendLine("CREATE EVENT IF NOT EXISTS min_data_calculation_event");
+        //    sb.AppendLine("ON SCHEDULE EVERY '1' day");
+        //    sb.AppendLine($"STARTS concat(curdate(), ' {date}')");
+        //    sb.AppendLine("COMMENT '매일 1회 지정된 시간에 실행하는 프로시저'");
+        //    sb.AppendLine("DO");
+        //    sb.AppendLine("call kdms.min_data_calculation(curdate());");
 
-            using (MySqlMapper mapper = new MySqlMapper(_configuration))
-            {
-                bool retval = mapper.RunQuery(query);
-                if (retval)
-                {
-                    mapper.RunQuery(sb.ToString());
-                }
-            }
-        }
+        //    using (MySqlMapper mapper = new MySqlMapper(_configuration))
+        //    {
+        //        bool retval = mapper.RunQuery(query);
+        //        if (retval)
+        //        {
+        //            mapper.RunQuery(sb.ToString());
+        //        }
+        //    }
+        //}
     }
 }
