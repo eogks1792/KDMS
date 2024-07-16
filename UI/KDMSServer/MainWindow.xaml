@@ -63,7 +63,7 @@
                         <ColumnDefinition Width="145"/>
                     </Grid.ColumnDefinitions>
 
-                    <GroupBox Margin="0 0 5 0">
+                    <GroupBox Margin="0 0 5 5">
                         <GroupBox.Header>
                             <TextBlock Text="PRIME SERVER 정보"
                                        FontSize="{StaticResource FontSizeRegular}"/>
@@ -87,7 +87,7 @@
                     </GroupBox>
 
                     <GroupBox Grid.Column="1"
-                              Margin="5 0 0 0">
+                              Margin="5 0 0 5">
                         <GroupBox.Header>
                             <TextBlock Text="BACKUP SERVER 정보"
                                        FontSize="{StaticResource FontSizeRegular}"/>
@@ -110,101 +110,55 @@
                         </Grid>
                     </GroupBox>
 
-                    <Grid Grid.Row="1"
+
+                    <GroupBox Grid.Row="1"
                               Grid.ColumnSpan="2"
                               Margin="0 0 0 0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="1.2*"/>
-                            <ColumnDefinition Width="2*"/>
-                        </Grid.ColumnDefinitions>
-                        <GroupBox Grid.Column="0">
-                            <GroupBox.Header>
-                                <TextBlock Text="로그인 정보"
-                                           FontSize="{StaticResource FontSizeRegular}"/>
-                            </GroupBox.Header>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="35"/>
-                                    <ColumnDefinition />
-                                    <ColumnDefinition Width="60"/>
-                                    <ColumnDefinition/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0"
-                                            Text="ID"
-                                            Style="{StaticResource baseTextBlock}" />
-                                <TextBox Grid.Column="1"
-                                         Text="{Binding LoginId}" 
-                                         TextAlignment="Center"
-                                         Style="{StaticResource baseTextBox}" />
-                                <TextBlock Grid.Column="2"
-                                           Text="PWD"
-                                           Style="{StaticResource baseTextBlock}" />
-                                <Border Grid.Column="3"
-                                        Margin="0 5 10 5"
-                                        Background="Transparent"
-                                        BorderBrush="Gray"
-                                        BorderThickness="1"
-                                        CornerRadius="5">
-                                    <PasswordBox Grid.Column="3"
-                                             FontSize="{StaticResource FontSizeLittle}"
-                                             BorderThickness="0"
-                                             Background="Transparent"
-                                             TextBlock.TextAlignment="Right"
-                                             PasswordChar="●"
-                                             VerticalContentAlignment="Center"
-                                             model:PasswordHelper.Attach="True" 
-                                             model:PasswordHelper.Password="{Binding LoginPwd, Mode=TwoWay}"/>
-                                </Border>
-                            </Grid>
-                        </GroupBox>
-                        <GroupBox  Grid.Column="1">
-                            <GroupBox.Header>
-                                <TextBlock Text="CHANNEL 정보"
-                                           FontSize="{StaticResource FontSizeRegular}"/>
-                            </GroupBox.Header>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="60"/>
-                                    <ColumnDefinition />
-                                    <ColumnDefinition Width="100"/>
-                                    <ColumnDefinition />
-                                    <ColumnDefinition Width="70"/>
-                                    <ColumnDefinition />
-                                </Grid.ColumnDefinitions>
+                        <GroupBox.Header>
+                            <TextBlock Text="CHANNEL 정보"
+                                       FontSize="{StaticResource FontSizeRegular}"/>
+                        </GroupBox.Header>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="110"/>
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="110"/>
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="110"/>
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
 
-                                <TextBlock Grid.Row="0" 
-                                           Grid.Column="0"
-                                           Text="SCAN"
-                                           Style="{StaticResource baseTextBlock}" />
-                                <TextBox Grid.Row="0" 
-                                         Grid.Column="1"
-                                         Text="{Binding ScanPort}" 
-                                         TextAlignment="Center"
-                                         Style="{StaticResource baseTextBox}" />
+                            <TextBlock Grid.Row="0" 
+                                      Grid.Column="0"
+                                      Text="SCAN"
+                                      Style="{StaticResource baseTextBlock}" />
+                            <TextBox Grid.Row="0" 
+                                    Grid.Column="1"
+                                    Text="{Binding ScanPort}" 
+                                    TextAlignment="Center"
+                                    Style="{StaticResource baseTextBox}" />
 
-                                <TextBlock Grid.Row="0" 
-                                           Grid.Column="2"
-                                           Text="CONTROL"
-                                           Style="{StaticResource baseTextBlock}" />
-                                <TextBox Grid.Row="0" 
-                                         Grid.Column="3"
-                                         Text="{Binding ControlPort}" 
-                                         TextAlignment="Center"
-                                         Style="{StaticResource baseTextBox}" />
+                            <TextBlock Grid.Row="0" 
+                                      Grid.Column="2"
+                                      Text="CONTROL"
+                                      Style="{StaticResource baseTextBlock}" />
+                            <TextBox Grid.Row="0" 
+                                    Grid.Column="3"
+                                    Text="{Binding ContorlPort}" 
+                                    TextAlignment="Center"
+                                    Style="{StaticResource baseTextBox}" />
 
-                                <TextBlock Grid.Row="0" 
-                                           Grid.Column="4"
-                                           Text="EVENT"
-                                           Style="{StaticResource baseTextBlock}" />
-                                <TextBox Grid.Row="0" 
-                                         Grid.Column="5"
-                                         Text="{Binding EventPort}" 
-                                         TextAlignment="Center"
-                                         Style="{StaticResource baseTextBox}" />
-                            </Grid>
-                        </GroupBox>
-                    </Grid>
-                    
+                            <TextBlock Grid.Row="0" 
+                                      Grid.Column="4"
+                                      Text="EVENT"
+                                      Style="{StaticResource baseTextBlock}" />
+                            <TextBox Grid.Row="0" 
+                                    Grid.Column="5"
+                                    Text="{Binding EventPort}" 
+                                    TextAlignment="Center"
+                                    Style="{StaticResource baseTextBox}" />
+                        </Grid>
+                    </GroupBox>
 
                     <Grid Grid.RowSpan="3" Grid.Column="3"
                           Margin="5 0 0 0">
