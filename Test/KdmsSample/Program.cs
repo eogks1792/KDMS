@@ -3,6 +3,7 @@ using KdmsTcpSocket.KdmsTcpStruct;
 using KdmsTcpSocket.Message;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -70,10 +71,24 @@ public class Test
                         Console.WriteLine("PDB 목록 요청 시작");
                         var pdbResponse = master.SendData<TcpNoData>(KdmsCodeInfo.KdmsPdbListReqs, KdmsCodeInfo.KdmsPdbListReps, null);
                         var pdbResult = KdmsValueConverter.ByteToStructArray<PdbListRes>(pdbResponse.RecvDatas);
-                        for(int i = 0; i < pdbResponse.DataCount;i++)
+                        //for(int i = 0; i < pdbResponse.DataCount; i++)
+                        //{
+                        //    Console.WriteLine($"PDB => ID:{pdbResult[i].iPdbId} PDB:{pdbResult[i].szPdbName} MD5:{pdbResult[i].szPdbMd5}");
+                        //}
+
+                        var pdbDatas = pdbResult.Take((int)pdbResponse.DataCount).Select(x => new PdbDataReqs { iPdbId = x.iPdbId }).ToList();
+
+                        var pdbDataponse = master.SendListData<PdbDataReqs>(KdmsCodeInfo.KdmsPdbSyncReqs, KdmsCodeInfo.KdmsPdbSyncReqs, pdbDatas);
+                        if(pdbDataponse.RequestCode == KdmsCodeInfo.KdmsPdbSyncStart)
                         {
-                            Console.WriteLine($"PDB => ID:{pdbResult[i].iPdbId} PDB:{pdbResult[i].szPdbName} MD5:{pdbResult[i].szPdbMd5}");
+
                         }
+
+
+
+
+
+                        //KdmsValueConverter.StructArrayToByte<int>(list);
                         //foreach (PdbListRes item in pdbResult)
                         //{
                         //    Console.WriteLine($"PDB => ID:{item.iPdbId} PDB:{item.szPdbName} MD5:{item.szPdbMd5}");

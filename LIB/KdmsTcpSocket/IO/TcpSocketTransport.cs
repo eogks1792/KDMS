@@ -3,6 +3,7 @@ using KdmsTcpSocket.Interfaces;
 using KdmsTcpSocket.KdmsTcpStruct;
 using KdmsTcpSocket.Message;
 using KdmsTcpSocket.Unme.Common;
+using System.Data;
 using System.Net.Sockets;
 
 namespace KdmsTcpSocket.IO;
@@ -56,6 +57,7 @@ public abstract class TcpSocketTransport : ITcpSocketTransport
 
     private byte[] CreateAckPacket(ushort requestCode, byte transactionId)
     {
+        DateTime now = DateTime.Now;
         UInt16 packetLength = KdmsCodeInfo.HmiPacketHeaderSize + KdmsCodeInfo.HmiDataHeaderSize;
         TcpPacketHeader tcpPacketHeader = new TcpPacketHeader
         {
@@ -69,12 +71,14 @@ public abstract class TcpSocketTransport : ITcpSocketTransport
         };
         TcpDataHeader dataHeader = new TcpDataHeader
         {
-            uiTime = (uint)KdmsValueConverter.ConvertToUnixTimestamp(DateTime.Now),
+            uiTime = (uint)KdmsValueConverter.ConvertToUnixTimestamp(now),
             sReqFc = requestCode,
             sRepFc = requestCode,
             usCount = 0,
         };
-
+        Console.WriteLine($"PKT SND ======> NC:{tcpPacketHeader.ucNodeCode} AC:{tcpPacketHeader.ucActCode} TOT:{tcpPacketHeader.usTotPktCnt} IDX:{tcpPacketHeader.usPktIdx} SEQ:{tcpPacketHeader.ucSeq} COMP:{tcpPacketHeader.ucComp} LEN:{tcpPacketHeader.usLength}");
+        Console.WriteLine($"DATA SND - (time:{now.ToString("yyyy-MM-dd HH:mm:ss")} req:0x{requestCode.ToString("X2")} res:0x{requestCode.ToString("X2")} cnt:{0})");
+        //Console.WriteLine($"ACK SND => time:{dataHeader.uiTime} req:{dataHeader.sReqFc.ToString("X2")} res:{dataHeader.sRepFc.ToString("X2")} cnt:{dataHeader.usCount}");
         var packetHeader = KdmsValueConverter.StructToByte(tcpPacketHeader);
         var packetData = KdmsValueConverter.StructToByte(tcpPacketHeader);
         var packetMessage = new MemoryStream(packetLength);
@@ -96,7 +100,7 @@ public abstract class TcpSocketTransport : ITcpSocketTransport
             ucComp = (byte)eCompress.uncompress,
             usLength = packetLength
         };
-
+        Console.WriteLine($"PKT SND ======> NC:{tcpPacketHeader.ucNodeCode} AC:{tcpPacketHeader.ucActCode} TOT:{tcpPacketHeader.usTotPktCnt} IDX:{tcpPacketHeader.usPktIdx} SEQ:{tcpPacketHeader.ucSeq} COMP:{tcpPacketHeader.ucComp} LEN:{tcpPacketHeader.usLength}");
         var packetHeader = KdmsValueConverter.StructToByte(tcpPacketHeader);
         var packetMessage = new MemoryStream(packetLength);
         packetMessage.Write(packetHeader, 0, packetHeader.Length);
@@ -115,11 +119,16 @@ public abstract class TcpSocketTransport : ITcpSocketTransport
                 var sendDatas = sendData.Split(KdmsCodeInfo.HmiPacketDataSize);
                 UInt16 packetIndex = 0;
                 UInt16 packetCount = (UInt16)sendDatas.Count();
+                int sendCount = 0;
                 foreach (var data in sendDatas)
-                {
+                {                    
                     byte transactionId = GetNewTransactionId();
                     byte[] frame = CreatePacketData(packetCount, ++packetIndex, transactionId, sendData);
                     StreamResource.Write(frame, 0, frame.Length);
+                    if(sendCount++ == 0)
+                    {
+                        Console.WriteLine($"DATA SND - (time:{message.SendTime.ToString("yyyy-MM-dd HH:mm:ss")} req:0x{message.RequestCode.ToString("X2")} res:0x{message.ResponseCode.ToString("X2")} cnt:{message.DataCount})");
+                    }
                     // ACK 수신
                     //Sleep(WaitToRetryMilliseconds);
                     byte[] ackPacket = Read(out bool isCompress);
@@ -172,9 +181,10 @@ public abstract class TcpSocketTransport : ITcpSocketTransport
                 }
 
                 var packetHeader = KdmsValueConverter.ByteToStruct<TcpPacketHeader>(tcpHeader);
+                Console.WriteLine($"PKT RCV <====== NC:{packetHeader.ucNodeCode} AC:{packetHeader.ucActCode} TOT:{packetHeader.usTotPktCnt} IDX:{packetHeader.usPktIdx} SEQ:{packetHeader.ucSeq} COMP:{packetHeader.ucComp} LEN:{packetHeader.usLength}");
+
                 int DataReadSize = packetHeader.usLength - numBytesRead;
-                if (DataReadSize > 1000)
-                    Console.WriteLine();
+
                 if (packetHeader.usPktIdx == 1)
                 {
                     isCompress = packetHeader.ucComp == 1? true : false;
@@ -193,7 +203,12 @@ public abstract class TcpSocketTransport : ITcpSocketTransport
                     }
                     dataTotalFrame = dataHeaderFrame;
                     DataReadSize = DataReadSize - numBytesRead;
-                    requestCode = BitConverter.ToUInt16(dataHeaderFrame, 2);
+                    var recvTime = BitConverter.ToUInt16(dataHeaderFrame, 0);
+                    requestCode = BitConverter.ToUInt16(dataHeaderFrame, 4);
+                    var responseCode = BitConverter.ToUInt16(dataHeaderFrame, 6);
+                    var dataCount = BitConverter.ToUInt16(dataHeaderFrame, 8);
+                    Console.WriteLine($"DATA RCV - (time:{recvTime} req:0x{requestCode.ToString("X2")} res:0x{responseCode.ToString("X2")} cnt:{dataCount})");
+
                 }
 
                 byte[] dataFrame = null!;
@@ -218,7 +233,7 @@ public abstract class TcpSocketTransport : ITcpSocketTransport
                 {
                     // ACK 확인
                     var dataHeader = KdmsValueConverter.ByteToStruct<TcpDataHeader>(dataTotalFrame);
-                    Console.WriteLine($"ACK RCV => time:{dataHeader.uiTime} req:{dataHeader.sReqFc} res:{dataHeader.sRepFc} cnt:{dataHeader.usCount}");
+                    // Console.WriteLine($"ACK RCV <= time:{dataHeader.uiTime} req:{dataHeader.sReqFc.ToString("X2")} res:{dataHeader.sRepFc.ToString("X2")} cnt:{dataHeader.usCount}");
                 }
                 else
                 {
@@ -226,13 +241,10 @@ public abstract class TcpSocketTransport : ITcpSocketTransport
                     var ackPacket = CreateAckPacket(requestCode, packetHeader.ucSeq);
                     StreamResource.Write(ackPacket, 0, ackPacket.Length);
                 }
-
                 if (dataFrame != null)
                     dataTotalFrame = dataTotalFrame.Concat(dataFrame).ToArray();
-
                 if (packetHeader.usTotPktCnt <= packetHeader.usPktIdx)
                     break;
-
             } while (true);
         }
 

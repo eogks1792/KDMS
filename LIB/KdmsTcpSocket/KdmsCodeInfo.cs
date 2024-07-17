@@ -41,6 +41,8 @@ public static class KdmsCodeInfo
 
     public const ushort KdmsAlarmEvent = (0x8101); // FC_AE_UPDATE
 
+    public const ushort KdmsHeartBeat = (0x2903);  // FC_HEART_BEAT
+
     //public const ushort KdmsScanCmdBIReqs = (0x4001);  // FC_SCAN_BI
     //public const ushort KdmsScanCmdBOReqs = (0x4002);  // FC_SCAN_BO
     //public const ushort KdmsScanCmdAIReqs = (0x4003);  // FC_SCAN_AI

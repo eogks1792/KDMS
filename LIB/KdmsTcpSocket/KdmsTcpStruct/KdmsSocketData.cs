@@ -97,3 +97,16 @@ public struct PdbListRes
 
 
 
+[Serializable]
+[StructLayout(LayoutKind.Sequential, Pack = 1)]
+public struct PdbDataReqs
+{
+    public Int32 iPdbId;
+
+    public int GetSize()
+    {
+        return Marshal.SizeOf(this);
+    }
+}
+
+
