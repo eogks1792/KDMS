@@ -14,7 +14,7 @@ namespace KDMSViewer.ViewModel
     public partial class ViewModel_SwitchData : ObservableObject
     {
         [ObservableProperty]
-        private List<HistoryMinDatum> _pointItems = new List<HistoryMinDatum>();
+        private ObservableCollection<HistoryMinDatum> _pointItems = new ObservableCollection<HistoryMinDatum>();
 
         public ViewModel_SwitchData(DataWorker worker)
         {

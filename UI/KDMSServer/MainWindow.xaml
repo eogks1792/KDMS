@@ -42,7 +42,7 @@
 
         <Grid Margin="5">
             <Grid.RowDefinitions>
-                <RowDefinition Height="260"/>
+                <RowDefinition Height="270"/>
                 <RowDefinition />
             </Grid.RowDefinitions>
 
@@ -80,6 +80,7 @@
                                        Style="{StaticResource baseTextBlock}" />    
                             <TextBox Grid.Row="0" 
                                      Grid.Column="1"
+                                     Margin="2"
                                      Text="{Binding PrimeIP}" 
                                      TextAlignment="Center"
                                      Style="{StaticResource baseTextBox}" />
@@ -103,10 +104,11 @@
                                       Text="BACKUP IP 정보"
                                       Style="{StaticResource baseTextBlock}" />
                             <TextBox Grid.Row="0" 
-                                    Grid.Column="1"
-                                    Text="{Binding BackupIP}" 
-                                    TextAlignment="Center"
-                                    Style="{StaticResource baseTextBox}" />
+                                     Grid.Column="1"
+                                     Margin="2"
+                                     Text="{Binding BackupIP}" 
+                                     TextAlignment="Center"
+                                     Style="{StaticResource baseTextBox}" />
                         </Grid>
                     </GroupBox>
 
@@ -135,13 +137,14 @@
                                             Style="{StaticResource baseTextBlock}" />
                                 <TextBox Grid.Column="1"
                                          Text="{Binding LoginId}" 
-                                         Margin="0"
+                                         Margin="2"
                                          TextAlignment="Center"
                                          Style="{StaticResource baseTextBox}" />
                                 <TextBlock Grid.Column="2"
                                            Text="PWD"
                                            Style="{StaticResource baseTextBlock}" />
                                 <Border Grid.Column="3"
+                                        Margin="2"
                                         Background="Transparent"
                                         BorderBrush="Gray"
                                         BorderThickness="1"
@@ -180,9 +183,9 @@
                                            Style="{StaticResource baseTextBlock}" />
                                 <TextBox Grid.Row="0" 
                                          Grid.Column="1"
+                                         Margin="2"
                                          Text="{Binding ScanPort}" 
                                          TextAlignment="Center"
-                                         Margin="0"
                                          Style="{StaticResource baseTextBox}" />
 
                                 <TextBlock Grid.Row="0" 
@@ -191,6 +194,7 @@
                                            Style="{StaticResource baseTextBlock}" />
                                 <TextBox Grid.Row="0" 
                                          Grid.Column="3"
+                                         Margin="2"
                                          Text="{Binding ControlPort}" 
                                          TextAlignment="Center"
                                          Style="{StaticResource baseTextBox}" />
@@ -201,6 +205,7 @@
                                            Style="{StaticResource baseTextBlock}" />
                                 <TextBox Grid.Row="0" 
                                          Grid.Column="5"
+                                         Margin="2"
                                          Text="{Binding EventPort}" 
                                          TextAlignment="Center"
                                          Style="{StaticResource baseTextBox}" />
@@ -224,27 +229,87 @@
                                 <TextBlock Text="서버 상태"
                                        FontSize="{StaticResource FontSizeRegular}"/>
                             </GroupBox.Header>
-                            <Grid>
-                                <TextBlock Text="{Binding IsConnetionState}"
-                                          HorizontalAlignment="Center"
-                                          VerticalAlignment="Center"
-                                          FontSize="{StaticResource FontSizeMiddle}"
-                                          Style="{StaticResource baseTextBlock}" />
+                            <Grid Margin="-5">
+                                <TextBlock Text="{Binding IsSocketConnetionState}"
+                                           Margin="0"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Style="{StaticResource baseTextBlock}" />
                             </Grid>
                         </GroupBox>
 
                         <GroupBox Grid.Row="1"
-                                 Margin="5 0 5 5">
+                                 Margin="5 0 5 6">
                             <GroupBox.Header>
                                 <TextBlock Text="통신 상태"
                                                  FontSize="{StaticResource FontSizeRegular}"/>
                             </GroupBox.Header>
-                            <Grid>
+                            <Grid Margin="-3">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition />
                                     <ColumnDefinition />
                                     <ColumnDefinition />
                                 </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Column="0"
+                                           Text="S"
+                                           Margin="0"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           FontSize="{StaticResource FontSizeSmall}">
+                                    <TextBlock.Style>
+                                        <Style TargetType="{x:Type TextBlock}" >
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ScanState}" Value="True">
+                                                    <Setter Property="Foreground" Value="White"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding ScanState}" Value="False">
+                                                    <Setter Property="Foreground" Value="Red"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+
+                                <TextBlock Grid.Column="1"
+                                           Text="C"
+                                           Margin="0"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           FontSize="{StaticResource FontSizeSmall}">
+                                    <TextBlock.Style>
+                                        <Style TargetType="{x:Type TextBlock}" >
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ControlState}" Value="True">
+                                                    <Setter Property="Foreground" Value="White"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding ControlState}" Value="False">
+                                                    <Setter Property="Foreground" Value="Red"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+
+                                <TextBlock Grid.Column="2"
+                                           Text="E"
+                                           Margin="0"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           FontSize="{StaticResource FontSizeSmall}">
+                                    <TextBlock.Style>
+                                        <Style TargetType="{x:Type TextBlock}" >
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding EventState}" Value="True">
+                                                    <Setter Property="Foreground" Value="White"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding EventState}" Value="False">
+                                                    <Setter Property="Foreground" Value="Red"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
                             </Grid>
                         </GroupBox>
 
@@ -252,14 +317,14 @@
                                Content="연결 테스트"
                                Height="35"
                                Margin="5"
-                               Command="{Binding ConnnetionCheckCommand}"
+                               Command="{Binding SocketConnnetionCheckCommand}"
                                FontSize="{StaticResource FontSizeRegular}"/>
 
                         <Button Grid.Row="3"
                                Content="저장"
                                Height="35"
                                Margin="5 5 5 0"
-                               Command="{Binding SaveCommand}"
+                               Command="{Binding SocketSaveCommand}"
                                FontSize="{StaticResource FontSizeRegular}"/>
                     </Grid>
 
@@ -270,10 +335,13 @@
                             BorderBrush="White"
                             BorderThickness="1"
                             Background="Transparent">
-                        <TextBlock Text="{Binding IsConnetionText}"
-                                   HorizontalAlignment="Center"
-                                   VerticalAlignment="Center"
-                                   Style="{StaticResource baseTextBlock}" />
+                        <TextBox Text="{Binding IsSocketConnetionText}"
+                                 IsReadOnly="True"
+                                 BorderThickness="0"
+                                 Margin="0"
+                                 HorizontalAlignment="Center"
+                                 VerticalAlignment="Center"
+                                 Style="{StaticResource baseTextBox}" />
                     </Border>
                 </Grid>
             </GroupBox>
@@ -360,7 +428,7 @@
         <Grid Grid.Column="1"
               Margin="5">
             <Grid.RowDefinitions>
-                <RowDefinition Height="260"/>
+                <RowDefinition Height="270"/>
                 <RowDefinition />
             </Grid.RowDefinitions>
 
@@ -403,6 +471,8 @@
                                        Style="{StaticResource baseTextBlock}" />
                             <TextBox Grid.Row="0" 
                                      Grid.Column="1"
+                                     Margin="2 5 2 5"
+                                     Height="auto"
                                      Text="{Binding IpAddress}" 
                                      TextAlignment="Center"
                                      Style="{StaticResource baseTextBox}" />
@@ -413,6 +483,7 @@
                                        Style="{StaticResource baseTextBlock}" />
                             <TextBox Grid.Row="1" 
                                      Grid.Column="1"
+                                     Margin="2 5 2 5"
                                      Text="{Binding Port}" 
                                      TextAlignment="Center"
                                      Style="{StaticResource baseTextBox}" />
@@ -423,6 +494,8 @@
                                        Style="{StaticResource baseTextBlock}" />
                             <TextBox Grid.Row="0"
                                      Grid.Column="3"
+                                     Margin="2 5 2 5"
+                                     Height="auto"
                                      Text="{Binding Name}" 
                                      TextAlignment="Center"
                                      Style="{StaticResource baseTextBox}" />
@@ -433,6 +506,8 @@
                                        Style="{StaticResource baseTextBlock}" />
                             <TextBox Grid.Row="1"
                                      Grid.Column="3"
+                                     Margin="2 5 2 5"
+                                     Height="auto"
                                      Text="{Binding UserId}" 
                                      TextAlignment="Center"
                                      Style="{StaticResource baseTextBox}" />
@@ -444,7 +519,8 @@
 
                             <Border Grid.Row="3"
                                     Grid.Column="3"
-                                    Margin="0 5 5 5"
+                                    Margin="2 5 2 5"
+                                    Height="auto"
                                     Background="Transparent"
                                     BorderBrush="Gray"
                                     BorderThickness="1"
@@ -489,14 +565,14 @@
                                 Content="연결 테스트"
                                 Height="35"
                                 Margin="5"
-                                Command="{Binding ConnnetionCheckCommand}"
+                                Command="{Binding DBConnnetionCheckCommand}"
                                 FontSize="{StaticResource FontSizeRegular}"/>
 
                         <Button Grid.Row="2"
                                 Content="저장"
                                 Height="35"
                                 Margin="5 5 5 0"
-                                Command="{Binding SaveCommand}"
+                                Command="{Binding DBSaveCommand}"
                                 FontSize="{StaticResource FontSizeRegular}"/>
                     </Grid>
 
@@ -505,11 +581,14 @@
                             CornerRadius="5"
                             BorderBrush="White"
                             BorderThickness="1"
-                            Background="Transparent"> 
-                        <TextBlock Text="{Binding IsDBConnetionText}"
-                                   HorizontalAlignment="Center"
-                                   VerticalAlignment="Center"
-                                   Style="{StaticResource baseTextBlock}" />
+                            Background="Transparent">
+                        <TextBox Text="{Binding IsDBConnetionText}"
+                                 IsReadOnly="True"
+                                 BorderThickness="0"
+                                 Margin="0"
+                                 HorizontalAlignment="Center"
+                                 VerticalAlignment="Center"
+                                 Style="{StaticResource baseTextBox}" />
                     </Border>
                 </Grid>
             </GroupBox>

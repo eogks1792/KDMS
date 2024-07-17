@@ -12,8 +12,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.DirectoryServices.ActiveDirectory;
 using System.Linq;
 using System.Net;
 using System.Reflection;
@@ -860,14 +862,21 @@ namespace KDMSViewer.Model
                             var model = App.Current.Services.GetService<ViewModel_SwitchData>()!;
                             if (model != null)
                             {
-                                model.PointItems.Clear();
+                                model.PointItems = new ObservableCollection<HistoryMinDatum>();
                                 var response = await _mediator.Send(request);
                                 if (response != null && response.Result)
                                 {
-                                    DispatcherService.Invoke((System.Action)(() =>
+                                    await Task.Run(() =>
                                     {
-                                        model.PointItems = response.datas;
-                                    }));
+                                        DispatcherService.Invoke((System.Action)(() =>
+                                        {
+                                            foreach (var data in response.datas)
+                                            {
+                                                model.PointItems.Add(data);
+                                            }
+
+                                        }));
+                                    });
                                 }
                                 else
                                 {
@@ -1108,7 +1117,6 @@ namespace KDMSViewer.Model
                 MessageBox.Show(ex.Message);
             }
         }
-
 
         public object GetPointItems(int type)
         {

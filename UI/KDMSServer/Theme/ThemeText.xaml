@@ -57,7 +57,7 @@
         <Setter Property="VerticalAlignment" Value="Center" />
 
         <!--<Style.Triggers>
-            <DataTrigger Binding="{Binding ServerState}" Value="True">
+            <DataTrigger Binding="{Binding ScanState}" Value="True">
                 <Setter Property="Text" Value="서버 상태: 정상"/>
             </DataTrigger>
             <DataTrigger Binding="{Binding ServerState}" Value="False">

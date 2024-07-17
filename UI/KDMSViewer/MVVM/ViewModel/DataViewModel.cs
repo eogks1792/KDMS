@@ -369,7 +369,7 @@ namespace KDMSViewer.ViewModel
                             // 실시간 데이터
                             if (SwitchCheck)
                             {
-                                var dataList = (List<HistoryMinDatum>)_worker.GetPointItems((int)SearchTypeCode.MINDATA);
+                                var dataList = (ObservableCollection<HistoryMinDatum>)_worker.GetPointItems((int)SearchTypeCode.MINDATA);
                                 if (dataList == null || dataList?.Count <= 0)
                                 {
                                     outputFile.Close();

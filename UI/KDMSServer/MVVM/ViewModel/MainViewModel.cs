@@ -8,6 +8,7 @@ using Serilog;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
+using System.Net.Sockets;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -29,6 +30,14 @@ namespace KDMSServer.ViewModel
         private string _userId = "kdms";
         [ObservableProperty]
         private string _userPwd = "";
+
+        [ObservableProperty]
+        private string _isSocketConnetionText = "";
+        [ObservableProperty]
+        private string _isSocketConnetionState = "";
+        [ObservableProperty]
+        private bool _isSocketConnetion = false;
+
         [ObservableProperty]
         private string _isDBConnetionText = "";
         [ObservableProperty]
@@ -37,15 +46,22 @@ namespace KDMSServer.ViewModel
         private bool _isDBConnetion = false;
 
         [ObservableProperty]
+        private bool _scanState = false;
+        [ObservableProperty]
+        private bool _controlState = false;
+        [ObservableProperty]
+        private bool _eventState = false;
+
+        [ObservableProperty]
         private string _loginId = "id";
         [ObservableProperty]
         private string _loginPwd = "password";
         [ObservableProperty]
-        private string _scanPort = "12345";
+        private int _scanPort = 12345;
         [ObservableProperty]
-        private string _controlPort = "12345";
+        private int _controlPort = 12345;
         [ObservableProperty]
-        private string _eventPort = "12345";
+        private int _eventPort = 12345;
         [ObservableProperty]
         private string _primeIP = "";
         [ObservableProperty]
@@ -95,9 +111,9 @@ namespace KDMSServer.ViewModel
             LoginPwd = LogintInfoSection.GetSection("LoginPwd").Value!;
 
             var ChannelInfoSection = _configuration.GetSection("ChannelInfo");
-            ScanPort = ChannelInfoSection.GetSection("Scan").Value!;
-            ControlPort = ChannelInfoSection.GetSection("Control").Value!;
-            EventPort = ChannelInfoSection.GetSection("Event").Value!;
+            ScanPort = Convert.ToInt32(ChannelInfoSection.GetSection("Scan").Value!);
+            ControlPort = Convert.ToInt32(ChannelInfoSection.GetSection("Control").Value!);
+            EventPort = Convert.ToInt32(ChannelInfoSection.GetSection("Event").Value!);
 
             var ServerIpInfoSection = _configuration.GetSection("ServerInfo");
             PrimeIP = ServerIpInfoSection.GetSection("PrimeServer").Value!;
@@ -108,7 +124,66 @@ namespace KDMSServer.ViewModel
         }
 
         [RelayCommand]
-        private void ConnnetionCheck()
+        private async void SocketConnnetionCheck()
+        {
+            await Task.Run(() =>
+            {
+                bool firstCheck = false;
+                try
+                {
+                    using (var client = new TcpClient(PrimeIP, Convert.ToInt32(ControlPort)))
+                    firstCheck = true;
+
+                    IsSocketConnetionText = $"{PrimeIP} KDMS 서버 연결 성공 (CONTORL Session)";
+                }
+                catch 
+                {
+                    if (!firstCheck)
+                    {
+                        try
+                        {
+                            using (var client = new TcpClient(BackupIP, Convert.ToInt32(ControlPort)))
+                            IsSocketConnetionText = $"{BackupIP} KDMS 서버 연결 성공 (CONTORL Session)";
+                        }
+                        catch (Exception ex)
+                        {
+                            IsSocketConnetionText = $"{BackupIP} KDMS 서버 연결 실패 (CONTORL Session) ex:{ex.Message}";
+                        }
+                    }
+                }
+            });
+        }
+
+        [RelayCommand]
+        private void SocketSave()
+        {
+            try
+            {
+                string filePath = AppDomain.CurrentDomain.BaseDirectory + "appsettings.json";
+
+                JsonHelpers.AddOrUpdateAppSetting(filePath, "ServerInfo:PrimeServer", PrimeIP);
+                JsonHelpers.AddOrUpdateAppSetting(filePath, "ServerInfo:BackupServer", BackupIP);
+
+                JsonHelpers.AddOrUpdateAppSetting(filePath, "LoginInfo:LoginId", LoginId);
+                JsonHelpers.AddOrUpdateAppSetting(filePath, "LoginInfo:LoginPwd", LoginPwd);
+
+                JsonHelpers.AddOrUpdateAppSetting(filePath, "ChannelInfo:Scan", ScanPort);
+                JsonHelpers.AddOrUpdateAppSetting(filePath, "ChannelInfo:Control", ControlPort);
+                JsonHelpers.AddOrUpdateAppSetting(filePath, "ChannelInfo:Event", EventPort);
+                
+                var root = (IConfigurationRoot)_configuration;
+                root.Reload();
+
+                IsSocketConnetionText = $"KDMS 서버 연결 정보 저장 성공";
+            }
+            catch (Exception ex)
+            {
+                IsDBConnetionText = $"KDMS 서버 연결 정보 저장 실패 예외발생 ex:{ex.Message}";
+            }
+        }
+
+        [RelayCommand]
+        private void DBConnnetionCheck()
         {
             var connectionString = $"Server={IpAddress};Port={Port};Database={Name};User={UserId};Password={UserPwd};";
             try
@@ -126,7 +201,7 @@ namespace KDMSServer.ViewModel
         }
 
         [RelayCommand]
-        private void Save()
+        private void DBSave()
         {
             try
             {

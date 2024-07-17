@@ -60,11 +60,6 @@
                         <Trigger Property="IsSelected" Value="True">
                             <Setter Property="Foreground" Value="Black"></Setter>
                         </Trigger>
-
-                        <DataTrigger Binding="{Binding IsInquiry}" Value="False">
-                            <Setter Property="ListView.Cursor" Value="Wait"/>
-                            <Setter Property="ListView.Background" Value="LightGray"/>
-                        </DataTrigger>
                     </Style.Triggers>
                 </Style>
             </ListView.ItemContainerStyle>

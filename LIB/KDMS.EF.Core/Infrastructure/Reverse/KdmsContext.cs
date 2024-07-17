@@ -16,7 +16,6 @@ public partial class KdmsContext : DbContext
         _configuration = configuration;
     }
 
-
     public virtual DbSet<AiInfo> AiInfos { get; set; }
 
     public virtual DbSet<AlarmInfo> AlarmInfos { get; set; }
@@ -45,6 +44,10 @@ public partial class KdmsContext : DbContext
 
     public virtual DbSet<PdbDistributionlinesegment> PdbDistributionlinesegments { get; set; }
 
+    public virtual DbSet<PdbList> PdbLists { get; set; }
+
+    public virtual DbSet<PdbRemoteunit> PdbRemoteunits { get; set; }
+
     public virtual DbSet<Powertransformer> Powertransformers { get; set; }
 
     public virtual DbSet<SchduleInfo> SchduleInfos { get; set; }
@@ -69,9 +72,9 @@ public partial class KdmsContext : DbContext
 
     public virtual DbSet<Substation> Substations { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseMySql("server=192.168.1.205;port=3306;database=kdms;user=root;password=20wellsdb19!@", Microsoft.EntityFrameworkCore.ServerVersion.Parse("11.3.2-mariadb"));
+//    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+//#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+//        => optionsBuilder.UseMySql("server=192.168.1.205;port=3306;database=kdms;user=root;password=20wellsdb19!@", Microsoft.EntityFrameworkCore.ServerVersion.Parse("11.3.2-mariadb"));
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -883,6 +886,208 @@ public partial class KdmsContext : DbContext
                 .HasComment("전단 SGRegion ID")
                 .HasColumnType("bigint(20)")
                 .HasColumnName("SGR_F_FK");
+        });
+
+        modelBuilder.Entity<PdbList>(entity =>
+        {
+            entity.HasKey(e => e.Pid).HasName("PRIMARY");
+
+            entity.ToTable("pdb_list", tb => tb.HasComment("PDB 목록 테이블"));
+
+            entity.Property(e => e.Pid)
+                .ValueGeneratedNever()
+                .HasComment("PDB 아이디")
+                .HasColumnType("int(11)")
+                .HasColumnName("PID");
+            entity.Property(e => e.Desc)
+                .HasMaxLength(64)
+                .HasComment("PDB 설명")
+                .HasColumnName("DESC");
+            entity.Property(e => e.Name)
+                .HasMaxLength(64)
+                .HasComment("PDB 이름")
+                .HasColumnName("NAME");
+        });
+
+        modelBuilder.Entity<PdbRemoteunit>(entity =>
+        {
+            entity.HasKey(e => e.Pid).HasName("PRIMARY");
+
+            entity.ToTable("pdb_remoteunit", tb => tb.HasComment("RTU 정보 테이블"));
+
+            entity.Property(e => e.Pid)
+                .ValueGeneratedNever()
+                .HasComment("FRTU/FIED ID")
+                .HasColumnType("bigint(20)")
+                .HasColumnName("PID");
+            entity.Property(e => e.AppTimeout)
+                .HasComment("Application Link TimeOut")
+                .HasColumnType("int(11)")
+                .HasColumnName("APP_TIMEOUT");
+            entity.Property(e => e.AsduAddrSize)
+                .HasComment("60870_3")
+                .HasColumnType("int(11)")
+                .HasColumnName("ASDU_ADDR_SIZE");
+            entity.Property(e => e.ChannelAlternate)
+                .HasComment("Backup Channel ID")
+                .HasColumnType("bigint(20)")
+                .HasColumnName("CHANNEL_ALTERNATE");
+            entity.Property(e => e.ChannelPrimary)
+                .HasComment("Prime Channel ID")
+                .HasColumnType("bigint(20)")
+                .HasColumnName("CHANNEL_PRIMARY");
+            entity.Property(e => e.CidFk)
+                .HasComment("CID FILE ID")
+                .HasColumnType("bigint(20)")
+                .HasColumnName("CID_FK");
+            entity.Property(e => e.CommDmcFk)
+                .HasComment("DMC Point ID")
+                .HasColumnType("bigint(20)")
+                .HasColumnName("COMM_DMC_FK");
+            entity.Property(e => e.CommInfo)
+                .HasMaxLength(32)
+                .HasComment("Coummunication Name")
+                .HasColumnName("COMM_INFO");
+            entity.Property(e => e.CommType)
+                .HasComment("Use RTU Coummunication Type")
+                .HasColumnType("bigint(20)")
+                .HasColumnName("COMM_TYPE");
+            entity.Property(e => e.Confirm)
+                .HasComment("Use Comnication Confirm ")
+                .HasColumnType("int(11)")
+                .HasColumnName("CONFIRM");
+            entity.Property(e => e.CotSize)
+                .HasComment("60870_2")
+                .HasColumnType("int(11)")
+                .HasColumnName("COT_SIZE");
+            entity.Property(e => e.DcpBackupFk)
+                .HasComment("Backup DCP ID")
+                .HasColumnType("bigint(20)")
+                .HasColumnName("DCP_BACKUP_FK");
+            entity.Property(e => e.DcpPrimeFk)
+                .HasComment("Prime DCP ID")
+                .HasColumnType("bigint(20)")
+                .HasColumnName("DCP_PRIME_FK");
+            entity.Property(e => e.DlTimeout)
+                .HasComment("Data Link TimeOut")
+                .HasColumnType("int(11)")
+                .HasColumnName("DL_TIMEOUT");
+            entity.Property(e => e.DmcFk)
+                .HasComment("DMC Point ID ")
+                .HasColumnType("bigint(20)")
+                .HasColumnName("DMC_FK");
+            entity.Property(e => e.EqCompany)
+                .HasMaxLength(32)
+                .HasComment("Equipment Maker Name")
+                .HasColumnName("EQ_COMPANY");
+            entity.Property(e => e.EqFk)
+                .HasComment("Equipment ID(CEQID, CPSID, MTRID, MTR Bank ID)")
+                .HasColumnType("bigint(20)")
+                .HasColumnName("EQ_FK");
+            entity.Property(e => e.EqInstallDate)
+                .HasMaxLength(20)
+                .HasComment("Equipment 설치일자")
+                .HasColumnName("EQ_INSTALL_DATE");
+            entity.Property(e => e.EqInstallManager)
+                .HasMaxLength(16)
+                .HasComment("Equipment 설치자")
+                .HasColumnName("EQ_INSTALL_MANAGER");
+            entity.Property(e => e.EqMakeDate)
+                .HasMaxLength(20)
+                .HasComment("Equipment 제작일자")
+                .HasColumnName("EQ_MAKE_DATE");
+            entity.Property(e => e.EqMaker)
+                .HasComment("Equipment Maker ID")
+                .HasColumnType("bigint(20)")
+                .HasColumnName("EQ_MAKER");
+            entity.Property(e => e.EqSerialno)
+                .HasMaxLength(32)
+                .HasComment("Equipment SeralNo")
+                .HasColumnName("EQ_SERIALNO");
+            entity.Property(e => e.EqType)
+                .HasComment("Equipment Type CEQ, CPS, MTR)")
+                .HasColumnType("int(11)")
+                .HasColumnName("EQ_TYPE");
+            entity.Property(e => e.FiedName)
+                .HasMaxLength(64)
+                .HasComment("FIED NAME")
+                .HasColumnName("FIED_NAME");
+            entity.Property(e => e.LinkAddrSize)
+                .HasComment("60870_1")
+                .HasColumnType("int(11)")
+                .HasColumnName("LINK_ADDR_SIZE");
+            entity.Property(e => e.MasterAddr)
+                .HasComment("DCP Communication Master Address(DCP)")
+                .HasColumnType("int(11)")
+                .HasColumnName("MASTER_ADDR");
+            entity.Property(e => e.Name)
+                .HasMaxLength(32)
+                .HasComment("RTU Name ")
+                .HasColumnName("NAME");
+            entity.Property(e => e.ObjectAddrSize)
+                .HasComment("60870_4")
+                .HasColumnType("int(11)")
+                .HasColumnName("OBJECT_ADDR_SIZE");
+            entity.Property(e => e.ProtocolFk)
+                .HasComment("Use RTU Protocol ID")
+                .HasColumnType("bigint(20)")
+                .HasColumnName("PROTOCOL_FK");
+            entity.Property(e => e.ProtocolName)
+                .HasMaxLength(32)
+                .HasComment("Protocol Name")
+                .HasColumnName("PROTOCOL_NAME");
+            entity.Property(e => e.Retry)
+                .HasComment("Failed Retry Count")
+                .HasColumnType("int(11)")
+                .HasColumnName("RETRY");
+            entity.Property(e => e.RtuCompany)
+                .HasMaxLength(32)
+                .HasComment("RTU Maker Name")
+                .HasColumnName("RTU_COMPANY");
+            entity.Property(e => e.RtuInstallDate)
+                .HasMaxLength(20)
+                .HasComment("RTU 설치일자")
+                .HasColumnName("RTU_INSTALL_DATE");
+            entity.Property(e => e.RtuMakeDate)
+                .HasMaxLength(20)
+                .HasComment("RTU 제작일자 ")
+                .HasColumnName("RTU_MAKE_DATE");
+            entity.Property(e => e.RtuMaker)
+                .HasComment("RTU Maker ID")
+                .HasColumnType("bigint(20)")
+                .HasColumnName("RTU_MAKER");
+            entity.Property(e => e.RtuMapFk)
+                .HasComment("Use RTU Map ID")
+                .HasColumnType("int(11)")
+                .HasColumnName("RTU_MAP_FK");
+            entity.Property(e => e.RtuSeralno)
+                .HasMaxLength(32)
+                .HasComment("RTU SeralNo")
+                .HasColumnName("RTU_SERALNO");
+            entity.Property(e => e.RtuType)
+                .HasComment("RTU Type(Not Connected RTU, FRTU, FIED)")
+                .HasColumnType("int(11)")
+                .HasColumnName("RTU_TYPE");
+            entity.Property(e => e.RtuVersion)
+                .HasMaxLength(32)
+                .HasComment("RTU Version")
+                .HasColumnName("RTU_VERSION");
+            entity.Property(e => e.SbFk)
+                .HasComment("RTU Scan Intrval(AI,AO,BI,BO,Counter,EMS)")
+                .HasColumnType("bigint(20)")
+                .HasColumnName("SB_FK");
+            entity.Property(e => e.SlaveAddr)
+                .HasComment("RTU Communication Slave Address(단말장치)")
+                .HasColumnType("int(11)")
+                .HasColumnName("SLAVE_ADDR");
+            entity.Property(e => e.UseAoper)
+                .HasComment("Operration Use")
+                .HasColumnType("int(11)")
+                .HasColumnName("USE_AOPER");
+            entity.Property(e => e.WaveCommTypeFk)
+                .HasComment("Wave 처리 유형(DNP, FTP)	")
+                .HasColumnType("bigint(20)")
+                .HasColumnName("WAVE_COMM_TYPE_FK");
         });
 
         modelBuilder.Entity<Powertransformer>(entity =>

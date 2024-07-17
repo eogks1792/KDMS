@@ -1,4 +1,5 @@
-﻿using KDMS.EF.Core.Contexts;
+﻿using DevExpress.Xpf.Editors.Validation;
+using KDMS.EF.Core.Contexts;
 using KDMS.EF.Core.Infrastructure.Reverse.Models;
 using KDMSServer.Features;
 using KDMSServer.MVVM.Model;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using System.Collections.ObjectModel;
+using System.Net.Sockets;
 using System.Windows;
 using System.Windows.Interop;
 
@@ -34,7 +36,12 @@ namespace KDMSServer.Model
         {
             Task.Run(() =>
             {
-                DataBaseStatue();
+                DataBaseStatus();
+            });
+
+            Task.Run(() =>
+            {
+                SocketStatus();
             });
 
             Task.Run(() =>
@@ -78,7 +85,7 @@ namespace KDMSServer.Model
                         }
                         else
                         {
-                            _logger.DbLog($"[1일 통계(1분활용)] {time.ToString("yyyy-MM-dd")} 데이터 입력 실패 {(manual ? " (수동)" : " (자동)")} CODE:{response.Error.Code} MSG:{response.Error.Message}");
+                            _logger.DbLog($"[1일 통계(1분활용)] {time.ToString("yyyy-MM-dd")} 데이터 입력 실패{(manual ? " (수동)" : " (자동)")} CODE:{response.Error.Code} MSG:{response.Error.Message}");
                         }
                     }
                     break;
@@ -404,10 +411,83 @@ namespace KDMSServer.Model
             }
         }
 
-        private async void DataBaseStatue()
+        private async void SocketStatus()
         {
-            int checkCnt = 0;
-            string checkText = string.Empty;
+            int checkSocketCnt = 0;
+            string checkSocketText = string.Empty;
+            while (ThreadFlag)
+            {
+                try
+                {
+                    var model = App.Current.Services.GetService<MainViewModel>()!;
+                    if (model != null)
+                    {
+                        // 소켓 통신 상태
+                        try
+                        {
+                            if (!string.IsNullOrEmpty(model.IsSocketConnetionText))
+                                checkSocketText = model.IsSocketConnetionText;
+
+                            if (checkSocketText == model.IsSocketConnetionText)
+                                checkSocketCnt++;
+
+                            if (checkSocketCnt == 6)
+                            {
+                                checkSocketCnt = 0;
+                                checkSocketText = string.Empty;
+                                model.IsSocketConnetionText = string.Empty;
+                            }
+
+                            bool firstCheck = false;
+                            model.ScanState = StateCheck(model.PrimeIP, model.ScanPort);
+                            model.ControlState = StateCheck(model.PrimeIP, model.ControlPort);
+                            model.EventState = StateCheck(model.PrimeIP, model.EventPort);
+
+                            if (model.ScanState || model.ControlState || model.EventState)
+                            {
+                                firstCheck = true;
+                                model.IsSocketConnetionState = "성공";
+                            }
+                            else
+                            {
+                                model.IsSocketConnetion = false;
+                                model.IsSocketConnetionState = "실패";
+                            }
+
+                            if (!firstCheck)
+                            {
+                                model.ScanState = StateCheck(model.BackupIP, model.ScanPort);
+                                model.ControlState = StateCheck(model.BackupIP, model.ControlPort);
+                                model.EventState = StateCheck(model.BackupIP, model.EventPort);
+
+                                if (model.ScanState || model.ControlState || model.EventState)
+                                    model.IsSocketConnetionState = "성공";
+                                else
+                                {
+                                    model.IsSocketConnetion = false;
+                                    model.IsSocketConnetionState = "실패";
+                                }
+                            }
+                        }
+                        catch
+                        {
+                            model.IsSocketConnetion = false;
+                            model.IsSocketConnetionState = "실패";
+                        }
+                    }
+                    await Task.Delay(1000);
+                }
+                catch
+                {
+
+                }
+            }
+        }
+
+        private async void DataBaseStatus()
+        {
+            int checkDBCnt = 0;
+            string checkDBText = string.Empty;
             while (ThreadFlag)
             {
                 try
@@ -419,15 +499,15 @@ namespace KDMSServer.Model
                         try
                         {
                             if (!string.IsNullOrEmpty(model.IsDBConnetionText))
-                                checkText = model.IsDBConnetionText;
+                                checkDBText = model.IsDBConnetionText;
 
-                            if (checkText == model.IsDBConnetionText)
-                                checkCnt++;
+                            if (checkDBText == model.IsDBConnetionText)
+                                checkDBCnt++;
 
-                            if (checkCnt == 11)
+                            if (checkDBCnt == 6)
                             {
-                                checkCnt = 0;
-                                checkText = string.Empty;
+                                checkDBCnt = 0;
+                                checkDBText = string.Empty;
                                 model.IsDBConnetionText = string.Empty;
                             }
 
@@ -439,7 +519,7 @@ namespace KDMSServer.Model
 
                             model.IsDBConnetion = retValue;
                         }
-                        catch (Exception ex) 
+                        catch
                         {
                             model.IsDBConnetion = false;
                             model.IsDBConnetionState = "실패";
@@ -453,5 +533,21 @@ namespace KDMSServer.Model
                 }
             }
         }
+
+        private bool StateCheck(string ip, int port)
+        {
+            bool retval = true;
+            try
+            {
+                using (var client = new TcpClient(ip, port)) ;
+            }
+            catch
+            {
+                retval = false;
+            }
+            return retval;
+        }
+
+
     }
 }
