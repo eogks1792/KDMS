@@ -39,3 +39,24 @@ D:\002. Wells\001. 회사업무\002. 배전지능화팀\002. 개발소스\016. K
 D:\002. Wells\001. 회사업무\002. 배전지능화팀\002. 개발소스\016. KDMSServer\UI\MessageSenderTest\obj\Debug\net7.0-windows\MessageSenderTest.pdb
 D:\002. Wells\001. 회사업무\002. 배전지능화팀\002. 개발소스\016. KDMSServer\UI\MessageSenderTest\obj\Debug\net7.0-windows\MessageSenderTest.genruntimeconfig.cache
 D:\002. Wells\001. 회사업무\002. 배전지능화팀\002. 개발소스\016. KDMSServer\UI\MessageSenderTest\obj\Debug\net7.0-windows\ref\MessageSenderTest.dll
+C:\workspace\wellsts\KDMS\UI\MessageSenderTest\bin\Debug\net7.0-windows\MessageSenderTest.exe
+C:\workspace\wellsts\KDMS\UI\MessageSenderTest\bin\Debug\net7.0-windows\MessageSenderTest.deps.json
+C:\workspace\wellsts\KDMS\UI\MessageSenderTest\bin\Debug\net7.0-windows\MessageSenderTest.runtimeconfig.json
+C:\workspace\wellsts\KDMS\UI\MessageSenderTest\bin\Debug\net7.0-windows\MessageSenderTest.dll
+C:\workspace\wellsts\KDMS\UI\MessageSenderTest\bin\Debug\net7.0-windows\MessageSenderTest.pdb
+C:\workspace\wellsts\KDMS\UI\MessageSenderTest\obj\Debug\net7.0-windows\MainWindow.g.cs
+C:\workspace\wellsts\KDMS\UI\MessageSenderTest\obj\Debug\net7.0-windows\App.g.cs
+C:\workspace\wellsts\KDMS\UI\MessageSenderTest\obj\Debug\net7.0-windows\MessageSenderTest_MarkupCompile.cache
+C:\workspace\wellsts\KDMS\UI\MessageSenderTest\obj\Debug\net7.0-windows\MessageSenderTest_MarkupCompile.lref
+C:\workspace\wellsts\KDMS\UI\MessageSenderTest\obj\Debug\net7.0-windows\MainWindow.baml
+C:\workspace\wellsts\KDMS\UI\MessageSenderTest\obj\Debug\net7.0-windows\MessageSenderTest.g.resources
+C:\workspace\wellsts\KDMS\UI\MessageSenderTest\obj\Debug\net7.0-windows\MessageSenderTest.GeneratedMSBuildEditorConfig.editorconfig
+C:\workspace\wellsts\KDMS\UI\MessageSenderTest\obj\Debug\net7.0-windows\MessageSenderTest.AssemblyInfoInputs.cache
+C:\workspace\wellsts\KDMS\UI\MessageSenderTest\obj\Debug\net7.0-windows\MessageSenderTest.AssemblyInfo.cs
+C:\workspace\wellsts\KDMS\UI\MessageSenderTest\obj\Debug\net7.0-windows\MessageSenderTest.csproj.CoreCompileInputs.cache
+C:\workspace\wellsts\KDMS\UI\MessageSenderTest\obj\Debug\net7.0-windows\MessageSenderTest.sourcelink.json
+C:\workspace\wellsts\KDMS\UI\MessageSenderTest\obj\Debug\net7.0-windows\MessageSenderTest.dll
+C:\workspace\wellsts\KDMS\UI\MessageSenderTest\obj\Debug\net7.0-windows\refint\MessageSenderTest.dll
+C:\workspace\wellsts\KDMS\UI\MessageSenderTest\obj\Debug\net7.0-windows\MessageSenderTest.pdb
+C:\workspace\wellsts\KDMS\UI\MessageSenderTest\obj\Debug\net7.0-windows\MessageSenderTest.genruntimeconfig.cache
+C:\workspace\wellsts\KDMS\UI\MessageSenderTest\obj\Debug\net7.0-windows\ref\MessageSenderTest.dll
