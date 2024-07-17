@@ -12,6 +12,6 @@ namespace KDMSViewer.ViewModel
     public partial class ViewModel_StatisticsMinData : ObservableObject
     {
         [ObservableProperty]
-        private List<Statistics15min> _pointItems = new List<Statistics15min>();
+        private ObservableCollection<Statistics15min> _pointItems = new ObservableCollection<Statistics15min>();
     }
 }

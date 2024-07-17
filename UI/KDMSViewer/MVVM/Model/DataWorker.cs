@@ -871,9 +871,8 @@ namespace KDMSViewer.Model
                                     {
                                         count++;
                                         if (count % 1000 == 0)
-                                        {
                                             await Task.Delay(1);
-                                        }
+
                                         DispatcherService.Invoke((System.Action)(() => { model.PointItems.Add(data); }));
                                     }
                                 }
@@ -896,11 +895,19 @@ namespace KDMSViewer.Model
                             var model = App.Current.Services.GetService<ViewModel_DayStatData>()!;
                             if (model != null)
                             {
-                                model.PointItems.Clear();
+                                model.PointItems = new ObservableCollection<HistoryDaystatDatum>();
                                 var response = await _mediator.Send(request);
                                 if (response != null && response.Result)
                                 {
-                                    Application.Current.Dispatcher.Invoke(() => { model.PointItems = response.datas; });
+                                    int count = 0;
+                                    foreach (var data in response.datas)
+                                    {
+                                        count++;
+                                        if (count % 1000 == 0)
+                                            await Task.Delay(1);
+
+                                        DispatcherService.Invoke((System.Action)(() => { model.PointItems.Add(data); }));
+                                    }
                                 }
                                 else
                                 {
@@ -921,11 +928,19 @@ namespace KDMSViewer.Model
                             var model = App.Current.Services.GetService<ViewModel_StatisticsMinData>()!;
                             if (model != null)
                             {
-                                model.PointItems.Clear();
+                                model.PointItems = new ObservableCollection<Statistics15min>();
                                 var response = await _mediator.Send(request);
                                 if (response != null && response.Result)
                                 {
-                                    Application.Current.Dispatcher.Invoke(() => { model.PointItems = response.datas; });
+                                    int count = 0;
+                                    foreach (var data in response.datas)
+                                    {
+                                        count++;
+                                        if (count % 1000 == 0)
+                                            await Task.Delay(1);
+
+                                        DispatcherService.Invoke((System.Action)(() => { model.PointItems.Add(data); }));
+                                    }
                                 }
                                 else
                                 {
@@ -946,11 +961,19 @@ namespace KDMSViewer.Model
                             var model = App.Current.Services.GetService<ViewModel_StatisticsHourData>()!;
                             if (model != null)
                             {
-                                model.PointItems.Clear();
+                                model.PointItems = new ObservableCollection<StatisticsHour>();
                                 var response = await _mediator.Send(request);
                                 if (response != null && response.Result)
                                 {
-                                    Application.Current.Dispatcher.Invoke(() => { model.PointItems = response.datas; });
+                                    int count = 0;
+                                    foreach (var data in response.datas)
+                                    {
+                                        count++;
+                                        if (count % 1000 == 0)
+                                            await Task.Delay(1);
+
+                                        DispatcherService.Invoke((System.Action)(() => { model.PointItems.Add(data); }));
+                                    }
                                 }
                                 else
                                 {
@@ -971,11 +994,19 @@ namespace KDMSViewer.Model
                             var model = App.Current.Services.GetService<ViewModel_StatisticsDayData>()!;
                             if (model != null)
                             {
-                                model.PointItems.Clear();
+                                model.PointItems = new ObservableCollection<StatisticsDay>();
                                 var response = await _mediator.Send(request);
                                 if (response != null && response.Result)
                                 {
-                                    Application.Current.Dispatcher.Invoke(() => { model.PointItems = response.datas; });
+                                    int count = 0;
+                                    foreach (var data in response.datas)
+                                    {
+                                        count++;
+                                        if (count % 1000 == 0)
+                                            await Task.Delay(1);
+
+                                        DispatcherService.Invoke((System.Action)(() => { model.PointItems.Add(data); }));
+                                    }
                                 }
                                 else
                                 {
@@ -996,11 +1027,19 @@ namespace KDMSViewer.Model
                             var model = App.Current.Services.GetService<ViewModel_StatisticsMonthData>()!;
                             if (model != null)
                             {
-                                model.PointItems.Clear();
+                                model.PointItems = new ObservableCollection<StatisticsMonth>();
                                 var response = await _mediator.Send(request);
                                 if (response != null && response.Result)
                                 {
-                                    Application.Current.Dispatcher.Invoke(() => { model.PointItems = response.datas; });
+                                    int count = 0;
+                                    foreach (var data in response.datas)
+                                    {
+                                        count++;
+                                        if (count % 1000 == 0)
+                                            await Task.Delay(1);
+
+                                        DispatcherService.Invoke((System.Action)(() => { model.PointItems.Add(data); }));
+                                    }
                                 }
                                 else
                                 {
@@ -1021,11 +1060,19 @@ namespace KDMSViewer.Model
                             var model = App.Current.Services.GetService<ViewModel_StatisticsYearData>()!;
                             if (model != null)
                             {
-                                model.PointItems.Clear();
+                                model.PointItems = new ObservableCollection<StatisticsYear>();
                                 var response = await _mediator.Send(request);
                                 if (response != null && response.Result)
                                 {
-                                    Application.Current.Dispatcher.Invoke(() => { model.PointItems = response.datas; });
+                                    int count = 0;
+                                    foreach (var data in response.datas)
+                                    {
+                                        count++;
+                                        if (count % 1000 == 0)
+                                            await Task.Delay(1);
+
+                                        DispatcherService.Invoke((System.Action)(() => { model.PointItems.Add(data); }));
+                                    }
                                 }
                                 else
                                 {
@@ -1046,11 +1093,19 @@ namespace KDMSViewer.Model
                             var model = App.Current.Services.GetService<ViewModel_FiAlarmData>()!;
                             if (model != null)
                             {
-                                model.PointItems.Clear();
+                                model.PointItems = new ObservableCollection<HistoryFiAlarm>();
                                 var response = await _mediator.Send(request);
                                 if (response != null && response.Result)
                                 {
-                                    Application.Current.Dispatcher.Invoke(() => { model.PointItems = response.datas; });
+                                    int count = 0;
+                                    foreach (var data in response.datas)
+                                    {
+                                        count++;
+                                        if (count % 1000 == 0)
+                                            await Task.Delay(1);
+
+                                        DispatcherService.Invoke((System.Action)(() => { model.PointItems.Add(data); }));
+                                    }
                                 }
                                 else
                                 {
@@ -1071,11 +1126,19 @@ namespace KDMSViewer.Model
                             var model = App.Current.Services.GetService<ViewModel_CommDayData>()!;
                             if (model != null)
                             {
-                                model.PointItems.Clear();
+                                model.PointItems = new ObservableCollection<HistoryCommState>();
                                 var response = await _mediator.Send(request);
                                 if (response != null && response.Result)
                                 {
-                                    Application.Current.Dispatcher.Invoke(() => { model.PointItems = response.datas; });
+                                    int count = 0;
+                                    foreach (var data in response.datas)
+                                    {
+                                        count++;
+                                        if (count % 1000 == 0)
+                                            await Task.Delay(1);
+
+                                        DispatcherService.Invoke((System.Action)(() => { model.PointItems.Add(data); }));
+                                    }
                                 }
                                 else
                                 {
@@ -1096,11 +1159,19 @@ namespace KDMSViewer.Model
                             var model = App.Current.Services.GetService<ViewModel_CommLogData>()!;
                             if (model != null)
                             {
-                                model.PointItems.Clear();
+                                model.PointItems = new ObservableCollection<HistoryCommStateLog>();
                                 var response = await _mediator.Send(request);
                                 if (response != null && response.Result)
                                 {
-                                    Application.Current.Dispatcher.Invoke(() => { model.PointItems = response.datas; });
+                                    int count = 0;
+                                    foreach (var data in response.datas)
+                                    {
+                                        count++;
+                                        if (count % 1000 == 0)
+                                            await Task.Delay(1);
+
+                                        DispatcherService.Invoke((System.Action)(() => { model.PointItems.Add(data); }));
+                                    }
                                 }
                                 else
                                 {

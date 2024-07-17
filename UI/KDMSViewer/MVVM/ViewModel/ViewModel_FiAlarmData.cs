@@ -12,6 +12,6 @@ namespace KDMSViewer.ViewModel
     public partial class ViewModel_FiAlarmData : ObservableObject
     {
         [ObservableProperty]
-        private List<HistoryFiAlarm> _pointItems = new List<HistoryFiAlarm>();
+        private ObservableCollection<HistoryFiAlarm> _pointItems = new ObservableCollection<HistoryFiAlarm>();
     }
 }

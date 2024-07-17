@@ -401,3 +401,4 @@ FodyWeavers.xsd
 /src/TEST/Kh2LogSender/hydrogen_prod/data_20230709.log
 /dll/PowerCubeLib.dll
 /dll/Smart.PowerCUBE.Api.dll
+/.vs/KDMSSolution/DesignTimeBuild
