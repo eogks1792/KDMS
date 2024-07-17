@@ -1,5 +1,6 @@
 ﻿using DevExpress.Xpf.Grid;
 using KDMS.EF.Core.Contexts;
+using KDMS.EF.Core.Extensions;
 using KDMS.EF.Core.Infrastructure.Reverse;
 using KDMS.EF.Core.Infrastructure.Reverse.Models;
 using KDMSViewer.Extensions;
@@ -270,7 +271,7 @@ namespace KDMSViewer.Model
 
         public List<HistoryFiAlarm> FiDataLoad(List<long> ceqList, DateTime fromDate, DateTime toDate)
         {
-            using (var context = new KdmsContext(_configuration))
+            using (var context = DbContextConfigurationExtensions.CreateServerContext(_configuration))
             {
                 return context.HistoryFiAlarms.Where(p => ceqList.Any(x => x == p.Ceqid) && p.SaveTime >= fromDate && p.SaveTime <= toDate).ToList();
             }
@@ -278,58 +279,60 @@ namespace KDMSViewer.Model
 
         public List<Statistics15min> StatisticsMinDataLoad(List<long> ceqList, DateTime fromDate, DateTime toDate)
         {
-            using (var context = new KdmsContext(_configuration))
+            using (var context = DbContextConfigurationExtensions.CreateServerContext(_configuration))
             {
-                return _kdmsContext.Statistics15mins.Where(p => ceqList.Any(x => x == p.Ceqid) && p.SaveTime >= fromDate && p.SaveTime <= toDate).ToList();
+                return context.Statistics15mins.Where(p => ceqList.Any(x => x == p.Ceqid) && p.SaveTime >= fromDate && p.SaveTime <= toDate).ToList();
             }
         }
 
         public List<StatisticsHour> StatisticsHourDataLoad(List<long> ceqList, DateTime fromDate, DateTime toDate)
         {
-            using (var context = new KdmsContext(_configuration))
+            using (var context = DbContextConfigurationExtensions.CreateServerContext(_configuration))
             {
-                return _kdmsContext.StatisticsHours.Where(p => ceqList.Any(x => x == p.Ceqid) && p.SaveTime >= fromDate && p.SaveTime <= toDate).ToList();
+                return context.StatisticsHours.Where(p => ceqList.Any(x => x == p.Ceqid) && p.SaveTime >= fromDate && p.SaveTime <= toDate).ToList();
             }
         }
 
         public List<StatisticsDay> StatisticsDayDataLoad(List<long> ceqList, DateTime fromDate, DateTime toDate)
         {
-            using (var context = new KdmsContext(_configuration))
+            using (var context = DbContextConfigurationExtensions.CreateServerContext(_configuration))
             {
-                return _kdmsContext.StatisticsDays.Where(p => ceqList.Any(x => x == p.Ceqid) && p.SaveTime >= fromDate && p.SaveTime <= toDate).ToList();
+                return context.StatisticsDays.Where(p => ceqList.Any(x => x == p.Ceqid) && p.SaveTime >= fromDate && p.SaveTime <= toDate).ToList();
             }
         }
-
+            
         public List<StatisticsMonth> StatisticsMonthDataLoad(List<long> ceqList, DateTime fromDate, DateTime toDate)
         {
-            using (var context = new KdmsContext(_configuration))
+            using (var context = DbContextConfigurationExtensions.CreateServerContext(_configuration))
             {
-                return _kdmsContext.StatisticsMonths.Where(p => ceqList.Any(x => x == p.Ceqid) && p.SaveTime >= fromDate && p.SaveTime <= toDate).ToList();
+                return context.StatisticsMonths.Where(p => ceqList.Any(x => x == p.Ceqid) && p.SaveTime >= fromDate && p.SaveTime <= toDate).ToList();
             }
         }
 
         public List<StatisticsYear> StatisticsYearDataLoad(List<long> ceqList, DateTime fromDate, DateTime toDate)
         {
-            using (var context = new KdmsContext(_configuration))
+            using (var context = DbContextConfigurationExtensions.CreateServerContext(_configuration))
             {
-                return _kdmsContext.StatisticsYears.Where(p => ceqList.Any(x => x == p.Ceqid) && p.SaveTime >= fromDate && p.SaveTime <= toDate).ToList();
+                return context.StatisticsYears.Where(p => ceqList.Any(x => x == p.Ceqid) && p.SaveTime >= fromDate && p.SaveTime <= toDate).ToList();
             }
         }
 
         public List<HistoryCommState> CommStateDataLoad(List<long> ceqList, DateTime fromDate, DateTime toDate)
         {
-            using (var context = new KdmsContext(_configuration))
+            using (var context = DbContextConfigurationExtensions.CreateServerContext(_configuration))
             {
-                return _kdmsContext.HistoryCommStates.Where(p => p.SaveTime >= fromDate && p.SaveTime <= toDate).ToList();
-
+                return context.HistoryCommStates.Where(p => ceqList.Any(x => x == p.Ceqid) && p.SaveTime >= fromDate && p.SaveTime <= toDate).ToList();
             }
         }
 
         public List<HistoryCommStateLog> CommStateLogDataLoad(List<long> ceqList, DateTime fromDate, DateTime toDate)
         {
-            using (var context = new KdmsContext(_configuration))
+            using (var context = DbContextConfigurationExtensions.CreateServerContext(_configuration))
             {
-                return _kdmsContext.HistoryCommStateLogs.Where(p => p.SaveTime >= fromDate && p.SaveTime <= toDate).ToList();
+                if (context.HistoryCommStateLogs.Count() > 0)
+                    return context.HistoryCommStateLogs.Where(p => ceqList.Any(x => x == p.Ceqid) && p.SaveTime >= fromDate && p.SaveTime <= toDate).ToList();
+                else
+                    return new List<HistoryCommStateLog>();
             }
         }
 

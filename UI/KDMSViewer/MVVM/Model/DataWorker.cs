@@ -866,17 +866,16 @@ namespace KDMSViewer.Model
                                 var response = await _mediator.Send(request);
                                 if (response != null && response.Result)
                                 {
-                                    await Task.Run(() =>
+                                    int count = 0;
+                                    foreach (var data in response.datas)
                                     {
-                                        DispatcherService.Invoke((System.Action)(() =>
+                                        count++;
+                                        if (count % 1000 == 0)
                                         {
-                                            foreach (var data in response.datas)
-                                            {
-                                                model.PointItems.Add(data);
-                                            }
-
-                                        }));
-                                    });
+                                            await Task.Delay(1);
+                                        }
+                                        DispatcherService.Invoke((System.Action)(() => { model.PointItems.Add(data); }));
+                                    }
                                 }
                                 else
                                 {
@@ -1055,7 +1054,7 @@ namespace KDMSViewer.Model
                                 }
                                 else
                                 {
-                                    MessageBox.Show($"HISTORY_MIN_DATA 테이블 \n\rCODE:{response.Error.Code} MSG:{response.Error.Message}", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
+                                    MessageBox.Show($"HISTORY_FI_ALARM 테이블 \n\rCODE:{response.Error.Code} MSG:{response.Error.Message}", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
                                 }
                             }
                         }

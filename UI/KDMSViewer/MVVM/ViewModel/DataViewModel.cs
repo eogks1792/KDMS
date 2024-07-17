@@ -160,6 +160,7 @@ namespace KDMSViewer.ViewModel
             GetTreeItemCheckData(TreeItems);
             if (CheckItems.Count <= 0)
             {
+                IsInquiry = true;
                 MessageBox.Show("선택된 데이터가 없습니다.", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }

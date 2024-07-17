@@ -73,13 +73,7 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="변전소" Width="{Binding ElementName=subs, Path=ActualWidth}">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding SubsName}" TextAlignment="Left" Margin="3 0 0 0"/>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
+     
                     <GridViewColumn Header="DL 이름" Width="{Binding ElementName=dl, Path=ActualWidth}">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>

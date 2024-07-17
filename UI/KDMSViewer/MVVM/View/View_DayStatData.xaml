@@ -40,7 +40,8 @@
                       VerticalAlignment="Stretch" 
                       ItemsSource="{Binding PointItems}" 
                       VirtualizingStackPanel.IsVirtualizing="True" 
-                      VirtualizingStackPanel.VirtualizationMode="Recycling">
+                      VirtualizingStackPanel.VirtualizationMode="Recycling"
+                      ScrollViewer.IsDeferredScrollingEnabled="True">
 
                 <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">
@@ -69,13 +70,6 @@
                                 <DataTemplate>
                                     <TextBlock Text="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListViewItem}}, Mode=OneWay, Converter={StaticResource indexConvert}}" 
                                                TextAlignment="Center" />
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-                        <GridViewColumn Header="변전소" Width="{Binding ElementName=subs, Path=ActualWidth}">
-                            <GridViewColumn.CellTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding SubsName}" TextAlignment="Left" Margin="3 0 0 0"/>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
