@@ -243,7 +243,7 @@ namespace KDMSServer.Model
 
             DateTime DayDt = Convert.ToDateTime(DateTime.Now.ToString(DayString));
             DateTime dayInitialTime = DateTimeHelper.GetNextDateTime(DateTime.Now, TimeDivisionCode.Day, hour:DayDt.Hour);
-            _logger.DbLog($"[일 통계(시간활용)] 데이터 생성 시간: {dayInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+            _logger.DbLog($"[일 통계(시활용)] 데이터 생성 시간: {dayInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
 
             DateTime MonthDt = Convert.ToDateTime(DateTime.Now.ToString(MonthString));
             DateTime monthInitialTime = DateTimeHelper.GetNextDateTime(DateTime.Now, TimeDivisionCode.Month, day:MonthDt.Day, hour:MonthDt.Hour);
@@ -255,7 +255,7 @@ namespace KDMSServer.Model
 
             DateTime DayForOneMinute = Convert.ToDateTime(DateTime.Now.ToString(DayStringForOneMinute));
             DateTime dayInitialTimeForOneMinute = DateTimeHelper.GetNextDateTime(DateTime.Now, TimeDivisionCode.Day, hour: DayForOneMinute.Hour, min: DayForOneMinute.Minute, sec: DayForOneMinute.Second);
-            _logger.DbLog($"[1일 통계(1분활용)] 데이터 생성 시간: {dayInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+            _logger.DbLog($"[1일 통계(1분활용)] 데이터 생성 시간: {dayInitialTimeForOneMinute.ToString("yyyy-MM-dd HH:mm:ss")}");
 
             while (ThreadFlag)
             {
@@ -283,10 +283,10 @@ namespace KDMSServer.Model
                             if (model.IsDBConnetion)
                                 GetProcData((int)ProcTypeCode.STATISTICSDAY, dayInitialTime.AddDays(-1));
                             else
-                                _logger.DbLog($"{dayInitialTime.AddDays(-1).ToString("yyyy-MM-dd")} [일 통계(시간활용)] 데이터 생성 실패 (DB 접속 실패) ");
+                                _logger.DbLog($"{dayInitialTime.AddDays(-1).ToString("yyyy-MM-dd")} [일 통계(시활용)] 데이터 생성 실패 (DB 접속 실패) ");
                         }
                         dayInitialTime = dayInitialTime.AddDays(1);
-                        _logger.DbLog($"[일 통계(시간활용)] NEXT 데이터 생성 시간: {dayInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+                        _logger.DbLog($"[일 통계(시활용)] NEXT 데이터 생성 시간: {dayInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
                     }
 
                     if (monthInitialTime <= DateTime.Now)
@@ -323,12 +323,12 @@ namespace KDMSServer.Model
                         if (model != null)
                         {
                             if (model.IsDBConnetion)
-                                GetProcData((int)ProcTypeCode.DAYSTATDATA, dayInitialTime.AddDays(-1));
+                                GetProcData((int)ProcTypeCode.DAYSTATDATA, dayInitialTimeForOneMinute.AddDays(-1));
                             else
-                                _logger.DbLog($"{dayInitialTime.AddDays(-1).ToString("yyyy-MM-dd HH:mm:ss")} [1일 통계(1분활용)] 데이터 생성 실패 (DB 접속 실패) ");
+                                _logger.DbLog($"{dayInitialTimeForOneMinute.AddDays(-1).ToString("yyyy-MM-dd HH:mm:ss")} [1일 통계(1분활용)] 데이터 생성 실패 (DB 접속 실패) ");
                         }
-                        dayInitialTime = dayInitialTime.AddDays(1);
-                        _logger.DbLog($"[1일 통계(1분활용)] NEXT 데이터 생성 시간: {dayInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+                        dayInitialTimeForOneMinute = dayInitialTimeForOneMinute.AddDays(1);
+                        _logger.DbLog($"[1일 통계(1분활용)] NEXT 데이터 생성 시간: {dayInitialTimeForOneMinute.ToString("yyyy-MM-dd HH:mm:ss")}");
                     }
                 }
                 catch

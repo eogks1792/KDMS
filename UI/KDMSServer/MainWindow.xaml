@@ -135,13 +135,13 @@
                                             Style="{StaticResource baseTextBlock}" />
                                 <TextBox Grid.Column="1"
                                          Text="{Binding LoginId}" 
+                                         Margin="0"
                                          TextAlignment="Center"
                                          Style="{StaticResource baseTextBox}" />
                                 <TextBlock Grid.Column="2"
                                            Text="PWD"
                                            Style="{StaticResource baseTextBlock}" />
                                 <Border Grid.Column="3"
-                                        Margin="0 5 10 5"
                                         Background="Transparent"
                                         BorderBrush="Gray"
                                         BorderThickness="1"
@@ -182,6 +182,7 @@
                                          Grid.Column="1"
                                          Text="{Binding ScanPort}" 
                                          TextAlignment="Center"
+                                         Margin="0"
                                          Style="{StaticResource baseTextBox}" />
 
                                 <TextBlock Grid.Row="0" 
