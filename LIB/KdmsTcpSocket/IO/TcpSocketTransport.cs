@@ -203,11 +203,11 @@ public abstract class TcpSocketTransport : ITcpSocketTransport
                     }
                     dataTotalFrame = dataHeaderFrame;
                     DataReadSize = DataReadSize - numBytesRead;
-                    var recvTime = BitConverter.ToUInt16(dataHeaderFrame, 0);
+                    var recvTime = BitConverter.ToUInt32(dataHeaderFrame, 0);
                     requestCode = BitConverter.ToUInt16(dataHeaderFrame, 4);
                     var responseCode = BitConverter.ToUInt16(dataHeaderFrame, 6);
-                    var dataCount = BitConverter.ToUInt16(dataHeaderFrame, 8);
-                    Console.WriteLine($"DATA RCV - (time:{recvTime} req:0x{requestCode.ToString("X2")} res:0x{responseCode.ToString("X2")} cnt:{dataCount})");
+                    var dataCount = BitConverter.ToUInt32(dataHeaderFrame, 8);
+                    Console.WriteLine($"DATA RCV - (time:{KdmsValueConverter.TimeTToDateTime(recvTime).ToString("yyyy-MM-dd HH:mm:ss")} req:0x{requestCode.ToString("X2")} res:0x{responseCode.ToString("X2")} cnt:{dataCount})");
 
                 }
 

@@ -53,7 +53,6 @@ public class Test
             using (TcpClient client = new TcpClient("192.168.1.172", 29001))
             {
                 var master = KdmsTcpClient.CreateKdmsSocketMaster(client);
-
                 /////////////////////////
                 Console.WriteLine("로그인 요청 시작");
                 var response = master.SendData<OperLogReq>(KdmsCodeInfo.kdmsOperLoginReqs, KdmsCodeInfo.KdmsOperLoginReps
@@ -71,10 +70,10 @@ public class Test
                         Console.WriteLine("PDB 목록 요청 시작");
                         var pdbResponse = master.SendData<TcpNoData>(KdmsCodeInfo.KdmsPdbListReqs, KdmsCodeInfo.KdmsPdbListReps, null);
                         var pdbResult = KdmsValueConverter.ByteToStructArray<PdbListRes>(pdbResponse.RecvDatas);
-                        //for(int i = 0; i < pdbResponse.DataCount; i++)
-                        //{
-                        //    Console.WriteLine($"PDB => ID:{pdbResult[i].iPdbId} PDB:{pdbResult[i].szPdbName} MD5:{pdbResult[i].szPdbMd5}");
-                        //}
+                        for (int i = 0; i < pdbResponse.DataCount; i++)
+                        {
+                            Console.WriteLine($"PDB => ID:{pdbResult[i].iPdbId} PDB:{pdbResult[i].szPdbName} MD5:{pdbResult[i].szPdbMd5}");
+                        }
 
                         var pdbDatas = pdbResult.Take((int)pdbResponse.DataCount).Select(x => new PdbDataReqs { iPdbId = x.iPdbId }).ToList();
 
