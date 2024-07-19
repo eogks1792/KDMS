@@ -66,7 +66,7 @@ namespace KdmsTcpSocket.Message
 
         public override string ToString()
         {
-            string msg = $"REQ:{RequestCode} RES:{ResponseCode} LOGIN MESSAGE";
+            string msg = $"REQ:{RequestCode} RES:{ResponseCode} MESSAGE";
             return msg;
         }
     }

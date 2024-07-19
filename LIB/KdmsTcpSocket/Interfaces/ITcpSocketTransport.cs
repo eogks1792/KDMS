@@ -22,6 +22,8 @@ namespace KdmsTcpSocket.Interfaces
 
         byte[] Read(out bool isCompress);
 
+        void SendHealthCheckData();
+
         IStreamResource StreamResource { get; }
     }
 }

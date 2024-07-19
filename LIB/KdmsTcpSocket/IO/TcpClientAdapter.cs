@@ -1,5 +1,7 @@
 ﻿using KdmsTcpSocket.Unme.Common;
 using System.Diagnostics;
+using System.Net;
+using System.Net.Http;
 using System.Net.Sockets;
 
 namespace KdmsTcpSocket.IO;
@@ -11,7 +13,8 @@ public class TcpClientAdapter : IStreamResource
     public TcpClientAdapter(TcpClient tcpClient)
     {
         Debug.Assert(tcpClient != null, "Argument tcpClient cannot be null.");
-
+        //tcpClient.Client.LocalEndPoint.ToString();
+        //var aaa = ((IPEndPoint)tcpClient.Client.RemoteEndPoint).Port.ToString();
         _tcpClient = tcpClient;
     }
 
@@ -28,6 +31,8 @@ public class TcpClientAdapter : IStreamResource
         get => _tcpClient.GetStream().WriteTimeout;
         set => _tcpClient.GetStream().WriteTimeout = value;
     }
+
+    public string GetConnPort => ((IPEndPoint)_tcpClient.Client.RemoteEndPoint).Port.ToString();
 
     public void Write(byte[] buffer, int offset, int size)
     {

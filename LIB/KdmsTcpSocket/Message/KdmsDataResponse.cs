@@ -1,55 +1,68 @@
 ﻿using KdmsTcpSocket.KdmsTcpStruct;
 
-namespace KdmsTcpSocket.Message
+namespace KdmsTcpSocket.Message;
+
+public class KdmsPdbDataResponse : KdmsDataResponse
 {
-    public class KdmsDataResponse : ITcpSocketResponse
+    public KdmsPdbDataResponse(ushort requestCode, ushort responseCode, uint dataCount, uint sendTime)
+        : base(requestCode, responseCode, dataCount, sendTime)
     {
-        public KdmsDataResponse(ushort requestCode, ushort responseCode, uint dataCount, uint sendTime)
-        {
-            RequestCode = KdmsCodeInfo.kdmsOperLoginReqs;
-            ResponseCode = KdmsCodeInfo.KdmsOperLoginReps;
-            DataCount = dataCount;
-            SendTime = KdmsValueConverter.TimeTToDateTime(sendTime);
-        }
+        RequestCode = requestCode;
+        ResponseCode = responseCode;
+        DataCount = dataCount;
+        SendTime = KdmsValueConverter.TimeTToDateTime(sendTime);
+    }
 
-        public DateTime SendTime { get; set; }
-        public ushort RequestCode { get; set; }
-        public ushort ResponseCode { get; set; }
-        public uint DataCount { get; set; }
-        public byte[]? RecvDatas { get; set; } = null;
+    public int PdbId { get; set; }
+}
 
-        public byte[] DataHeader
+public class KdmsDataResponse : ITcpSocketResponse
+{
+    public KdmsDataResponse(ushort requestCode, ushort responseCode, uint dataCount, uint sendTime)
+    {
+        RequestCode = requestCode;
+        ResponseCode = responseCode;
+        DataCount = dataCount;
+        SendTime = KdmsValueConverter.TimeTToDateTime(sendTime);
+    }
+
+    public DateTime SendTime { get; set; }
+    public ushort RequestCode { get; set; }
+    public ushort ResponseCode { get; set; }
+    public uint DataCount { get; set; }
+    public byte[]? RecvDatas { get; set; } = null;
+
+    public byte[] DataHeader
+    {
+        get
         {
-            get
+            TcpDataHeader tcpDataHeader = new TcpDataHeader
             {
-                TcpDataHeader tcpDataHeader = new TcpDataHeader
-                {
-                    uiTime = (uint)KdmsValueConverter.ConvertToUnixTimestamp(SendTime),
-                    sReqFc = RequestCode,
-                    sRepFc = RequestCode,
-                    usCount = DataCount,
-                };
+                uiTime = (uint)KdmsValueConverter.ConvertToUnixTimestamp(SendTime),
+                sReqFc = RequestCode,
+                sRepFc = RequestCode,
+                usCount = DataCount,
+            };
 
-                return KdmsValueConverter.StructToByte(tcpDataHeader);
-            }
+            return KdmsValueConverter.StructToByte(tcpDataHeader);
         }
+    }
 
-        public byte[] SendDatas
+    public byte[] SendDatas
+    {
+        get
         {
-            get
-            {
-                var dataHeader = DataHeader;
-                var frame = new MemoryStream(dataHeader.Length);
-                frame.Write(dataHeader, 0, dataHeader.Length);
-                return frame.ToArray();
-            }
+            var dataHeader = DataHeader;
+            var frame = new MemoryStream(dataHeader.Length);
+            frame.Write(dataHeader, 0, dataHeader.Length);
+            return frame.ToArray();
         }
+    }
 
 
-        public override string ToString()
-        {
-            string msg = $"REQ:{RequestCode} RES:{ResponseCode} MESSAGE";
-            return msg;
-        }
+    public override string ToString()
+    {
+        string msg = $"REQ:{RequestCode} RES:{ResponseCode} MESSAGE";
+        return msg;
     }
 }

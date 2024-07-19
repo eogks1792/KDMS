@@ -17,4 +17,17 @@ public static class CompressUtility
             return decompressedStream.ToArray();
         }
     }
+
+    public static byte[] CompressUsingZlib(byte[] data)
+    {
+        using (MemoryStream compressedStream = new MemoryStream())
+        {
+            using (DeflaterOutputStream zlibStream = new DeflaterOutputStream(compressedStream, new Deflater(Deflater.BEST_COMPRESSION)))
+            {
+                zlibStream.Write(data, 0, data.Length);
+                zlibStream.Finish(); // 남아 있는 데이터를 플러시
+            }
+            return compressedStream.ToArray();
+        }
+    }
 }

@@ -2,9 +2,8 @@
 using KdmsTcpSocket;
 using KdmsTcpSocket.Interfaces;
 using KdmsTcpSocket.KdmsTcpStruct;
-using System.Diagnostics.Metrics;
+using KdmsTcpSocket.Message;
 using System.Net.Sockets;
-using System.Reflection.Metadata.Ecma335;
 
 namespace DSOAdmsRealDataLink;
 
@@ -16,6 +15,7 @@ public class KdmsHmiTcpSoket : ISingletonService
     private ITcpSocketMaster? _rtaMaster = null;
     private ITcpSocketMaster? _ctlMaster = null;
     private ITcpSocketMaster? _evtMaster = null;
+
     public KdmsHmiTcpSoket(IApiLogger logger
             , IConfiguration configuration)
     {
@@ -37,13 +37,17 @@ public class KdmsHmiTcpSoket : ISingletonService
             _logger.LogInformation($"LOGIN user:{username} pass:{password}");
             var response = _rtaMaster.SendData<OperLogReq>(KdmsCodeInfo.kdmsOperLoginReqs, KdmsCodeInfo.KdmsOperLoginReps
                    , new OperLogReq { szUserId = username, szUserPw = password });
+            if (response == null)
+            {
+                throw new Exception("LOGIN Response NULL");
+            }
 
-            if(response.RecvDatas != null)
+            if (response.RecvDatas != null)
             {
                 var loginResult = KdmsValueConverter.ByteToStruct<OperLogRes>(response.RecvDatas);
-                if(loginResult.usSt == 1) isLogin = true;
+                if (loginResult.usSt == 1) isLogin = true;
 
-                if(isLogin)
+                if (isLogin)
                 {
                     _logger.LogInformation($"KDMS SERVER USER:{username} LOGIN SUCC");
                     // CTL/EVT 연결
@@ -76,13 +80,13 @@ public class KdmsHmiTcpSoket : ISingletonService
             if (_ctlMaster != null)
             {
                 var response = _ctlMaster.SendData<TcpNoData>(KdmsCodeInfo.KdmsPdbListReqs, KdmsCodeInfo.KdmsPdbListReps, null);
-                if (response.RecvDatas != null)
+                if (response != null && response.RecvDatas != null)
                 {
                     var pdbResult = KdmsValueConverter.ByteToStructArray<PdbListRes>(response.RecvDatas);
 
                     for (int i = 0; i < response.DataCount; i++)
                     {
-                        _logger.LogDebug($"PDB => ID:{pdbResult[i].iPdbId} PDB:{pdbResult[i].szPdbName} MD5:{pdbResult[i].szPdbMd5}");
+                        _logger.LogInformation($"PDB => ID:{pdbResult[i].iPdbId} PDB:{pdbResult[i].szPdbName} MD5:{pdbResult[i].szPdbMd5}");
                     }
                 }
             }
@@ -92,6 +96,98 @@ public class KdmsHmiTcpSoket : ISingletonService
             _logger.LogError($"PDB LIST RCV FAIL(ex:{ex.Message})");
         }
     }
+
+    public void KdmsAnalogScan()
+    {
+        try
+        {
+            if (_rtaMaster != null)
+            {
+                var response = _rtaMaster.SendData<TcpNoData>(KdmsCodeInfo.KdmsRtAIReqs, KdmsCodeInfo.KdmsRtAIReqs, null);
+                if (response != null && response.RecvDatas != null)
+                {
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+        }
+    }
+
+    public void KdmsDMCScan()
+    {
+        try
+        {
+            if (_rtaMaster != null)
+            {
+                var response = _rtaMaster.SendData<TcpNoData>(KdmsCodeInfo.KdmsRtDMCReqs, KdmsCodeInfo.KdmsRtDMCReqs, null);
+                if (response != null && response.RecvDatas != null)
+                {
+
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+        }
+    }
+    public void KdmsPdbFileDownload(IEnumerable<int> pdbIds)
+    {
+        try
+        {
+            var pdbDatas = pdbIds.Select(x => new PdbDataReqs { iPdbId = x }).ToList();
+            _logger.LogInformation($"PDB => 파일 수신111");
+            if (_ctlMaster != null)
+            {
+                var pdbDataponse = _ctlMaster.SendListData<PdbDataReqs>(KdmsCodeInfo.KdmsPdbSyncReqs, KdmsCodeInfo.KdmsPdbSyncReqs, pdbDatas);
+                if (pdbDataponse.RequestCode == KdmsCodeInfo.KdmsPdbSyncStart)
+                {
+                    if (pdbDataponse.RecvDatas != null)
+                    {
+                        int pdbid = (pdbDataponse as KdmsPdbDataResponse).PdbId;
+                        _logger.LogInformation($"PDB:{pdbid} => 파일 수신 및 처리1");
+                        //var rcvDatas = KdmsValueConverter.ByteToStructArray<PdbInfoAnalog>(pdbDataponse.RecvDatas);
+                    }
+
+                    while (true)
+                    {
+                        var response = _ctlMaster.Recv();
+                        if (response != null)
+                        {
+                            if (response.RequestCode == KdmsCodeInfo.KdmsPdbSyncComp)
+                            {
+                                _logger.LogInformation($"PDB => 파일 수신 완료");
+                                break;
+                            }
+
+                            if (response.RequestCode == KdmsCodeInfo.KdmsPdbSyncStart)
+                            {
+                                if (response.RecvDatas != null)
+                                {
+                                    int pdbid = (response as KdmsPdbDataResponse).PdbId;
+                                    _logger.LogInformation($"PDB:{pdbid} => 파일 수신 및 처리12");
+                                    //var rcvDatas = KdmsValueConverter.ByteToStructArray<PdbInfoAnalog>(pdbDataponse.RecvDatas);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            _logger.LogInformation($"PDB => 파일 수신 ===========");
+                        }
+                    }
+
+                }
+
+                //KemsCTLReceive();
+                //KemsCTLReceive();
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"PDB FILE RCV FAIL(ex:{ex.Message})");
+        }
+    }
+
 
     public void KemsEVTReceive()
     {
@@ -123,7 +219,7 @@ public class KdmsHmiTcpSoket : ISingletonService
             if (_rtaMaster != null)
             {
                 var response = _rtaMaster.Recv();
-                if(response != null)
+                if (response != null)
                 {
                     _logger.LogInformation($"RTA RCV => FC:0x{response.RequestCode.ToString("X2")}");
                     if (response.RecvDatas != null)
@@ -138,7 +234,6 @@ public class KdmsHmiTcpSoket : ISingletonService
             _logger.LogError($"REAL RCV FAIL(ex:{ex.Message})");
         }
     }
-
 
     public void KemsCTLReceive()
     {

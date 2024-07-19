@@ -29,9 +29,15 @@ namespace KdmsTcpSocket.IO
             lock (_transactionIdLock)
             {
                 _transactionId = _transactionId == byte.MaxValue ? (byte)1 : ++_transactionId;
+                //_transactionId = ++_transactionId;
             }
 
             return _transactionId;
+        }
+
+        public override void SendHealthCheckData()
+        {
+            SendHealthCheck();
         }
 
         public override ITcpSocketMessage ResponseData(ITcpSocketMessage message)
@@ -43,7 +49,7 @@ namespace KdmsTcpSocket.IO
         public override ITcpSocketMessage ResponseData()
         {
             byte[] recvDatas = Read(out bool isCompress);
-            ITcpSocketResponse tcpSocketResponse = null!;
+            ITcpSocketResponse responseData = null!;
 
             if (recvDatas.Length >= KdmsCodeInfo.HmiDataHeaderSize)
             {
@@ -51,23 +57,44 @@ namespace KdmsTcpSocket.IO
                 UInt16 sReqFc = BitConverter.ToUInt16(recvDatas, 4);
                 UInt16 sRepFc = BitConverter.ToUInt16(recvDatas, 6);
                 UInt32 usCount = BitConverter.ToUInt32(recvDatas, 8);
-                tcpSocketResponse = new KdmsDataResponse(sReqFc, sRepFc, usCount, uiTime);
-                if (isCompress)
-                {
-                    int sliceSize = KdmsCodeInfo.HmiDataHeaderSize + 4;
-                    byte[] compressedData = recvDatas.Slice(sliceSize
-                    , recvDatas.Length - sliceSize).ToArray();
 
-                    tcpSocketResponse.RecvDatas = CompressUtility.DecompressUsingZlib(compressedData);
-                }
-                else
+                if(usCount > 0)
                 {
-                    tcpSocketResponse.RecvDatas = recvDatas.Slice(KdmsCodeInfo.HmiDataHeaderSize
-                    , recvDatas.Length - KdmsCodeInfo.HmiDataHeaderSize).ToArray();
+                    if (isCompress)
+                    {
+                        int sliceSize = KdmsCodeInfo.HmiDataHeaderSize + 4;
+                        if (sRepFc == KdmsCodeInfo.KdmsPdbSyncStart)
+                        {
+                            sliceSize += 4;
+                            responseData = new KdmsPdbDataResponse(sReqFc, sRepFc, usCount, uiTime);
+
+                            int pdbId = BitConverter.ToInt32(recvDatas, 12);
+                            (responseData as KdmsPdbDataResponse).PdbId = pdbId;
+
+                            byte[] compressedData = recvDatas.Slice(sliceSize
+                                , recvDatas.Length - sliceSize).ToArray();
+
+                            responseData.RecvDatas = CompressUtility.DecompressUsingZlib(compressedData);
+                        }
+                        else
+                        {
+                            responseData = new KdmsDataResponse(sReqFc, sRepFc, usCount, uiTime);
+                            byte[] compressedData = recvDatas.Slice(sliceSize
+                                    , recvDatas.Length - sliceSize).ToArray();
+
+                            responseData.RecvDatas = CompressUtility.DecompressUsingZlib(compressedData);
+                        }
+                    }
+                    else
+                    {
+                        responseData = new KdmsDataResponse(sReqFc, sRepFc, usCount, uiTime);
+                        responseData.RecvDatas = recvDatas.Slice(KdmsCodeInfo.HmiDataHeaderSize
+                        , recvDatas.Length - KdmsCodeInfo.HmiDataHeaderSize).ToArray();
+                    }
                 }
             }
 
-            return tcpSocketResponse;
+            return responseData;
         }
     }
 }

@@ -8,6 +8,7 @@ namespace KdmsTcpSocket.IO
     /// </summary>
     public interface IStreamResource : IDisposable
     {
+        string GetConnPort { get; }
         /// <summary>
         ///     Indicates that no timeout should occur.
         /// </summary>

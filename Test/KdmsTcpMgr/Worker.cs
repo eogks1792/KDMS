@@ -1,5 +1,6 @@
 using DSOAdmsRealDataLink;
 using KdmsTcpMgr.Shared.Interface;
+using KdmsTcpSocket.Unme.Common;
 
 namespace KdmsTcpMgr
 {
@@ -27,9 +28,13 @@ namespace KdmsTcpMgr
             if (!islogin)
             {
                 _applicationLifetime.StopApplication();
+                return Task.CompletedTask;
             }
 
-            _hmiManager.KdmsPdbListDownload();
+            //byte[] bytes = BitConverter.GetBytes(12);
+            //byte[] compressBytes = CompressUtility.CompressUsingZlib(bytes);
+
+            //_hmiManager.KdmsPdbListDownload();
             return base.StartAsync(cancellationToken);
         }
 
@@ -41,10 +46,14 @@ namespace KdmsTcpMgr
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            var pdbIds = new List<int> { 1,2,3 };
+            _hmiManager.KdmsPdbFileDownload(pdbIds);
+
+            //_hmiManager.KdmsAnalogScan();
             while (!stoppingToken.IsCancellationRequested)
             {
                 //_logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-                _hmiManager.KemsEVTReceive();
+                //_hmiManager.KemsEVTReceive();
                 //_hmiManager.KemsRTAReceive();
                 //_hmiManager.KemsCTLReceive();
                 await Task.Delay(1000, stoppingToken);
