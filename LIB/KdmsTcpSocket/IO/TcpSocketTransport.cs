@@ -77,13 +77,15 @@ public abstract class TcpSocketTransport : ITcpSocketTransport
             sRepFc = requestCode,
             usCount = dataCount,
         };
-        string actKind = "ACK";
-        if (actCode == (byte)eActionCode.health_check)
+        string actKind = "";
+        if (actCode == (byte)eActionCode.ack_packet)
+            actKind = "ACK";
+        else if (actCode == (byte)eActionCode.health_check)
             actKind = "HEALTH";
 
         Console.WriteLine($"[{_streamResource.GetConnPort}] : {actKind} PKT SND ======> NC:{tcpPacketHeader.ucNodeCode} AC:{tcpPacketHeader.ucActCode} PACKET:{tcpPacketHeader.usPktIdx}/{tcpPacketHeader.usTotPktCnt} SEQ:{tcpPacketHeader.ucSeq} COMP:{tcpPacketHeader.ucComp} LEN:{tcpPacketHeader.usLength}-(time:{now.ToString("yyyy-MM-dd HH:mm:ss")} req:0x{requestCode.ToString("X2")} res:0x{requestCode.ToString("X2")} cnt:{dataCount})");
         var packetHeader = KdmsValueConverter.StructToByte(tcpPacketHeader);
-        var packetData = KdmsValueConverter.StructToByte(tcpPacketHeader);
+        var packetData = KdmsValueConverter.StructToByte(dataHeader);
         var packetMessage = new MemoryStream(packetLength);
         packetMessage.Write(packetHeader, 0, packetHeader.Length);
         packetMessage.Write(packetData, 0, packetData.Length);
@@ -130,16 +132,14 @@ public abstract class TcpSocketTransport : ITcpSocketTransport
         return packetMessage.ToArray();
     }
 
-    public virtual void SendHealthCheck()
+    public virtual void NoResponsePacketData(byte actionCode, ushort requestCode)
     {
         byte transactionId = GetNewTransactionId();
-        byte[] frame = CreateActionPacketData((byte)eActionCode.health_check, KdmsCodeInfo.KdmsHeartBeat, transactionId);
+        byte[] frame = CreateActionPacketData(actionCode, requestCode, transactionId);
         StreamResource.Write(frame, 0, frame.Length);
         // ACK 수신
-        //Sleep(WaitToRetryMilliseconds);
         byte[] ackPacket = Read(out bool isCompress);
         var packetHeader = KdmsValueConverter.ByteToStruct<TcpDataHeader>(ackPacket);
-        //if (packetHeader.ucSeq != transactionId || packetHeader.ucActCode != (byte)eActionCode.ack_packet)
         {
             // ACK 예외발생(종료해야할듯)
         }
@@ -241,7 +241,7 @@ public abstract class TcpSocketTransport : ITcpSocketTransport
                     var hresponseCode = BitConverter.ToUInt16(helthHeaderFrame, 6);
                     var hdataCount = BitConverter.ToUInt32(helthHeaderFrame, 8);
                     Console.WriteLine($"[{_streamResource.GetConnPort}] : PKT(HEALTH) RCV <====== NC:{packetHeader.ucNodeCode} AC:{packetHeader.ucActCode} PACKET:{packetHeader.usPktIdx}/{packetHeader.usTotPktCnt} SEQ:{packetHeader.ucSeq} COMP:{packetHeader.ucComp} LEN:{packetHeader.usLength} (time:{KdmsValueConverter.TimeTToDateTime(hrecvTime).ToString("yyyy-MM-dd HH:mm:ss")} req:0x{hrequestCode.ToString("X2")} res:0x{hresponseCode.ToString("X2")} cnt:{hdataCount})");
-                    var ackPacket = CreateActionPacketData((byte)eActionCode.ack_packet, requestCode, packetHeader.ucSeq);
+                    var ackPacket = CreateActionPacketData((byte)eActionCode.ack_packet, hrequestCode, packetHeader.ucSeq);
                     StreamResource.Write(ackPacket, 0, ackPacket.Length);
                     continue;
                 }
@@ -340,5 +340,5 @@ public abstract class TcpSocketTransport : ITcpSocketTransport
         Task.Delay(millisecondsTimeout).Wait();
     }
 
-    public abstract void SendHealthCheckData();
+    public abstract void NoResponseData(byte actionCode, ushort requestCode);
 }

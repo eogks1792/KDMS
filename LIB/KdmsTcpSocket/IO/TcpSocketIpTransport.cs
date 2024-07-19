@@ -35,9 +35,9 @@ namespace KdmsTcpSocket.IO
             return _transactionId;
         }
 
-        public override void SendHealthCheckData()
+        public override void NoResponseData(byte actionCode, ushort requestCode)
         {
-            SendHealthCheck();
+            NoResponsePacketData(actionCode, requestCode);
         }
 
         public override ITcpSocketMessage ResponseData(ITcpSocketMessage message)
@@ -58,7 +58,7 @@ namespace KdmsTcpSocket.IO
                 UInt16 sRepFc = BitConverter.ToUInt16(recvDatas, 6);
                 UInt32 usCount = BitConverter.ToUInt32(recvDatas, 8);
 
-                if(usCount > 0)
+                if (usCount > 0)
                 {
                     if (isCompress)
                     {
@@ -91,6 +91,10 @@ namespace KdmsTcpSocket.IO
                         responseData.RecvDatas = recvDatas.Slice(KdmsCodeInfo.HmiDataHeaderSize
                         , recvDatas.Length - KdmsCodeInfo.HmiDataHeaderSize).ToArray();
                     }
+                }
+                else
+                {
+                    responseData = new KdmsDataResponse(sReqFc, sRepFc, usCount, uiTime);
                 }
             }
 

@@ -22,7 +22,7 @@ namespace KdmsTcpSocket.Interfaces
 
         byte[] Read(out bool isCompress);
 
-        void SendHealthCheckData();
+        void NoResponseData(byte actionCode, ushort requestCode);
 
         IStreamResource StreamResource { get; }
     }

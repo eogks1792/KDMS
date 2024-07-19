@@ -77,17 +77,25 @@ public class KdmsHmiTcpSoket : ISingletonService
 
     public void KdmsSendHealthCheckData()
     {
-        if(_ctlMaster != null)
-            _ctlMaster.Transport.SendHealthCheckData();
+        if (_rtaMaster != null)
+            _rtaMaster.Transport.NoResponseData((byte)eActionCode.rt_req, KdmsCodeInfo.KdmsUnknownReqs);
+
+
+        //if (_rtaMaster != null)
+        //{
+        //    var response = _ctlMaster.SendData<TcpNoData>(KdmsCodeInfo.KdmsUnknownReqs, KdmsCodeInfo.KdmsUnknownReqs, null);
+        //    Console.WriteLine();
+        //}
+
     }
 
     public void KdmsPdbListDownload()
     {
         try
         {
-            if (_ctlMaster != null)
+            if (_rtaMaster != null)
             {
-                var response = _ctlMaster.SendData<TcpNoData>(KdmsCodeInfo.KdmsPdbListReqs, KdmsCodeInfo.KdmsPdbListReps, null);
+                var response = _rtaMaster.SendData<TcpNoData>(KdmsCodeInfo.KdmsPdbListReqs, KdmsCodeInfo.KdmsPdbListReps, null);
                 if (response != null && response.RecvDatas != null)
                 {
                     var pdbResult = KdmsValueConverter.ByteToStructArray<PdbListRes>(response.RecvDatas);

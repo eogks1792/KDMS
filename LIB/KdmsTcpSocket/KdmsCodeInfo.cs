@@ -50,8 +50,7 @@ public static class KdmsCodeInfo
     //public const ushort KdmsScanCmdPIReqs = (0x4005);  // FC_SCAN_PI
     //public const ushort KdmsScanCmdReqs = (0x4101);    // FC_SCAN_ALL
 
-
-
+    public const ushort KdmsUnknownReqs = (0x9999);  // FC_AE_INFO_REQS - 테스트
 
 
     public const int HmiPacketSize = 4096;
