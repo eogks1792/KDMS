@@ -46,15 +46,15 @@ namespace KdmsTcpMgr
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            var pdbIds = new List<int> { 1 };
+            var pdbIds = new List<int> { 1, 2, 3, 4, 5, 6 };
             await _hmiManager.KdmsPdbFileDownload(pdbIds);
 
-            //_hmiManager.KdmsAnalogScan();
+            _hmiManager.KdmsAnalogScan();
             while (!stoppingToken.IsCancellationRequested)
             {
                 //_logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
                 //_hmiManager.KdmsSendHealthCheckData();
-                //_hmiManager.KemsEVTReceive();
+                _hmiManager.KemsEVTReceive();
                 //_hmiManager.KemsRTAReceive();
                 //_hmiManager.KemsCTLReceive();
                 await Task.Delay(1000, stoppingToken);

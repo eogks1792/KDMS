@@ -205,7 +205,7 @@ public class KdmsHmiTcpSoket : ISingletonService
         {
             if (_evtMaster != null)
             {
-                var response = _rtaMaster.Recv();
+                var response = _evtMaster.Recv();
                 if (response != null)
                 {
                     _logger.LogInformation($"EVT RCV => FC:0x{response.RequestCode.ToString("X2")}");
