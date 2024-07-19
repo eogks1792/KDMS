@@ -16,9 +16,16 @@ public class TcpClientAdapter : IStreamResource
         //tcpClient.Client.LocalEndPoint.ToString();
         //var aaa = ((IPEndPoint)tcpClient.Client.RemoteEndPoint).Port.ToString();
         _tcpClient = tcpClient;
+        //_tcpClient.ReceiveBufferSize = 1024 * 1000;
+        //_tcpClient.SendBufferSize = 1024 * 1000;
     }
 
     public int InfiniteTimeout => Timeout.Infinite;
+
+    public int ReadAvailable
+    {
+        get => _tcpClient.Available;
+    }
 
     public int ReadTimeout
     {

@@ -24,6 +24,8 @@ namespace KdmsTcpSocket.IO
         /// </summary>
         int WriteTimeout { get; set; }
 
+        int ReadAvailable { get; }
+
         /// <summary>
         ///     Purges the receive buffer.
         /// </summary>

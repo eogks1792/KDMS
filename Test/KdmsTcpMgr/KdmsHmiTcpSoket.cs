@@ -75,6 +75,12 @@ public class KdmsHmiTcpSoket : ISingletonService
         return isLogin;
     }
 
+    public void KdmsSendHealthCheckData()
+    {
+        if(_ctlMaster != null)
+            _ctlMaster.Transport.SendHealthCheckData();
+    }
+
     public void KdmsPdbListDownload()
     {
         try
@@ -137,20 +143,20 @@ public class KdmsHmiTcpSoket : ISingletonService
     {
         try
         {
-            CtlDispose();
-            if(_ctlMaster == null)
-            {
-                TcpClient ctlClient = new TcpClient("192.168.1.172", 29002);
-                _ctlMaster = KdmsTcpClient.CreateKdmsSocketMaster(ctlClient);
-            }
+            //CtlDispose();
+            //if(_rtaMaster == null)
+            //{
+            //    TcpClient ctlClient = new TcpClient("192.168.1.172", 29001);
+            //    _rtaMaster = KdmsTcpClient.CreateKdmsSocketMaster(ctlClient);
+            //}
 
             await Task.Delay(500);
 
             var pdbDatas = pdbIds.Select(x => new PdbDataReqs { iPdbId = x }).ToList();
-            if (_ctlMaster != null)
+            if (_rtaMaster != null)
             {
                 _logger.LogInformation($"PDB 파일 요청 전송({string.Join(",", pdbIds)})");
-                var response = _ctlMaster.SendListData<PdbDataReqs>(KdmsCodeInfo.KdmsPdbSyncReqs, KdmsCodeInfo.KdmsPdbSyncReqs, pdbDatas);
+                var response = _rtaMaster.SendListData<PdbDataReqs>(KdmsCodeInfo.KdmsPdbSyncReqs, KdmsCodeInfo.KdmsPdbSyncReqs, pdbDatas);
                 while (true)
                 {
                     if (response != null && response.RequestCode == KdmsCodeInfo.KdmsPdbSyncStart)
@@ -163,7 +169,7 @@ public class KdmsHmiTcpSoket : ISingletonService
                         }
                     }
 
-                    response = _ctlMaster.Recv();
+                    response = _rtaMaster.Recv();
                     if (response != null)
                     {
                         if (response.RequestCode == KdmsCodeInfo.KdmsPdbSyncComp)
@@ -235,9 +241,9 @@ public class KdmsHmiTcpSoket : ISingletonService
     {
         try
         {
-            if (_ctlMaster != null)
+            if (_rtaMaster != null)
             {
-                var response = _ctlMaster.Recv();
+                var response = _rtaMaster.Recv();
                 if (response != null)
                 {
                     _logger.LogInformation($"CTL RCV => FC:0x{response.RequestCode.ToString("X2")}");
@@ -256,10 +262,10 @@ public class KdmsHmiTcpSoket : ISingletonService
 
     public void CtlDispose()
     {
-        if(_ctlMaster != null )
-        { 
-            _ctlMaster.Dispose();
-            _ctlMaster = null;
+        if(_rtaMaster != null )
+        {
+            _rtaMaster.Dispose();
+            _rtaMaster = null;
         }
     }
 }

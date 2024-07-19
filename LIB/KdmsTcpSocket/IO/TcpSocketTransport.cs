@@ -204,6 +204,9 @@ public abstract class TcpSocketTransport : ITcpSocketTransport
                 int numBytesRead = 0;
                 while (numBytesRead != KdmsCodeInfo.HmiPacketHeaderSize) // 패킷 헤더 수신
                 {
+                    //if(StreamResource.ReadAvailable > 0)
+                    //    Console.WriteLine($"socket read available size : {StreamResource.ReadAvailable}");
+                    
                     int bRead = StreamResource.Read(tcpHeader, numBytesRead, KdmsCodeInfo.HmiPacketHeaderSize - numBytesRead);
 
                     if (bRead == 0)
@@ -309,6 +312,7 @@ public abstract class TcpSocketTransport : ITcpSocketTransport
 
                 if (packetHeader.usTotPktCnt <= packetHeader.usPktIdx)
                     break;
+
             } while (true);
         }
 
