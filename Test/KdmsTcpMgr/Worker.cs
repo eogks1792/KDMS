@@ -34,7 +34,7 @@ namespace KdmsTcpMgr
             //byte[] bytes = BitConverter.GetBytes(12);
             //byte[] compressBytes = CompressUtility.CompressUsingZlib(bytes);
 
-            //_hmiManager.KdmsPdbListDownload();
+            _hmiManager.KdmsPdbListDownload();
             return base.StartAsync(cancellationToken);
         }
 
@@ -46,8 +46,8 @@ namespace KdmsTcpMgr
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            var pdbIds = new List<int> { 1,2,3 };
-            _hmiManager.KdmsPdbFileDownload(pdbIds);
+            var pdbIds = new List<int> { 1,2,3,4 };
+            await _hmiManager.KdmsPdbFileDownload(pdbIds);
 
             //_hmiManager.KdmsAnalogScan();
             while (!stoppingToken.IsCancellationRequested)

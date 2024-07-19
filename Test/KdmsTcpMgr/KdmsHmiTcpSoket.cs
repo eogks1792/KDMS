@@ -23,6 +23,8 @@ public class KdmsHmiTcpSoket : ISingletonService
         _configuration = configuration;
     }
 
+
+
     public bool KdmsTcpServerLogin(string username, string password)
     {
         // config에서 IP, 포트 가져옴
@@ -131,51 +133,45 @@ public class KdmsHmiTcpSoket : ISingletonService
         {
         }
     }
-    public void KdmsPdbFileDownload(IEnumerable<int> pdbIds)
+    public async Task KdmsPdbFileDownload(IEnumerable<int> pdbIds)
     {
         try
         {
+            CtlDispose();
+            if(_ctlMaster == null)
+            {
+                TcpClient ctlClient = new TcpClient("192.168.1.172", 29002);
+                _ctlMaster = KdmsTcpClient.CreateKdmsSocketMaster(ctlClient);
+            }
+
+            await Task.Delay(500);
+
             var pdbDatas = pdbIds.Select(x => new PdbDataReqs { iPdbId = x }).ToList();
-            _logger.LogInformation($"PDB => 파일 수신111");
             if (_ctlMaster != null)
             {
-                var pdbDataponse = _ctlMaster.SendListData<PdbDataReqs>(KdmsCodeInfo.KdmsPdbSyncReqs, KdmsCodeInfo.KdmsPdbSyncReqs, pdbDatas);
-                if (pdbDataponse.RequestCode == KdmsCodeInfo.KdmsPdbSyncStart)
+                _logger.LogInformation($"PDB 파일 요청 전송({string.Join(",", pdbIds)})");
+                var response = _ctlMaster.SendListData<PdbDataReqs>(KdmsCodeInfo.KdmsPdbSyncReqs, KdmsCodeInfo.KdmsPdbSyncReqs, pdbDatas);
+                while (true)
                 {
-                    if (pdbDataponse.RecvDatas != null)
+                    if (response != null && response.RequestCode == KdmsCodeInfo.KdmsPdbSyncStart)
                     {
-                        int pdbid = (pdbDataponse as KdmsPdbDataResponse).PdbId;
-                        _logger.LogInformation($"PDB:{pdbid} => 파일 수신 및 처리1");
-                        //var rcvDatas = KdmsValueConverter.ByteToStructArray<PdbInfoAnalog>(pdbDataponse.RecvDatas);
-                    }
-
-                    while (true)
-                    {
-                        var response = _ctlMaster.Recv();
-                        if (response != null)
+                        if (response.RecvDatas != null)
                         {
-                            if (response.RequestCode == KdmsCodeInfo.KdmsPdbSyncComp)
-                            {
-                                _logger.LogInformation($"PDB => 파일 수신 완료");
-                                break;
-                            }
-
-                            if (response.RequestCode == KdmsCodeInfo.KdmsPdbSyncStart)
-                            {
-                                if (response.RecvDatas != null)
-                                {
-                                    int pdbid = (response as KdmsPdbDataResponse).PdbId;
-                                    _logger.LogInformation($"PDB:{pdbid} => 파일 수신 및 처리12");
-                                    //var rcvDatas = KdmsValueConverter.ByteToStructArray<PdbInfoAnalog>(pdbDataponse.RecvDatas);
-                                }
-                            }
-                        }
-                        else
-                        {
-                            _logger.LogInformation($"PDB => 파일 수신 ===========");
+                            int pdbid = (response as KdmsPdbDataResponse).PdbId;
+                            _logger.LogInformation($"PDB:{pdbid} => 파일 수신 및 처리1");
+                            //var rcvDatas = KdmsValueConverter.ByteToStructArray<PdbInfoAnalog>(pdbDataponse.RecvDatas);
                         }
                     }
 
+                    response = _ctlMaster.Recv();
+                    if (response != null)
+                    {
+                        if (response.RequestCode == KdmsCodeInfo.KdmsPdbSyncComp)
+                        {
+                            _logger.LogInformation($"PDB => 파일 수신 완료");
+                            break;
+                        }
+                    }
                 }
 
                 //KemsCTLReceive();
@@ -255,6 +251,15 @@ public class KdmsHmiTcpSoket : ISingletonService
         catch (Exception ex)
         {
             _logger.LogError($"CONTRL RCV FAIL(ex:{ex.Message})");
+        }
+    }
+
+    public void CtlDispose()
+    {
+        if(_ctlMaster != null )
+        { 
+            _ctlMaster.Dispose();
+            _ctlMaster = null;
         }
     }
 }
