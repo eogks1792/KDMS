@@ -113,13 +113,7 @@ public abstract class TcpSocketTransport : ITcpSocketTransport
             var responseCode = BitConverter.ToUInt16(packetData, 6);
             var dataCount = BitConverter.ToUInt32(packetData, 8);
             var sendTime = KdmsValueConverter.TimeTToDateTime(tm);
-            //Console.WriteLine($"PKT SND ======> NC:{tcpPacketHeader.ucNodeCode} AC:{tcpPacketHeader.ucActCode} PACKET:{tcpPacketHeader.usPktIdx}/{tcpPacketHeader.usTotPktCnt} SEQ:{tcpPacketHeader.ucSeq} COMP:{tcpPacketHeader.ucComp} LEN:{tcpPacketHeader.usLength}");
             Console.WriteLine($"[{_streamResource.GetConnPort}] : PKT SND ======> NC:{tcpPacketHeader.ucNodeCode} AC:{tcpPacketHeader.ucActCode} PACKET:{tcpPacketHeader.usPktIdx}/{tcpPacketHeader.usTotPktCnt} SEQ:{tcpPacketHeader.ucSeq} COMP:{tcpPacketHeader.ucComp} LEN:{tcpPacketHeader.usLength}-(time:{sendTime.ToString("yyyy-MM-dd HH:mm:ss")} req:0x{requestCode.ToString("X2")} res:0x{requestCode.ToString("X2")} cnt:{dataCount})");
-
-            //    (time:{ message.SendTime.ToString("yyyy-MM-dd HH:mm:ss")}
-            //req: 0x{ message.RequestCode.ToString("X2")}
-            //res: 0x{ message.ResponseCode.ToString("X2")}
-            //cnt: { message.DataCount})            
         }
         else
         {
@@ -137,12 +131,12 @@ public abstract class TcpSocketTransport : ITcpSocketTransport
         byte transactionId = GetNewTransactionId();
         byte[] frame = CreateActionPacketData(actionCode, requestCode, transactionId);
         StreamResource.Write(frame, 0, frame.Length);
-        // ACK 수신
-        byte[] ackPacket = Read(out bool isCompress);
-        var packetHeader = KdmsValueConverter.ByteToStruct<TcpDataHeader>(ackPacket);
-        {
-            // ACK 예외발생(종료해야할듯)
-        }
+        
+        byte[] ackPacket = Read(out bool isCompress); // ACK 수신 => ACK 처리시 확인하는게 무슨 의미가 있겠어!!!
+        //var packetHeader = KdmsValueConverter.ByteToStruct<TcpDataHeader>(ackPacket);
+        //{
+        // ACK 예외발생(종료해야할듯)
+        //}
     }
 
     public virtual void Write(ITcpSocketMessage message)
@@ -159,20 +153,19 @@ public abstract class TcpSocketTransport : ITcpSocketTransport
                 foreach (var data in sendDatas)
                 {                    
                     byte transactionId = GetNewTransactionId();
-                    byte[] frame = CreatePacketData(packetCount, ++packetIndex, transactionId, sendData);
+                    byte[] frame = CreatePacketData(packetCount, ++packetIndex, transactionId, data.ToArray());
                     StreamResource.Write(frame, 0, frame.Length);
-                    // ACK 수신
                     //Sleep(WaitToRetryMilliseconds);
-                    byte[] ackPacket = Read(out bool isCompress);
-                    var packetHeader = KdmsValueConverter.ByteToStruct<TcpDataHeader>(ackPacket);
+                    byte[] ackPacket = Read(out bool isCompress);  // ACK 수신 => ACK 처리시 확인하는게 무슨 의미가 있겠어!!!
+                    //var packetHeader = KdmsValueConverter.ByteToStruct<TcpDataHeader>(ackPacket);
                     //if (packetHeader.ucSeq != transactionId || packetHeader.ucActCode != (byte)eActionCode.ack_packet)
-                    {
+                    //{
                         // ACK 예외발생(종료해야할듯)
-                    }
+                    //}
                 }
             }
         }
-        catch (Exception e)
+        catch (Exception e) 
         {
             if ((e is SocketException socketException && socketException.SocketErrorCode != SocketError.TimedOut)
                 || (e.InnerException is SocketException innerSocketException && innerSocketException.SocketErrorCode != SocketError.TimedOut))
@@ -204,11 +197,7 @@ public abstract class TcpSocketTransport : ITcpSocketTransport
                 int numBytesRead = 0;
                 while (numBytesRead != KdmsCodeInfo.HmiPacketHeaderSize) // 패킷 헤더 수신
                 {
-                    //if(StreamResource.ReadAvailable > 0)
-                    //    Console.WriteLine($"socket read available size : {StreamResource.ReadAvailable}");
-                    
                     int bRead = StreamResource.Read(tcpHeader, numBytesRead, KdmsCodeInfo.HmiPacketHeaderSize - numBytesRead);
-
                     if (bRead == 0)
                     {
                         throw new IOException("Read resulted in 0 bytes returned.");
@@ -221,12 +210,11 @@ public abstract class TcpSocketTransport : ITcpSocketTransport
                 if(packetHeader.ucActCode == (ushort)eActionCode.health_check)
                 {
                     numBytesRead = 0;
-                    // 데이터 수신(HELTHCHECK)
+                    // 데이터 수신(HELTHCHECK) => 
                     byte[] helthHeaderFrame = new byte[KdmsCodeInfo.HmiDataHeaderSize];
                     while (numBytesRead != KdmsCodeInfo.HmiDataHeaderSize)
                     {
                         int bRead = StreamResource.Read(helthHeaderFrame, numBytesRead, KdmsCodeInfo.HmiDataHeaderSize - numBytesRead);
-
                         if (bRead == 0)
                         {
                             throw new IOException("Read resulted in 0 bytes returned.");
@@ -255,7 +243,6 @@ public abstract class TcpSocketTransport : ITcpSocketTransport
                     while (numBytesRead != KdmsCodeInfo.HmiDataHeaderSize)
                     {
                         int bRead = StreamResource.Read(dataHeaderFrame, numBytesRead, KdmsCodeInfo.HmiDataHeaderSize - numBytesRead);
-
                         if (bRead == 0)
                         {
                             throw new IOException("Read resulted in 0 bytes returned.");
@@ -285,7 +272,6 @@ public abstract class TcpSocketTransport : ITcpSocketTransport
                     while (numBytesRead != DataReadSize)
                     {
                         int bRead = StreamResource.Read(dataFrame, numBytesRead, DataReadSize - numBytesRead);
-
                         if (bRead == 0)
                         {
                             throw new IOException("Read resulted in 0 bytes returned.");
@@ -295,18 +281,14 @@ public abstract class TcpSocketTransport : ITcpSocketTransport
                     }
                 }
 
-                if (packetHeader.ucActCode == (byte)eActionCode.ack_packet)
-                {
-                    // ACK 확인
-                    var dataHeader = KdmsValueConverter.ByteToStruct<TcpDataHeader>(dataTotalFrame);
-                    // Console.WriteLine($"ACK RCV <= time:{dataHeader.uiTime} req:{dataHeader.sReqFc.ToString("X2")} res:{dataHeader.sRepFc.ToString("X2")} cnt:{dataHeader.usCount}");
-                }
-                else
+                // ACK 패킷 수신시는 아무짓도 안함(완료)
+                if (packetHeader.ucActCode != (byte)eActionCode.ack_packet) 
                 {
                     // ACK PACKET 전송
                     var ackPacket = CreateActionPacketData((byte)eActionCode.ack_packet, requestCode, packetHeader.ucSeq);
-                    StreamResource.Write(ackPacket, 0, ackPacket.Length);
+                    StreamResource.Write(ackPacket, 0, ackPacket.Length);                    
                 }
+
                 if (dataFrame != null)
                     dataTotalFrame = dataTotalFrame.Concat(dataFrame).ToArray();
 

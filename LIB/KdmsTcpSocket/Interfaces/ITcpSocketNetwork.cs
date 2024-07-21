@@ -1,4 +1,7 @@
-﻿namespace KdmsTcpSocket.Interfaces;
+﻿using System.Collections.ObjectModel;
+using System.Net.Sockets;
+
+namespace KdmsTcpSocket.Interfaces;
 
 public interface ITcpSocketNetwork : IDisposable
 {
@@ -7,4 +10,6 @@ public interface ITcpSocketNetwork : IDisposable
     /// </summary>
     /// <returns></returns>
     Task ListenAsync(CancellationToken cancellationToken = new CancellationToken());
+
+    ReadOnlyCollection<TcpClient> TcpClients { get; }
 }

@@ -28,7 +28,7 @@ public class KdmsHmiTcpSoket : ISingletonService
     public bool KdmsTcpServerLogin(string username, string password)
     {
         // config에서 IP, 포트 가져옴
-        string serverAddr = "192.168.1.172";
+        string serverAddr = "127.0.0.1";
         int rtPort = 29001, ctlPort = 29002, evtPort = 29003;
         bool isLogin = false;
         try
@@ -93,10 +93,10 @@ public class KdmsHmiTcpSoket : ISingletonService
     {
         try
         {
-            if (_rtaMaster != null)
+            if (_rtaMaster is not null)
             {
                 var response = _rtaMaster.SendData<TcpNoData>(KdmsCodeInfo.KdmsPdbListReqs, KdmsCodeInfo.KdmsPdbListReps, null);
-                if (response != null && response.RecvDatas != null)
+                if (response is not null && response.RecvDatas is not null)
                 {
                     var pdbResult = KdmsValueConverter.ByteToStructArray<PdbListRes>(response.RecvDatas);
 
@@ -171,9 +171,10 @@ public class KdmsHmiTcpSoket : ISingletonService
                     {
                         if (response.RecvDatas != null)
                         {
-                            int pdbid = (response as KdmsPdbDataResponse).PdbId;
-                            _logger.LogInformation($"PDB:{pdbid} => 파일 수신 및 처리1");
-                            //var rcvDatas = KdmsValueConverter.ByteToStructArray<PdbInfoAnalog>(pdbDataponse.RecvDatas);
+                            if(response is KdmsPdbDataResponse pdbResponse)
+                            {
+                                _logger.LogInformation($"PDB:{pdbResponse.PdbId} => 파일 수신 및 처리1");
+                            }
                         }
                     }
 
