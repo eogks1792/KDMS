@@ -570,7 +570,6 @@ namespace KDMSServer.Model
         public void CommStateLogDataSave(List<rtdb_Alarm> alarmList)
         {
             var date = DateTime.Now;
-
             List<HistoryCommStateLog> dataList = new List<HistoryCommStateLog>();
             foreach (var alarm in alarmList)
             {
@@ -626,7 +625,6 @@ namespace KDMSServer.Model
                     using (MySqlMapper mapper = new MySqlMapper(_configuration))
                     {
                         mapper.RunQuery(sb.ToString());
-                        //_logger.ServerLog($"[통신상태 이력] {date.ToString("yyyy-MM-dd HH:mm:ss")} 데이터 입력 완료 CNT:{dataList.Count}");
                     }
                 }
                 catch (Exception ex)

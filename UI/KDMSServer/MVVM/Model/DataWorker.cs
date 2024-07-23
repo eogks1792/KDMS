@@ -312,7 +312,7 @@ namespace KDMSServer.Model
                                 // 동작 처리
                                 await Task.Run(() =>
                                 {
-                                    //PdbRealTimeWorker();
+                                    PdbRealTimeWorker();
                                 });
 
                                 await Task.Run(() =>
@@ -892,15 +892,6 @@ namespace KDMSServer.Model
                                 model.IsSocketConnetionText = string.Empty;
                             }
 
-                            bool firstCheck = false;
-                            //model.ScanState = StateCheck(model.PrimeIP, model.ScanPort);
-                            //model.ControlState = StateCheck(model.PrimeIP, model.ControlPort);
-                            //model.EventState = StateCheck(model.PrimeIP, model.EventPort);
-
-                            //model.ScanState = true;
-                            //model.ControlState = true;
-                            //model.EventState = true;
-
                             if (rtaMaster == null && evtMaster == null)
                             {
                                 model.ScanState = false;
@@ -922,51 +913,6 @@ namespace KDMSServer.Model
                                 if (evtMaster != null)
                                     model.EventState = true;
                             }
-
-                            //if (model.ScanState && model.ControlState && model.EventState)
-                            //{
-                            //    firstCheck = true;
-                            //    model.IsSocketConnetionState = "성공";
-
-                            //    if (rtaMaster == null && ctlMaster == null && evtMaster == null)
-                            //    {
-                            //        await Task.Delay(100);
-                            //        KdmsServerInit();
-                            //    }
-                            //}
-                            //else
-                            //{
-                            //    model.IsSocketConnetion = false;
-                            //    model.IsSocketConnetionState = "실패";
-
-                            //    SocketClose();
-                            //}
-
-                            //if (!firstCheck)
-                            //{
-                            //    model.ScanState = StateCheck(model.BackupIP, model.ScanPort);
-                            //    model.ControlState = StateCheck(model.BackupIP, model.ControlPort);
-                            //    model.EventState = StateCheck(model.BackupIP, model.EventPort);
-
-                            //    if (model.ScanState && model.ControlState && model.EventState)
-                            //    {
-                            //        model.IsSocketConnetionState = "성공";
-
-                            //        if (rtaMaster == null && ctlMaster == null && evtMaster == null)
-                            //        {
-                            //            await Task.Delay(100);
-                            //            KdmsServerInit(backupIP);
-                            //        }
-                                        
-                            //    }
-                            //    else
-                            //    {
-                            //        model.IsSocketConnetion = false;
-                            //        model.IsSocketConnetionState = "실패";
-
-                            //        SocketClose();
-                            //    }
-                            //}
                         }
                         catch
                         {
