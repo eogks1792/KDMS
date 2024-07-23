@@ -1,4 +1,5 @@
 ﻿using DevExpress.Xpf.Core;
+using KDMSServer.Model;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -17,9 +18,12 @@ namespace KDMSServer
     /// </summary>
     public partial class MainWindow : ThemedWindow
     {
-        public MainWindow()
+        private readonly DataWorker _worker;
+
+        public MainWindow(DataWorker worker)
         {
             InitializeComponent();
+            _worker = worker;
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -31,7 +35,8 @@ namespace KDMSServer
                 return;
             }
 
-            //_worker.ThreadClose();
+            _worker.SocketClose();
+            _worker.ThreadClose();
         }
 
         

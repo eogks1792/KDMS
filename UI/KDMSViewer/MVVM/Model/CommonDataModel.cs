@@ -113,7 +113,6 @@ namespace KDMSViewer.Model
                         }
                     }
 
-
                     //foreach (var conductingEquipment in ConductingEquipments.Where(p => p.DlFk == distributionline.Dlid && p.EcFk == 0))
                     //{
                     //    TreeDataModel equipment = new TreeDataModel();

@@ -26,7 +26,7 @@
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="450"/>
+            <ColumnDefinition Width="500"/>
             <ColumnDefinition Width="200"/>
             <ColumnDefinition Width="200"/>
             <ColumnDefinition Width="*"/>
@@ -71,7 +71,7 @@
                    Margin="5 5 0 5"
                    Style="{StaticResource baseTextBlock}"/>
         <TextBlock Grid.Row="2" Grid.Column="0"
-                   Text="HISTORY_DAYSTAT_DATA [1일 통계(1분활용)]"
+                   Text="HISTORY_DAYSTAT_DATA [1일 통계(1분실시간전류)]"
                    Margin="5 5 0 5"
                    Style="{StaticResource baseTextBlock}"/>
         <TextBlock Grid.Row="3" Grid.Column="0"
@@ -79,19 +79,19 @@
                    Margin="5 5 0 5"
                    Style="{StaticResource baseTextBlock}"/>
         <TextBlock Grid.Row="4" Grid.Column="0"
-                   Text="STATISTICS_HOUR [시간 통계(15분활용)]"
+                   Text="STATISTICS_HOUR [시간 통계(평균부하전류)]"
                    Margin="5 5 0 5"
                    Style="{StaticResource baseTextBlock}"/>
         <TextBlock Grid.Row="5" Grid.Column="0"
-                   Text="STATISTICS_DAY [일 통계(시활용)]"
+                   Text="STATISTICS_DAY [일 통계(평균부하전류)]"
                    Margin="5 5 0 5"
                    Style="{StaticResource baseTextBlock}"/>
         <TextBlock Grid.Row="6" Grid.Column="0"
-                   Text="STATISTICS_MONTH [월 통계(일활용)]"
+                   Text="STATISTICS_MONTH [월 통계(평균부하전류)]"
                    Margin="5 5 0 5"
                    Style="{StaticResource baseTextBlock}"/>
         <TextBlock Grid.Row="7" Grid.Column="0"
-                   Text="STATISTICS_YEAR [년 통계(월활용)]"
+                   Text="STATISTICS_YEAR [년 통계(평균부하전류)]"
                    Margin="5 5 0 5"
                    Style="{StaticResource baseTextBlock}"/>
         <TextBlock Grid.Row="8" Grid.Column="0"

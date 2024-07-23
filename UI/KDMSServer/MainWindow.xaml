@@ -9,7 +9,7 @@
                   xmlns:local="clr-namespace:KDMSServer"
                   xmlns:model="clr-namespace:KDMSServer.Model"
                   mc:Ignorable="d"
-                  Title="KDMS 서버" 
+                  Title="KDMS_MNS_Server" 
                   Height="1024" Width="1920"
                   MinHeight="1024" MinWidth="1920"
                   Background="Transparent"
@@ -116,7 +116,7 @@
                               Grid.ColumnSpan="2"
                               Margin="0 0 0 0">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="1.2*"/>
+                            <ColumnDefinition Width="2*"/>
                             <ColumnDefinition Width="2*"/>
                         </Grid.ColumnDefinitions>
                         <GroupBox Grid.Column="0"
@@ -127,13 +127,13 @@
                             </GroupBox.Header>
                             <Grid>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="35"/>
+                                    <ColumnDefinition Width="auto"/>
                                     <ColumnDefinition />
-                                    <ColumnDefinition Width="60"/>
+                                    <ColumnDefinition Width="auto"/>
                                     <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Grid.Column="0"
-                                            Text="ID"
+                                            Text="아이디"
                                             Style="{StaticResource baseTextBlock}" />
                                 <TextBox Grid.Column="1"
                                          Text="{Binding LoginId}" 
@@ -141,7 +141,7 @@
                                          TextAlignment="Center"
                                          Style="{StaticResource baseTextBox}" />
                                 <TextBlock Grid.Column="2"
-                                           Text="PWD"
+                                           Text="비밀번호"
                                            Style="{StaticResource baseTextBlock}" />
                                 <Border Grid.Column="3"
                                         Margin="2"
@@ -169,13 +169,25 @@
                             </GroupBox.Header>
                             <Grid>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="60"/>
+                                    <!--<ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition />-->
+                                    <ColumnDefinition Width="auto"/>
                                     <ColumnDefinition />
-                                    <ColumnDefinition Width="100"/>
-                                    <ColumnDefinition />
-                                    <ColumnDefinition Width="70"/>
+                                    <ColumnDefinition Width="auto"/>
                                     <ColumnDefinition />
                                 </Grid.ColumnDefinitions>
+
+                                <!--<TextBlock Grid.Row="0" 
+                                           Grid.Column="0"
+                                           Text="CONTROL"
+                                           Margin="5 0 3 0"
+                                           Style="{StaticResource baseTextBlock}" />
+                                <TextBox Grid.Row="0" 
+                                         Grid.Column="1"
+                                         Margin="2"
+                                         Text="{Binding ControlPort}" 
+                                         TextAlignment="Center"
+                                         Style="{StaticResource baseTextBox}" />-->
 
                                 <TextBlock Grid.Row="0" 
                                            Grid.Column="0"
@@ -190,21 +202,10 @@
 
                                 <TextBlock Grid.Row="0" 
                                            Grid.Column="2"
-                                           Text="CONTROL"
+                                           Text="ALARM"
                                            Style="{StaticResource baseTextBlock}" />
                                 <TextBox Grid.Row="0" 
                                          Grid.Column="3"
-                                         Margin="2"
-                                         Text="{Binding ControlPort}" 
-                                         TextAlignment="Center"
-                                         Style="{StaticResource baseTextBox}" />
-
-                                <TextBlock Grid.Row="0" 
-                                           Grid.Column="4"
-                                           Text="EVENT"
-                                           Style="{StaticResource baseTextBlock}" />
-                                <TextBox Grid.Row="0" 
-                                         Grid.Column="5"
                                          Margin="2"
                                          Text="{Binding EventPort}" 
                                          TextAlignment="Center"
@@ -248,8 +249,29 @@
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition />
                                     <ColumnDefinition />
-                                    <ColumnDefinition />
                                 </Grid.ColumnDefinitions>
+
+                                <!--<TextBlock Grid.Column="0"
+                                           Text="C"
+                                           Margin="0"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           FontSize="{StaticResource FontSizeSmall}">
+                                    <TextBlock.Style>
+                                        <Style TargetType="{x:Type TextBlock}" >
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ControlState}" Value="True">
+                                                    <Setter Property="Foreground" Value="White"/>
+                                                    <Setter Property="ToolTip" Value="성공"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding ControlState}" Value="False">
+                                                    <Setter Property="Foreground" Value="Red"/>
+                                                    <Setter Property="ToolTip" Value="실패"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>-->
 
                                 <TextBlock Grid.Column="0"
                                            Text="S"
@@ -262,9 +284,11 @@
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding ScanState}" Value="True">
                                                     <Setter Property="Foreground" Value="White"/>
+                                                    <Setter Property="ToolTip" Value="성공"/>
                                                 </DataTrigger>
                                                 <DataTrigger Binding="{Binding ScanState}" Value="False">
                                                     <Setter Property="Foreground" Value="Red"/>
+                                                    <Setter Property="ToolTip" Value="실패"/>
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
@@ -272,27 +296,7 @@
                                 </TextBlock>
 
                                 <TextBlock Grid.Column="1"
-                                           Text="C"
-                                           Margin="0"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center"
-                                           FontSize="{StaticResource FontSizeSmall}">
-                                    <TextBlock.Style>
-                                        <Style TargetType="{x:Type TextBlock}" >
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding ControlState}" Value="True">
-                                                    <Setter Property="Foreground" Value="White"/>
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding ControlState}" Value="False">
-                                                    <Setter Property="Foreground" Value="Red"/>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </TextBlock.Style>
-                                </TextBlock>
-
-                                <TextBlock Grid.Column="2"
-                                           Text="E"
+                                           Text="A"
                                            Margin="0"
                                            HorizontalAlignment="Center"
                                            VerticalAlignment="Center"
@@ -302,9 +306,11 @@
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding EventState}" Value="True">
                                                     <Setter Property="Foreground" Value="White"/>
+                                                    <Setter Property="ToolTip" Value="성공"/>
                                                 </DataTrigger>
                                                 <DataTrigger Binding="{Binding EventState}" Value="False">
                                                     <Setter Property="Foreground" Value="Red"/>
+                                                    <Setter Property="ToolTip" Value="실패"/>
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>

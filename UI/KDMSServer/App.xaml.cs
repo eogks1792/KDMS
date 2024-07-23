@@ -74,12 +74,13 @@ namespace KDMSServer
 
             DuplicateExecution();
 
+            Log.Logger.Information("KDMS 서버 프로그램 시작...");
+
             var startupForm = Services.GetService<MainWindow>();
             this.MainWindow = startupForm;
             startupForm!.DataContext = Services.GetService<MainViewModel>();
             startupForm!.Show();
-
-            Log.Logger.Information("KDMS 서버 프로그램 시작...");
+            
             base.OnStartup(e);
         }
 

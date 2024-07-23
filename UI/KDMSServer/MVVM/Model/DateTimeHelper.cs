@@ -26,7 +26,11 @@ namespace KDMSServer.MVVM.Model
             switch (timeCode)
             {
                 case TimeDivisionCode.None:
-
+                    {
+                        date = new DateTime(now.Year, now.Month, now.Day, hour, min, sec);
+                        if (now > date)
+                            date = date.AddHours(12);
+                    }
                     break;
                 case TimeDivisionCode.Minute:
                     {

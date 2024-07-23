@@ -20,14 +20,14 @@ namespace KDMSServer.Model
         COMMSTATELOG,
     }
 
-    public enum SchduleCode
+    public enum PointTypeCode
     {
         BI = 1,
         BO,
         AI,
         AO,
         COUNTER,
-        STATISTICS
+        DMC
     }
 
     public enum StorageCode
@@ -43,4 +43,12 @@ namespace KDMSServer.Model
         HISTORY_COMM_STATE,
         HISTORY_COMM_STATE_LOG,
     }
+
+    public enum SocketConnectionType
+    {
+        PRIME = 1,
+        BACKUP
+    }
+
+    
 }

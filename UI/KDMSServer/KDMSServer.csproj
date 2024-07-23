@@ -7,6 +7,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <UseWindowsForms>False</UseWindowsForms>
+    <AssemblyName>KDMS_MNS_Server</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
@@ -24,6 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\LIB\KDMS.EF.Core\KDMS.EF.Core.csproj" />
+    <ProjectReference Include="..\..\LIB\KdmsTcpSocket\KdmsTcpSocket.csproj" />
   </ItemGroup>
 
   <ItemGroup>

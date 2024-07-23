@@ -11,7 +11,7 @@
                  xmlns:viewmodel="clr-namespace:KDMSViewer.ViewModel" 
                  d:DataContext="{d:DesignInstance Type=viewmodel:MainViewModel}"
                  mc:Ignorable="d"
-                 Title="KDMS 데이터 뷰어" 
+                 Title="KDMS_MNS_Viewer" 
                  Height="1080" Width="1920"
                  MinHeight="1080" MinWidth="1920"
                  WindowStyle="None"

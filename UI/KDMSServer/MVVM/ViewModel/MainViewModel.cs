@@ -113,7 +113,7 @@ namespace KDMSServer.ViewModel
             var ChannelInfoSection = _configuration.GetSection("ChannelInfo");
             ScanPort = Convert.ToInt32(ChannelInfoSection.GetSection("Scan").Value!);
             ControlPort = Convert.ToInt32(ChannelInfoSection.GetSection("Control").Value!);
-            EventPort = Convert.ToInt32(ChannelInfoSection.GetSection("Event").Value!);
+            EventPort = Convert.ToInt32(ChannelInfoSection.GetSection("Alarm").Value!);
 
             var ServerIpInfoSection = _configuration.GetSection("ServerInfo");
             PrimeIP = ServerIpInfoSection.GetSection("PrimeServer").Value!;
@@ -169,7 +169,7 @@ namespace KDMSServer.ViewModel
 
                 JsonHelpers.AddOrUpdateAppSetting(filePath, "ChannelInfo:Scan", ScanPort);
                 JsonHelpers.AddOrUpdateAppSetting(filePath, "ChannelInfo:Control", ControlPort);
-                JsonHelpers.AddOrUpdateAppSetting(filePath, "ChannelInfo:Event", EventPort);
+                JsonHelpers.AddOrUpdateAppSetting(filePath, "ChannelInfo:Alarm", EventPort);
                 
                 var root = (IConfigurationRoot)_configuration;
                 root.Reload();

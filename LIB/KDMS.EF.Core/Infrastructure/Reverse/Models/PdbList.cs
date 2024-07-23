@@ -19,6 +19,16 @@ public partial class PdbList
     public string? Name { get; set; }
 
     /// <summary>
+    /// PDB 사용여부
+    /// </summary>
+    public bool? UseYn { get; set; }
+
+    /// <summary>
+    /// PDB MD5
+    /// </summary>
+    public string? Md5 { get; set; }
+
+    /// <summary>
     /// PDB 설명
     /// </summary>
     public string? Desc { get; set; }
