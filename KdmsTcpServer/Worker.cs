@@ -1,4 +1,5 @@
 using KdmsTcpServer.Shared.Interface;
+using KdmsTcpSocket;
 using KdmsTcpSocket.Device;
 using KdmsTcpSocket.Interfaces;
 using System.Net;
@@ -46,18 +47,6 @@ namespace KdmsTcpServer
             return valuesList;
         }
 
-        public void test1()
-        {
-            string query = "INSERT INTO `log_user_analog_his` VALUES (402036255,11921400000001,31044,30.59,145,0,'0000-00-00 00:00:00.000','2022-12-31 23:58:00.762','2023-01-01 00:00:00.000'),(402045001,11922100022690,38236,0,145,0,'0000-00-00 00:00:00.000','2022-12-31 23:02:28.816','2023-01-01 00:00:00.000');";
-
-            List<string> valuesList = ExtractValuesFromQuery(query);
-
-            foreach (var value in valuesList)
-            {
-                Console.WriteLine(value);
-            }
-        }
-
 
         public override Task StartAsync(CancellationToken cancellationToken)
         {
@@ -73,8 +62,21 @@ namespace KdmsTcpServer
 
         private void onClientHandler(object sender, TcpRequestEventArgs e)
         {
-            
             Console.WriteLine($"수신정보 - REQ:{e.Request.RequestCode} RES:{e.Request.ResponseCode} CNT:{e.Request.DataCount}");
+            switch (e.Request.RequestCode)
+            {
+                case KdmsCodeInfo.kdmsOperLoginReqs:
+                    {
+
+                    }
+                    break;
+
+                case KdmsCodeInfo.KdmsOperLogoutReqs:
+                    {
+
+                    }
+                    break;
+            }
         }
 
 

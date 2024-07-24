@@ -86,6 +86,7 @@ public class TcpSocketNetwork : ITcpSocketNetwork
             catch (ObjectDisposedException) when (cancellationToken.IsCancellationRequested)
             {
                 //Swallow this
+                Console.WriteLine("");
             }
             catch (InvalidOperationException)
             {
