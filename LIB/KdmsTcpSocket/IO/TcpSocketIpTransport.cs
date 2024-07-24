@@ -16,7 +16,7 @@ namespace KdmsTcpSocket.IO
 
             // 타임아웃 설정함.
             //ReadTimeout = TcpSocket.ReadTimeOut;
-            //ReadTimeout = TcpSocket.WriteTimeOut;
+            //WriteTimeout = TcpSocket.WriteTimeOut;
         }
 
         /// <summary>

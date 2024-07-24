@@ -81,13 +81,25 @@ namespace KdmsTcpSocket.Device
                 while (true)
                 {
                     //Console.WriteLine($"Begin reading header from Master at IP: {EndPoint}");
-                    var response = Recv();
-
-                    if (response != null)
+                    try
                     {
-                        DataProcHandler?.Invoke(this, new TcpRequestEventArgs(Transport, response));
+                        var response = Recv();
+
+                        if (response != null)
+                        {
+                            DataProcHandler?.Invoke(this, new TcpRequestEventArgs(Transport, response));
+                        }
+                        await Task.Delay(100);
                     }
-                    await Task.Delay(100);
+                    catch(TcpSocketTimeoutException ex)
+                    {
+                        Console.Write($"socket:{EndPoint} type:{ex.GetType().Name} msg:{ex.Message}");
+                    }
+                    catch (Exception)
+                    {
+                        throw;
+                    }
+
                 }
             }
             // If an exception occurs (such as IOException in case of disconnect, or other failures), handle it as if the connection was gracefully closed

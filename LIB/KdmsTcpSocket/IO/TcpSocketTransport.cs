@@ -190,112 +190,130 @@ public abstract class TcpSocketTransport : ITcpSocketTransport
         {
             ushort requestCode = 0, responseCode = 0;
             uint recvTime = 0, dataCount = 0;
-
-            do
+            try
             {
-                var tcpHeader = new byte[KdmsCodeInfo.HmiPacketHeaderSize];
-                int numBytesRead = 0;
-                while (numBytesRead != KdmsCodeInfo.HmiPacketHeaderSize) // 패킷 헤더 수신
+                do
                 {
-                    int bRead = StreamResource.Read(tcpHeader, numBytesRead, KdmsCodeInfo.HmiPacketHeaderSize - numBytesRead);
-                    if (bRead == 0)
+                    var tcpHeader = new byte[KdmsCodeInfo.HmiPacketHeaderSize];
+                    int numBytesRead = 0;
+                    while (numBytesRead != KdmsCodeInfo.HmiPacketHeaderSize) // 패킷 헤더 수신
                     {
-                        throw new IOException("Read resulted in 0 bytes returned.");
-                    }
-
-                    numBytesRead += bRead;
-                }
-
-                var packetHeader = KdmsValueConverter.ByteToStruct<TcpPacketHeader>(tcpHeader);
-                if(packetHeader.ucActCode == (ushort)eActionCode.health_check)
-                {
-                    numBytesRead = 0;
-                    // 데이터 수신(HELTHCHECK) => 
-                    byte[] helthHeaderFrame = new byte[KdmsCodeInfo.HmiDataHeaderSize];
-                    while (numBytesRead != KdmsCodeInfo.HmiDataHeaderSize)
-                    {
-                        int bRead = StreamResource.Read(helthHeaderFrame, numBytesRead, KdmsCodeInfo.HmiDataHeaderSize - numBytesRead);
+                        int bRead = StreamResource.Read(tcpHeader, numBytesRead, KdmsCodeInfo.HmiPacketHeaderSize - numBytesRead);
                         if (bRead == 0)
                         {
                             throw new IOException("Read resulted in 0 bytes returned.");
                         }
-
                         numBytesRead += bRead;
                     }
 
-                    // ACK PACKET 전송(하트비트에 대한 데이터 처리를 따로 수행함)
-                    var hrecvTime = BitConverter.ToUInt32(helthHeaderFrame, 0);
-                    var hrequestCode = BitConverter.ToUInt16(helthHeaderFrame, 4);
-                    var hresponseCode = BitConverter.ToUInt16(helthHeaderFrame, 6);
-                    var hdataCount = BitConverter.ToUInt32(helthHeaderFrame, 8);
-                    Console.WriteLine($"[{_streamResource.GetConnPort}] : PKT(HEALTH) RCV <====== NC:{packetHeader.ucNodeCode} AC:{packetHeader.ucActCode} PACKET:{packetHeader.usPktIdx}/{packetHeader.usTotPktCnt} SEQ:{packetHeader.ucSeq} COMP:{packetHeader.ucComp} LEN:{packetHeader.usLength} (time:{KdmsValueConverter.TimeTToDateTime(hrecvTime).ToString("yyyy-MM-dd HH:mm:ss")} req:0x{hrequestCode.ToString("X2")} res:0x{hresponseCode.ToString("X2")} cnt:{hdataCount})");
-                    var ackPacket = CreateActionPacketData((byte)eActionCode.ack_packet, hrequestCode, packetHeader.ucSeq);
-                    StreamResource.Write(ackPacket, 0, ackPacket.Length);
-                    continue;
-                }
-
-                int DataReadSize = packetHeader.usLength - numBytesRead;
-                if (packetHeader.usPktIdx == 1)
-                {
-                    isCompress = packetHeader.ucComp == 1? true : false;
-                    numBytesRead = 0;
-                    byte[] dataHeaderFrame = new byte[KdmsCodeInfo.HmiDataHeaderSize];
-                    while (numBytesRead != KdmsCodeInfo.HmiDataHeaderSize)
+                    var packetHeader = KdmsValueConverter.ByteToStruct<TcpPacketHeader>(tcpHeader);
+                    if (packetHeader.ucActCode == (ushort)eActionCode.health_check)
                     {
-                        int bRead = StreamResource.Read(dataHeaderFrame, numBytesRead, KdmsCodeInfo.HmiDataHeaderSize - numBytesRead);
-                        if (bRead == 0)
+                        numBytesRead = 0;
+                        // 데이터 수신(HELTHCHECK) => 
+                        byte[] helthHeaderFrame = new byte[KdmsCodeInfo.HmiDataHeaderSize];
+                        while (numBytesRead != KdmsCodeInfo.HmiDataHeaderSize)
                         {
-                            throw new IOException("Read resulted in 0 bytes returned.");
+                            int bRead = StreamResource.Read(helthHeaderFrame, numBytesRead, KdmsCodeInfo.HmiDataHeaderSize - numBytesRead);
+                            if (bRead == 0)
+                            {
+                                throw new IOException("Read resulted in 0 bytes returned.");
+                            }
+
+                            numBytesRead += bRead;
                         }
 
-                        numBytesRead += bRead;
+                        // ACK PACKET 전송(하트비트에 대한 데이터 처리를 따로 수행함)
+                        var hrecvTime = BitConverter.ToUInt32(helthHeaderFrame, 0);
+                        var hrequestCode = BitConverter.ToUInt16(helthHeaderFrame, 4);
+                        var hresponseCode = BitConverter.ToUInt16(helthHeaderFrame, 6);
+                        var hdataCount = BitConverter.ToUInt32(helthHeaderFrame, 8);
+                        Console.WriteLine($"[{_streamResource.GetConnPort}] : PKT(HEALTH) RCV <====== NC:{packetHeader.ucNodeCode} AC:{packetHeader.ucActCode} PACKET:{packetHeader.usPktIdx}/{packetHeader.usTotPktCnt} SEQ:{packetHeader.ucSeq} COMP:{packetHeader.ucComp} LEN:{packetHeader.usLength} (time:{KdmsValueConverter.TimeTToDateTime(hrecvTime).ToString("yyyy-MM-dd HH:mm:ss")} req:0x{hrequestCode.ToString("X2")} res:0x{hresponseCode.ToString("X2")} cnt:{hdataCount})");
+                        var ackPacket = CreateActionPacketData((byte)eActionCode.ack_packet, hrequestCode, packetHeader.ucSeq);
+                        StreamResource.Write(ackPacket, 0, ackPacket.Length);
+                        continue;
                     }
-                    dataTotalFrame = dataHeaderFrame;
-                    DataReadSize = DataReadSize - numBytesRead;
 
-                    recvTime = BitConverter.ToUInt32(dataHeaderFrame, 0);
-                    requestCode = BitConverter.ToUInt16(dataHeaderFrame, 4);
-                    responseCode = BitConverter.ToUInt16(dataHeaderFrame, 6);
-                    dataCount = BitConverter.ToUInt32(dataHeaderFrame, 8);
-                    Console.WriteLine($"[{_streamResource.GetConnPort}] : PKT RCV <====== NC:{packetHeader.ucNodeCode} AC:{packetHeader.ucActCode} PACKET:{packetHeader.usPktIdx}/{packetHeader.usTotPktCnt} SEQ:{packetHeader.ucSeq} COMP:{packetHeader.ucComp} LEN:{packetHeader.usLength} (time:{KdmsValueConverter.TimeTToDateTime(recvTime).ToString("yyyy-MM-dd HH:mm:ss")} req:0x{requestCode.ToString("X2")} res:0x{responseCode.ToString("X2")} cnt:{dataCount})");
-                }
-                else
-                {
-                    Console.WriteLine($"[{_streamResource.GetConnPort}] : PKT RCV <====== NC:{packetHeader.ucNodeCode} AC:{packetHeader.ucActCode} PACKET:{packetHeader.usPktIdx}/{packetHeader.usTotPktCnt} SEQ:{packetHeader.ucSeq} COMP:{packetHeader.ucComp} LEN:{packetHeader.usLength}");
-                }
-
-                byte[]? dataFrame = null;
-                if (DataReadSize > 0)
-                {
-                    numBytesRead = 0;
-                    dataFrame = new byte[DataReadSize];
-                    while (numBytesRead != DataReadSize)
+                    int DataReadSize = packetHeader.usLength - numBytesRead;
+                    if (packetHeader.usPktIdx == 1)
                     {
-                        int bRead = StreamResource.Read(dataFrame, numBytesRead, DataReadSize - numBytesRead);
-                        if (bRead == 0)
+                        isCompress = packetHeader.ucComp == 1 ? true : false;
+                        numBytesRead = 0;
+                        byte[] dataHeaderFrame = new byte[KdmsCodeInfo.HmiDataHeaderSize];
+                        while (numBytesRead != KdmsCodeInfo.HmiDataHeaderSize)
                         {
-                            throw new IOException("Read resulted in 0 bytes returned.");
+                            int bRead = StreamResource.Read(dataHeaderFrame, numBytesRead, KdmsCodeInfo.HmiDataHeaderSize - numBytesRead);
+                            if (bRead == 0)
+                            {
+                                throw new IOException("Read resulted in 0 bytes returned.");
+                            }
+
+                            numBytesRead += bRead;
                         }
+                        dataTotalFrame = dataHeaderFrame;
+                        DataReadSize = DataReadSize - numBytesRead;
 
-                        numBytesRead += bRead;
+                        recvTime = BitConverter.ToUInt32(dataHeaderFrame, 0);
+                        requestCode = BitConverter.ToUInt16(dataHeaderFrame, 4);
+                        responseCode = BitConverter.ToUInt16(dataHeaderFrame, 6);
+                        dataCount = BitConverter.ToUInt32(dataHeaderFrame, 8);
+                        Console.WriteLine($"[{_streamResource.GetConnPort}] : PKT RCV <====== NC:{packetHeader.ucNodeCode} AC:{packetHeader.ucActCode} PACKET:{packetHeader.usPktIdx}/{packetHeader.usTotPktCnt} SEQ:{packetHeader.ucSeq} COMP:{packetHeader.ucComp} LEN:{packetHeader.usLength} (time:{KdmsValueConverter.TimeTToDateTime(recvTime).ToString("yyyy-MM-dd HH:mm:ss")} req:0x{requestCode.ToString("X2")} res:0x{responseCode.ToString("X2")} cnt:{dataCount})");
                     }
-                }
+                    else
+                    {
+                        Console.WriteLine($"[{_streamResource.GetConnPort}] : PKT RCV <====== NC:{packetHeader.ucNodeCode} AC:{packetHeader.ucActCode} PACKET:{packetHeader.usPktIdx}/{packetHeader.usTotPktCnt} SEQ:{packetHeader.ucSeq} COMP:{packetHeader.ucComp} LEN:{packetHeader.usLength}");
+                    }
 
-                // ACK 패킷 수신시는 아무짓도 안함(완료)
-                if (packetHeader.ucActCode != (byte)eActionCode.ack_packet) 
+                    byte[]? dataFrame = null;
+                    if (DataReadSize > 0)
+                    {
+                        numBytesRead = 0;
+                        dataFrame = new byte[DataReadSize];
+                        while (numBytesRead != DataReadSize)
+                        {
+                            int bRead = StreamResource.Read(dataFrame, numBytesRead, DataReadSize - numBytesRead);
+                            if (bRead == 0)
+                            {
+                                throw new IOException("Read resulted in 0 bytes returned.");
+                            }
+
+                            numBytesRead += bRead;
+                        }
+                    }
+
+                    // ACK 패킷 수신시는 아무짓도 안함(완료)
+                    if (packetHeader.ucActCode != (byte)eActionCode.ack_packet)
+                    {
+                        // ACK PACKET 전송
+                        var ackPacket = CreateActionPacketData((byte)eActionCode.ack_packet, requestCode, packetHeader.ucSeq);
+                        StreamResource.Write(ackPacket, 0, ackPacket.Length);
+                    }
+
+                    if (dataFrame != null)
+                        dataTotalFrame = dataTotalFrame.Concat(dataFrame).ToArray();
+
+                    if (packetHeader.usTotPktCnt <= packetHeader.usPktIdx)
+                        break;
+
+                } while (true);
+            }
+            catch (IOException ex)
+            {
+                SocketError socketError = SocketError.Success;
+                if (ex.InnerException is SocketException)
+                    socketError = ((SocketException)ex.InnerException).SocketErrorCode;
+
+                if (socketError == SocketError.TimedOut)
                 {
-                    // ACK PACKET 전송
-                    var ackPacket = CreateActionPacketData((byte)eActionCode.ack_packet, requestCode, packetHeader.ucSeq);
-                    StreamResource.Write(ackPacket, 0, ackPacket.Length);                    
+                    throw new TcpSocketTimeoutException($"no data received for {StreamResource.ReadTimeout} seconds");
                 }
 
-                if (dataFrame != null)
-                    dataTotalFrame = dataTotalFrame.Concat(dataFrame).ToArray();
-
-                if (packetHeader.usTotPktCnt <= packetHeader.usPktIdx)
-                    break;
-
-            } while (true);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         return dataTotalFrame;

@@ -3,7 +3,7 @@
     /// <summary>
     ///     Defines constants related to the Modbus protocol.
     /// </summary>
-    internal static class TcpSocket
+    public static class TcpSocket
     {
         public const int ReadTimeOut = 5000;
         public const int WriteTimeOut = 5000;
