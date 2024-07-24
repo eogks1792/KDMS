@@ -1,4 +1,5 @@
-﻿using KdmsTcpSocket;
+﻿using KdmsSample;
+using KdmsTcpSocket;
 using KdmsTcpSocket.KdmsTcpStruct;
 using KdmsTcpSocket.Message;
 using System;
@@ -28,7 +29,7 @@ public class Test
             //    }
             //});
 
-            KdermsTcpTest();
+            await KdermsTcpTest1(stoppingToken);
 
 
         }
@@ -40,6 +41,34 @@ public class Test
         Console.ReadKey();
 
         return 0;
+    }
+
+
+    public static async Task KdermsTcpTest1(CancellationToken stoppingToken)
+    {
+        try
+        {
+            // 29001 : RT => 로그인
+            // 29002 : CTL
+            // 29003 : EVT
+            using (TcpClient client = new TcpClient("127.0.0.1", 22011))
+            {
+                var master = KdmsTcpClient.CreateKdmsSocketMaster(client);
+                /////////////////////////
+                ///
+                while (!stoppingToken.IsCancellationRequested)
+                {
+                    master.Transport.NoResponseData((byte)eActionCode.rt_req, KdmsCodeInfo.KdmsPdbListReqs);
+                    await Task.Delay(1000);
+                }
+
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+
     }
 
 

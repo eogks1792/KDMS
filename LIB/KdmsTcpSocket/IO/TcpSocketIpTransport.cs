@@ -1,8 +1,6 @@
 ﻿using KdmsTcpSocket.Interfaces;
-using KdmsTcpSocket.KdmsTcpStruct;
 using KdmsTcpSocket.Message;
 using KdmsTcpSocket.Unme.Common;
-using System.IO.Compression;
 
 namespace KdmsTcpSocket.IO
 {
@@ -42,7 +40,7 @@ namespace KdmsTcpSocket.IO
 
         public override ITcpSocketMessage ResponseData(ITcpSocketMessage message)
         {
-            Write(message);            
+            Write(message);
             return ResponseData();
         }
 

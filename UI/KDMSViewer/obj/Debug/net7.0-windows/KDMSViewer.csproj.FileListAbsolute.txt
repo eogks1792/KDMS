@@ -333,12 +333,7 @@ D:\002. Wells\001. 회사업무\002. 배전지능화팀\002. 개발소스\016. K
 D:\002. Wells\001. 회사업무\002. 배전지능화팀\002. 개발소스\016. KDMSServer\UI\KDMSViewer\obj\Debug\net7.0-windows\KDMSViewer.sourcelink.json
 D:\002. Wells\001. 회사업무\002. 배전지능화팀\002. 개발소스\016. KDMSServer\UI\KDMSViewer\obj\Debug\net7.0-windows\KDMSViewer.csproj.CopyComplete
 D:\002. Wells\001. 회사업무\002. 배전지능화팀\002. 개발소스\016. KDMSServer\UI\KDMSViewer\obj\Debug\net7.0-windows\KDMSViewer.genruntimeconfig.cache
-C:\workspace\wellsts\KDMS\UI\KDMSViewer\bin\Debug\net7.0-windows\KDMSViewer.exe
 C:\workspace\wellsts\KDMS\UI\KDMSViewer\bin\Debug\net7.0-windows\appsettings.json
-C:\workspace\wellsts\KDMS\UI\KDMSViewer\bin\Debug\net7.0-windows\KDMSViewer.deps.json
-C:\workspace\wellsts\KDMS\UI\KDMSViewer\bin\Debug\net7.0-windows\KDMSViewer.runtimeconfig.json
-C:\workspace\wellsts\KDMS\UI\KDMSViewer\bin\Debug\net7.0-windows\KDMSViewer.dll
-C:\workspace\wellsts\KDMS\UI\KDMSViewer\bin\Debug\net7.0-windows\KDMSViewer.pdb
 C:\workspace\wellsts\KDMS\UI\KDMSViewer\bin\Debug\net7.0-windows\Azure.Core.dll
 C:\workspace\wellsts\KDMS\UI\KDMSViewer\bin\Debug\net7.0-windows\Azure.Identity.dll
 C:\workspace\wellsts\KDMS\UI\KDMSViewer\bin\Debug\net7.0-windows\CommunityToolkit.Mvvm.dll
@@ -470,8 +465,6 @@ C:\workspace\wellsts\KDMS\UI\KDMSViewer\obj\Debug\net7.0-windows\MVVM\View\View_
 C:\workspace\wellsts\KDMS\UI\KDMSViewer\obj\Debug\net7.0-windows\MVVM\View\View_SwitchData.g.cs
 C:\workspace\wellsts\KDMS\UI\KDMSViewer\obj\Debug\net7.0-windows\App.g.cs
 C:\workspace\wellsts\KDMS\UI\KDMSViewer\obj\Debug\net7.0-windows\GeneratedInternalTypeHelper.g.cs
-C:\workspace\wellsts\KDMS\UI\KDMSViewer\obj\Debug\net7.0-windows\KDMSViewer_MarkupCompile.cache
-C:\workspace\wellsts\KDMS\UI\KDMSViewer\obj\Debug\net7.0-windows\KDMSViewer_MarkupCompile.lref
 C:\workspace\wellsts\KDMS\UI\KDMSViewer\obj\Debug\net7.0-windows\App.baml
 C:\workspace\wellsts\KDMS\UI\KDMSViewer\obj\Debug\net7.0-windows\MainWindow.baml
 C:\workspace\wellsts\KDMS\UI\KDMSViewer\obj\Debug\net7.0-windows\MVVM\View\ConfigView.baml
@@ -495,18 +488,13 @@ C:\workspace\wellsts\KDMS\UI\KDMSViewer\obj\Debug\net7.0-windows\MVVM\View\View_
 C:\workspace\wellsts\KDMS\UI\KDMSViewer\obj\Debug\net7.0-windows\MVVM\View\View_StatisticsMonthData.baml
 C:\workspace\wellsts\KDMS\UI\KDMSViewer\obj\Debug\net7.0-windows\MVVM\View\View_StatisticsYearData.baml
 C:\workspace\wellsts\KDMS\UI\KDMSViewer\obj\Debug\net7.0-windows\MVVM\View\View_SwitchData.baml
-C:\workspace\wellsts\KDMS\UI\KDMSViewer\obj\Debug\net7.0-windows\KDMSViewer.g.resources
 C:\workspace\wellsts\KDMS\UI\KDMSViewer\obj\Debug\net7.0-windows\KDMSViewer.GeneratedMSBuildEditorConfig.editorconfig
 C:\workspace\wellsts\KDMS\UI\KDMSViewer\obj\Debug\net7.0-windows\KDMSViewer.AssemblyInfoInputs.cache
 C:\workspace\wellsts\KDMS\UI\KDMSViewer\obj\Debug\net7.0-windows\KDMSViewer.AssemblyInfo.cs
 C:\workspace\wellsts\KDMS\UI\KDMSViewer\obj\Debug\net7.0-windows\KDMSViewer.csproj.CoreCompileInputs.cache
 C:\workspace\wellsts\KDMS\UI\KDMSViewer\obj\Debug\net7.0-windows\KDMSViewer.sourcelink.json
 C:\workspace\wellsts\KDMS\UI\KDMSViewer\obj\Debug\net7.0-windows\KDMSViewer.csproj.Up2Date
-C:\workspace\wellsts\KDMS\UI\KDMSViewer\obj\Debug\net7.0-windows\KDMSViewer.dll
-C:\workspace\wellsts\KDMS\UI\KDMSViewer\obj\Debug\net7.0-windows\refint\KDMSViewer.dll
-C:\workspace\wellsts\KDMS\UI\KDMSViewer\obj\Debug\net7.0-windows\KDMSViewer.pdb
 C:\workspace\wellsts\KDMS\UI\KDMSViewer\obj\Debug\net7.0-windows\KDMSViewer.genruntimeconfig.cache
-C:\workspace\wellsts\KDMS\UI\KDMSViewer\obj\Debug\net7.0-windows\ref\KDMSViewer.dll
 D:\002. Wells\001. 회사업무\002. 배전지능화팀\002. 개발소스\016. KDMSServer\UI\KDMSViewer\bin\Debug\net7.0-windows\KDMS_MNS_Viewer.exe
 D:\002. Wells\001. 회사업무\002. 배전지능화팀\002. 개발소스\016. KDMSServer\UI\KDMSViewer\bin\Debug\net7.0-windows\KDMS_MNS_Viewer.deps.json
 D:\002. Wells\001. 회사업무\002. 배전지능화팀\002. 개발소스\016. KDMSServer\UI\KDMSViewer\bin\Debug\net7.0-windows\KDMS_MNS_Viewer.runtimeconfig.json
@@ -519,3 +507,15 @@ D:\002. Wells\001. 회사업무\002. 배전지능화팀\002. 개발소스\016. K
 D:\002. Wells\001. 회사업무\002. 배전지능화팀\002. 개발소스\016. KDMSServer\UI\KDMSViewer\obj\Debug\net7.0-windows\refint\KDMS_MNS_Viewer.dll
 D:\002. Wells\001. 회사업무\002. 배전지능화팀\002. 개발소스\016. KDMSServer\UI\KDMSViewer\obj\Debug\net7.0-windows\KDMS_MNS_Viewer.pdb
 D:\002. Wells\001. 회사업무\002. 배전지능화팀\002. 개발소스\016. KDMSServer\UI\KDMSViewer\obj\Debug\net7.0-windows\ref\KDMS_MNS_Viewer.dll
+C:\workspace\wellsts\KDMS\UI\KDMSViewer\bin\Debug\net7.0-windows\KDMS_MNS_Viewer.exe
+C:\workspace\wellsts\KDMS\UI\KDMSViewer\bin\Debug\net7.0-windows\KDMS_MNS_Viewer.deps.json
+C:\workspace\wellsts\KDMS\UI\KDMSViewer\bin\Debug\net7.0-windows\KDMS_MNS_Viewer.runtimeconfig.json
+C:\workspace\wellsts\KDMS\UI\KDMSViewer\bin\Debug\net7.0-windows\KDMS_MNS_Viewer.dll
+C:\workspace\wellsts\KDMS\UI\KDMSViewer\bin\Debug\net7.0-windows\KDMS_MNS_Viewer.pdb
+C:\workspace\wellsts\KDMS\UI\KDMSViewer\obj\Debug\net7.0-windows\KDMS_MNS_Viewer_MarkupCompile.cache
+C:\workspace\wellsts\KDMS\UI\KDMSViewer\obj\Debug\net7.0-windows\KDMS_MNS_Viewer_MarkupCompile.lref
+C:\workspace\wellsts\KDMS\UI\KDMSViewer\obj\Debug\net7.0-windows\KDMS_MNS_Viewer.g.resources
+C:\workspace\wellsts\KDMS\UI\KDMSViewer\obj\Debug\net7.0-windows\KDMS_MNS_Viewer.dll
+C:\workspace\wellsts\KDMS\UI\KDMSViewer\obj\Debug\net7.0-windows\refint\KDMS_MNS_Viewer.dll
+C:\workspace\wellsts\KDMS\UI\KDMSViewer\obj\Debug\net7.0-windows\KDMS_MNS_Viewer.pdb
+C:\workspace\wellsts\KDMS\UI\KDMSViewer\obj\Debug\net7.0-windows\ref\KDMS_MNS_Viewer.dll

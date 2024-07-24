@@ -1,4 +1,5 @@
-﻿using KdmsTcpMgr.Shared.Interface;
+﻿using KdmsTcpMgr;
+using KdmsTcpMgr.Shared.Interface;
 using KdmsTcpSocket;
 using KdmsTcpSocket.Interfaces;
 using KdmsTcpSocket.KdmsTcpStruct;
@@ -28,7 +29,7 @@ public class KdmsHmiTcpSoket : ISingletonService
     public bool KdmsTcpServerLogin(string username, string password)
     {
         // config에서 IP, 포트 가져옴
-        string serverAddr = "127.0.0.1";
+        string serverAddr = "192.168.1.172";
         int rtPort = 29001, ctlPort = 29002, evtPort = 29003;
         bool isLogin = false;
         try

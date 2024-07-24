@@ -2,6 +2,7 @@
 using KdmsTcpSocket.IO;
 using KdmsTcpSocket.Message;
 using System.IO;
+using System.Net;
 using System.Net.Sockets;
 
 namespace KdmsTcpSocket.Device
@@ -13,6 +14,9 @@ namespace KdmsTcpSocket.Device
 	{
         private readonly TcpClient _client;
         private readonly ITcpSocketNetwork _socketNetwork;
+        
+        //private readonly Func<Task> _handle;
+        private readonly Task _requestHandlerTask;
         private readonly string _endPoint;
         private readonly Stream _stream;
         //private readonly Task _requestHandlerTask;
@@ -23,8 +27,14 @@ namespace KdmsTcpSocket.Device
             _endPoint = client.Client.RemoteEndPoint.ToString();
             _stream = client.GetStream();
             _socketNetwork = socketNetwork;
+            
+            //_handle = handle;
+            _requestHandlerTask = Task.Run((Func<Task>)HandleRequestAsync);
             //_requestHandlerTask = Task.Run((Func<Task>)HandleRequestAsync);
         }
+
+        public event EventHandler<TcpConnectionEventArgs> TcpClientConnectionClosed;
+        public event EventHandler<TcpRequestEventArgs> DataProcHandler;
 
         public ITcpSocketMessage Recv()
         {
@@ -63,5 +73,31 @@ namespace KdmsTcpSocket.Device
 
             base.Dispose(disposing);
         }
+
+        private async Task HandleRequestAsync()
+        {
+            try
+            {
+                while (true)
+                {
+                    //Console.WriteLine($"Begin reading header from Master at IP: {EndPoint}");
+                    var response = Recv();
+
+                    if (response != null)
+                    {
+                        DataProcHandler?.Invoke(this, new TcpRequestEventArgs(Transport, response));
+                    }
+                    await Task.Delay(100);
+                }
+            }
+            // If an exception occurs (such as IOException in case of disconnect, or other failures), handle it as if the connection was gracefully closed
+            catch (Exception e)
+            {
+                Console.WriteLine($"{e.GetType().Name} occured with Master at {EndPoint}. Closing connection.");
+                TcpClientConnectionClosed?.Invoke(this, new TcpConnectionEventArgs(EndPoint));
+                return;
+            }
+        }
+
     }
 }
