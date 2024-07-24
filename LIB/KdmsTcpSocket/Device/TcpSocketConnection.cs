@@ -21,7 +21,7 @@ namespace KdmsTcpSocket.Device
         private readonly Stream _stream;
         //private readonly Task _requestHandlerTask;
         public TcpSocketConnection(TcpClient client, ITcpSocketNetwork socketNetwork)
-				: base(new TcpSocketIpTransport(new TcpClientAdapter(client)))
+				: base(new TcpSocketIpTransport(new TcpClientAdapter(client)) { NodeCode = (byte)eNodeCode.nc_kdms_comm })
 		{
             _client = client ?? throw new ArgumentNullException(nameof(client));
             _endPoint = client.Client.RemoteEndPoint.ToString();

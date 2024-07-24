@@ -2,6 +2,7 @@ using KdmsTcpServer.Shared.Interface;
 using KdmsTcpSocket;
 using KdmsTcpSocket.Device;
 using KdmsTcpSocket.Interfaces;
+using KdmsTcpSocket.Message;
 using System.Net;
 using System.Net.Sockets;
 using System.Text.RegularExpressions;
@@ -67,6 +68,14 @@ public class Worker : BackgroundService
         {
             case KdmsCodeInfo.kdmsOperLoginReqs:
                 {
+                    if(e.Request.RecvDatas != null)
+                    {
+                        var login = KdmsValueConverter.ByteToStruct<OperLogReq>(e.Request.RecvDatas);
+                        Console.WriteLine($"ID:{login.szUserId} PW:{login.szUserPw}");
+                        OperLogRes operLogRes = new OperLogRes { usRes = 0, usSt = 1 };
+                        var request = new KdmsDataRequest<OperLogRes>(KdmsCodeInfo.KdmsOperLoginReps, KdmsCodeInfo.KdmsOperLoginReps, operLogRes);
+                        e.ClientTransport.Write(request);
+                    }
 
                 }
                 break;

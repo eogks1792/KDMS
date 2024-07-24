@@ -44,6 +44,7 @@ namespace KdmsTcpSocket.IO
             return ResponseData();
         }
 
+
         public override ITcpSocketMessage ResponseData()
         {
             byte[] recvDatas = Read(out bool isCompress);
@@ -98,5 +99,8 @@ namespace KdmsTcpSocket.IO
 
             return responseData;
         }
+
+        public override byte NodeCode { get; set; } = (byte)eNodeCode.nc_hmi_comm;
+
     }
 }

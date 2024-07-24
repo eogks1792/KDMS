@@ -1,9 +1,7 @@
 ﻿using KdmsTcpSocket.Extensions;
 using KdmsTcpSocket.Interfaces;
 using KdmsTcpSocket.KdmsTcpStruct;
-using KdmsTcpSocket.Message;
 using KdmsTcpSocket.Unme.Common;
-using System.Data;
 using System.Net.Sockets;
 
 namespace KdmsTcpSocket.IO;
@@ -47,6 +45,8 @@ public abstract class TcpSocketTransport : ITcpSocketTransport
         set => StreamResource.WriteTimeout = value;
     }
 
+    public virtual byte NodeCode { get; set; }
+
     public IStreamResource StreamResource => _streamResource;
 
     public void Dispose()
@@ -62,7 +62,7 @@ public abstract class TcpSocketTransport : ITcpSocketTransport
         uint dataCount = 0;
         TcpPacketHeader tcpPacketHeader = new TcpPacketHeader
         {
-            ucNodeCode = (byte)eNodeCode.nc_hmi_comm,
+            ucNodeCode = NodeCode,
             ucActCode = actCode,
             usTotPktCnt = 1,
             usPktIdx = 1,
@@ -91,14 +91,14 @@ public abstract class TcpSocketTransport : ITcpSocketTransport
         packetMessage.Write(packetData, 0, packetData.Length);
         return packetMessage.ToArray();
     }
-    
+
 
     private byte[] CreatePacketData(UInt16 packetCount, UInt16 packetIndex, byte transactionId, byte[] packetData)
     {
         UInt16 packetLength = (UInt16)(packetData.Length + KdmsCodeInfo.HmiPacketHeaderSize);
         TcpPacketHeader tcpPacketHeader = new TcpPacketHeader
         {
-            ucNodeCode = (byte)eNodeCode.nc_hmi_comm,
+            ucNodeCode = NodeCode,
             ucActCode = (byte)eActionCode.rt_req,
             usTotPktCnt = packetCount,
             usPktIdx = packetIndex,
@@ -106,7 +106,7 @@ public abstract class TcpSocketTransport : ITcpSocketTransport
             ucComp = (byte)eCompress.uncompress,
             usLength = packetLength
         };
-        if(packetIndex == 1)
+        if (packetIndex == 1)
         {
             var tm = BitConverter.ToUInt32(packetData, 0);
             var requestCode = BitConverter.ToUInt16(packetData, 4);
@@ -131,12 +131,14 @@ public abstract class TcpSocketTransport : ITcpSocketTransport
         byte transactionId = GetNewTransactionId();
         byte[] frame = CreateActionPacketData(actionCode, requestCode, transactionId);
         StreamResource.Write(frame, 0, frame.Length);
-        
+
         byte[] ackPacket = Read(out bool isCompress); // ACK 수신 => ACK 처리시 확인하는게 무슨 의미가 있겠어!!!
-        //var packetHeader = KdmsValueConverter.ByteToStruct<TcpDataHeader>(ackPacket);
-        //{
-        // ACK 예외발생(종료해야할듯)
-        //}
+        var packetHeader = KdmsValueConverter.ByteToStruct<TcpDataHeader>(ackPacket);
+        if (packetHeader.sRepFc != requestCode)
+        {
+            // transactionId 와 actCode도 비교해야하지만 .... SKIP
+            throw new ArgumentException($"ACK request code is different(send:0x{requestCode.ToString("X2")} ack:0x{packetHeader.sRepFc.ToString("X2")})");
+        }
     }
 
     public virtual void Write(ITcpSocketMessage message)
@@ -151,21 +153,22 @@ public abstract class TcpSocketTransport : ITcpSocketTransport
                 UInt16 packetIndex = 0;
                 UInt16 packetCount = (UInt16)sendDatas.Count();
                 foreach (var data in sendDatas)
-                {                    
+                {
                     byte transactionId = GetNewTransactionId();
                     byte[] frame = CreatePacketData(packetCount, ++packetIndex, transactionId, data.ToArray());
                     StreamResource.Write(frame, 0, frame.Length);
                     //Sleep(WaitToRetryMilliseconds);
                     byte[] ackPacket = Read(out bool isCompress);  // ACK 수신 => ACK 처리시 확인하는게 무슨 의미가 있겠어!!!
-                    //var packetHeader = KdmsValueConverter.ByteToStruct<TcpDataHeader>(ackPacket);
-                    //if (packetHeader.ucSeq != transactionId || packetHeader.ucActCode != (byte)eActionCode.ack_packet)
-                    //{
-                        // ACK 예외발생(종료해야할듯)
-                    //}
+                    var packetHeader = KdmsValueConverter.ByteToStruct<TcpDataHeader>(ackPacket);
+                    if (packetHeader.sRepFc != message.RequestCode)
+                    {
+                        // transactionId 와 actCode도 비교해야하지만 .... SKIP
+                        throw new ArgumentException($"ACK request code is different(send:0x{message.RequestCode.ToString("X2")} ack:0x{packetHeader.sRepFc.ToString("X2")})");
+                    }
                 }
             }
         }
-        catch (Exception e) 
+        catch (Exception e)
         {
             if ((e is SocketException socketException && socketException.SocketErrorCode != SocketError.TimedOut)
                 || (e.InnerException is SocketException innerSocketException && innerSocketException.SocketErrorCode != SocketError.TimedOut))
@@ -173,8 +176,9 @@ public abstract class TcpSocketTransport : ITcpSocketTransport
                 throw;
             }
 
-            Sleep(WaitToRetryMilliseconds);
-            throw;
+            //Sleep(WaitToRetryMilliseconds);
+            throw new TcpSocketTimeoutException($"no data received for {StreamResource.ReadTimeout} seconds");
+
         }
     }
 
@@ -297,22 +301,28 @@ public abstract class TcpSocketTransport : ITcpSocketTransport
 
                 } while (true);
             }
-            catch (IOException ex)
-            {
-                SocketError socketError = SocketError.Success;
-                if (ex.InnerException is SocketException)
-                    socketError = ((SocketException)ex.InnerException).SocketErrorCode;
+            //catch (IOException ex)
+            //{
+            //    SocketError socketError = SocketError.Success;
+            //    if (ex.InnerException is SocketException)
+            //        socketError = ((SocketException)ex.InnerException).SocketErrorCode;
 
-                if (socketError == SocketError.TimedOut)
+            //    if (socketError == SocketError.TimedOut)
+            //    {
+            //        throw new TcpSocketTimeoutException($"no data received for {StreamResource.ReadTimeout} seconds");
+            //    }
+
+            //    throw;
+            //}
+            catch (Exception e)
+            {
+                if ((e is SocketException socketException && socketException.SocketErrorCode != SocketError.TimedOut)
+                || (e.InnerException is SocketException innerSocketException && innerSocketException.SocketErrorCode != SocketError.TimedOut))
                 {
-                    throw new TcpSocketTimeoutException($"no data received for {StreamResource.ReadTimeout} seconds");
+                    throw;
                 }
 
-                throw;
-            }
-            catch (Exception ex)
-            {
-                throw;
+                throw new TcpSocketTimeoutException($"no data received for {StreamResource.ReadTimeout} seconds");
             }
         }
 
