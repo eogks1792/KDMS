@@ -11,12 +11,12 @@
 using System;
 using System.Reflection;
 
-[assembly: System.Reflection.AssemblyCompanyAttribute("KDMSServer")]
+[assembly: System.Reflection.AssemblyCompanyAttribute("KDMS_MNS_Server")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+395da7d7c9e9e948a0473fc7437f0a92376c7f4a")]
-[assembly: System.Reflection.AssemblyProductAttribute("KDMSServer")]
-[assembly: System.Reflection.AssemblyTitleAttribute("KDMSServer")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+24dbef569b79aca5f9d42a06a8ea557a5815ee05")]
+[assembly: System.Reflection.AssemblyProductAttribute("KDMS_MNS_Server")]
+[assembly: System.Reflection.AssemblyTitleAttribute("KDMS_MNS_Server")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
 [assembly: System.Runtime.Versioning.TargetPlatformAttribute("Windows7.0")]
 [assembly: System.Runtime.Versioning.SupportedOSPlatformAttribute("Windows7.0")]

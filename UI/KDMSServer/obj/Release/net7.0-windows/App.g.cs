@@ -55,7 +55,7 @@ namespace KDMSServer {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/KDMSServer;component/app.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/KDMS_MNS_Server;component/app.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\App.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

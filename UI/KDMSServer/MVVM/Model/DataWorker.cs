@@ -49,7 +49,6 @@ namespace KDMSServer.Model
             _configuration = configuration;
             _commonData = commonData;
         }
-
         public void Init()
         {
             Task.Run(() =>
@@ -345,6 +344,8 @@ namespace KDMSServer.Model
                 if (rtaMaster != null)
                 {
                     _logger.Debug($"[PDB 파일] 요청 전송(PDBID: 57, 60)");
+                    _commonData.rtdbAnalogs = new List<rtdb_Analog>();
+                    _commonData.rtdbDmcs = new List<rtdb_Dmc>();
                     var response = rtaMaster.SendListData<PdbDataReqs>(KdmsCodeInfo.KdmsPdbSyncReqs, KdmsCodeInfo.KdmsPdbSyncReqs, pdbDatas);
                     while (true)
                     {
@@ -480,8 +481,6 @@ namespace KDMSServer.Model
             string min15String = _commonData.SchduleInfos.FirstOrDefault(x => x.SchduleId == (int)ProcTypeCode.STATISTICSMIN)!.SchduleValue.ToString();
             int addMin = 15 - (DateTime.Now.Minute % 15);
             DateTime min15DataInitialTime = Convert.ToDateTime(DateTime.Now.AddMinutes(addMin).AddMinutes(Convert.ToInt32(min15String)).ToString("yyyy-MM-dd HH:mm:00"));
-            //min15DataInitialTime = minDataInitialTime;
-            //pdbModifyInitialTime = minDataInitialTime;
             _logger.ServerLog($"[15분 실시간(평균부하전류)] 데이터 생성 시간: {min15DataInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
 
             while (ThreadFlag)
@@ -978,23 +977,6 @@ namespace KDMSServer.Model
                 }
             }
         }
-
-        private bool StateCheck(string ip, int port)
-        {
-            bool retval = true;
-            try
-            {
-                using (var client = new TcpClient(ip, port))
-                {
-                }
-            }
-            catch
-            {
-                retval = false;
-            }
-            return retval;
-        }
-
 
     }
 }
