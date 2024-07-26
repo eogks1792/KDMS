@@ -93,7 +93,14 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-      
+                    <GridViewColumn Header="장치타입" Width="{Binding ElementName=eqtype, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding EqType}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
                     <GridViewColumn Header="성공 여부" Width="{Binding ElementName=succ_fail, Path=ActualWidth}">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
@@ -151,10 +158,10 @@
         <Grid Visibility="Hidden">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="60"/>
-                <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="100"/>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="100"/>
 
                 <ColumnDefinition Width="130"/>
                 <ColumnDefinition Width="130"/>
@@ -167,10 +174,10 @@
                 <ColumnDefinition Width="30"/>
             </Grid.ColumnDefinitions>
             <Grid Grid.Column="0" x:Name="no"/>
-            <Grid Grid.Column="1" x:Name="subs"/>
-            <Grid Grid.Column="2" x:Name="dl"/>
-            <Grid Grid.Column="3" x:Name="sw"/>
-            <Grid Grid.Column="4" x:Name="ceq"/>
+            <Grid Grid.Column="1" x:Name="dl"/>
+            <Grid Grid.Column="2" x:Name="sw"/>
+            <Grid Grid.Column="3" x:Name="ceq"/>
+            <Grid Grid.Column="4" x:Name="eqtype"/>
 
             <Grid Grid.Column="5" x:Name="succ_fail"/>
             <Grid Grid.Column="6" x:Name="total"/>

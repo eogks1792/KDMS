@@ -14,6 +14,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace KDMSViewer.ViewModel
@@ -88,9 +89,6 @@ namespace KDMSViewer.ViewModel
         private Visibility _statisticalVisibility = Visibility.Collapsed;
 
         [ObservableProperty]
-        private Visibility _statisticalMinVisibility = Visibility.Collapsed;
-
-        [ObservableProperty]
         private DateTime _fromDate;
 
         [ObservableProperty]
@@ -100,11 +98,7 @@ namespace KDMSViewer.ViewModel
         public string _timeEditMask = CultureInfo.CurrentCulture.DateTimeFormat.LongTimePattern;
 
         [ObservableProperty]
-        private DateTime _fromTime = Convert.ToDateTime(DateTime.Now.ToString("HH:00:00"));
-
-        [ObservableProperty]
-        private DateTime _toTime = Convert.ToDateTime(DateTime.Now.AddHours(1).ToString("HH:00:00"));
-
+        private bool _isInquiry = true;
 
         public TrandViewModel(DataWorker worker)
         {
@@ -113,8 +107,8 @@ namespace KDMSViewer.ViewModel
         }
         private void DataInit()
         {
-            FromDate = Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd 00:00:00"));
-            ToDate = Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd 23:59:59"));
+            FromDate = Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd HH:00:00"));
+            ToDate = Convert.ToDateTime(DateTime.Now.AddHours(1).ToString("yyyy-MM-dd HH:00:00"));
 
             TreeItems = new ObservableCollection<TreeDataModel>(_worker.TreeDatas);
         }
@@ -172,7 +166,31 @@ namespace KDMSViewer.ViewModel
             }
             else
             {
-                if(StatisticsMinCheck)
+                if (StatisticsMinCheck)
+                {
+                    name = "AVERAGE_CURRENT";
+                    if (CurrentA)
+                    {
+                        check = $"{name}_A";
+                        retList.AddRange(PointItems.Where(p => p.PointName.Contains(check)).ToList());
+                    }
+                    if (CurrentB)
+                    {
+                        check = $"{name}_B";
+                        retList.AddRange(PointItems.Where(p => p.PointName.Contains(check)).ToList());
+                    }
+                    if (CurrentC)
+                    {
+                        check = $"{name}_C";
+                        retList.AddRange(PointItems.Where(p => p.PointName.Contains(check)).ToList());
+                    }
+                    if (CurrentN)
+                    {
+                        check = $"{name}_N";
+                        retList.AddRange(PointItems.Where(p => p.PointName.Contains(check)).ToList());
+                    }
+                }
+                else
                 {
                     if (Average)
                     {
@@ -198,35 +216,8 @@ namespace KDMSViewer.ViewModel
                             retList.AddRange(PointItems.Where(p => p.PointName.Contains(check)).ToList());
                         }
                     }
-                }
-                else
-                {
-                    if(Average)
-                    {
-                        name = "AVERAGE_CURRENT";
-                        if (CurrentA)
-                        {
-                            check = $"{name}_A";
-                            retList.AddRange(PointItems.Where(p => p.PointName.Contains(check)).ToList());
-                        }
-                        if (CurrentB)
-                        {
-                            check = $"{name}_B";
-                            retList.AddRange(PointItems.Where(p => p.PointName.Contains(check)).ToList());
-                        }
-                        if (CurrentC)
-                        {
-                            check = $"{name}_C";
-                            retList.AddRange(PointItems.Where(p => p.PointName.Contains(check)).ToList());
-                        }
-                        if (CurrentN)
-                        {
-                            check = $"{name}_N";
-                            retList.AddRange(PointItems.Where(p => p.PointName.Contains(check)).ToList());
-                        }
-                    }
 
-                    if(Max)
+                    if (Max)
                     {
                         name = "MAX_CURRENT";
                         if (CurrentA)
@@ -251,7 +242,7 @@ namespace KDMSViewer.ViewModel
                         }
                     }
 
-                    if(Min)
+                    if (Min)
                     {
                         name = "MIN_CURRENT";
                         if (CurrentA)
@@ -465,7 +456,7 @@ namespace KDMSViewer.ViewModel
             
             if (MinDataCheck)
             {
-                _worker.GetTrandData(ceqList, (int)SearchTypeCode.MINDATA, FromDate, ToDate, FromTime, ToTime);
+                _worker.GetTrandData(ceqList, (int)SearchTypeCode.MINDATA, FromDate, ToDate);
             }
             else if (DayStatCheck)
             {
@@ -499,6 +490,8 @@ namespace KDMSViewer.ViewModel
             CurrentCheck = false;
             VoltageCheck = true;
             VoltageCheck = false;
+            Application.Current.Dispatcher.Invoke(() => { Mouse.OverrideCursor = Cursors.Arrow; });
+            IsInquiry = true;
 
             //// 날짜 데이터 범위 
             //// 체크된 변전소, DL, 스위치 
@@ -532,8 +525,10 @@ namespace KDMSViewer.ViewModel
         [RelayCommand]
         private async void Inquiry()
         {
+            Mouse.OverrideCursor = Cursors.Wait;
             await Task.Run(() =>
             {
+                IsInquiry = false;
                 GetData();
             });
         }
@@ -563,7 +558,6 @@ namespace KDMSViewer.ViewModel
             ItemCount = 0;
 
             StatisticalVisibility = Visibility.Visible;
-            StatisticalMinVisibility = Visibility.Visible;
             RealVisibility = Visibility.Collapsed;
         }
 
@@ -577,8 +571,7 @@ namespace KDMSViewer.ViewModel
             PointItems = new List<ChartPointDataModel>();
             ItemCount = 0;
 
-            StatisticalVisibility = Visibility.Visible;
-            StatisticalMinVisibility = Visibility.Collapsed;
+            StatisticalVisibility = Visibility.Collapsed;
             RealVisibility = Visibility.Collapsed;
         }
 
@@ -593,7 +586,6 @@ namespace KDMSViewer.ViewModel
             ItemCount = 0;
 
             StatisticalVisibility = Visibility.Visible;
-            StatisticalMinVisibility = Visibility.Visible;
             RealVisibility = Visibility.Collapsed;
         }
 
@@ -608,7 +600,6 @@ namespace KDMSViewer.ViewModel
             ItemCount = 0;
 
             StatisticalVisibility = Visibility.Visible;
-            StatisticalMinVisibility = Visibility.Visible;
             RealVisibility = Visibility.Collapsed;
         }
 
@@ -623,7 +614,6 @@ namespace KDMSViewer.ViewModel
             ItemCount = 0;
 
             StatisticalVisibility = Visibility.Visible;
-            StatisticalMinVisibility = Visibility.Visible;
             RealVisibility = Visibility.Collapsed;
         }
 
@@ -638,12 +628,8 @@ namespace KDMSViewer.ViewModel
             ItemCount = 0;
 
             StatisticalVisibility = Visibility.Visible;
-            StatisticalMinVisibility = Visibility.Visible;
             RealVisibility = Visibility.Collapsed;
         }
-
-
-
 
     }
 }

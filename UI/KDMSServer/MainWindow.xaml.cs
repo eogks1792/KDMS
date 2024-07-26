@@ -35,8 +35,8 @@ namespace KDMSServer
                 return;
             }
 
-            _worker.SocketClose();
             _worker.ThreadClose();
+            _worker.SocketClose();
         }
 
         

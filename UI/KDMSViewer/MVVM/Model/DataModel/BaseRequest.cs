@@ -11,7 +11,5 @@ namespace KDMSViewer.Model
         public List<long> CeqList { get; set; }
         public DateTime FromDate { get; set; }
         public DateTime ToDate { get; set; }
-        public DateTime FromTime { get; set; }
-        public DateTime ToTime { get; set; }
     }
 }

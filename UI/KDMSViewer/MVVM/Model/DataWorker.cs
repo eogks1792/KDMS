@@ -61,26 +61,26 @@ namespace KDMSViewer.Model
             });
         }
 
-        public void ThreadFilterMessage(ref MSG msg, ref bool handled)
-        {
-            if (msg.message == Win32API.message && msg.wParam != Win32API.handle)
-            {
-                MessageBox.Show("Message : " + msg.lParam.ToString());
-            }
-        }
+        //public void ThreadFilterMessage(ref MSG msg, ref bool handled)
+        //{
+        //    if (msg.message == Win32API.message && msg.wParam != Win32API.handle)
+        //    {
+        //        MessageBox.Show("Message : " + msg.lParam.ToString());
+        //    }
+        //}
 
-        public void PostMessageSend(int value)
-        {
-            var retValue = Win32API.PostMessage((IntPtr)Win32API.HWND_BROADCAST, Win32API.message, (uint)Win32API.handle, (uint)value);
-            if(retValue)
-            {
+        //public void PostMessageSend(int value)
+        //{
+        //    var retValue = Win32API.PostMessage((IntPtr)Win32API.HWND_BROADCAST, Win32API.message, (uint)Win32API.handle, (uint)value);
+        //    if(retValue)
+        //    {
 
-            }
-            else
-            {
-                MessageBox.Show("111111111111");
-            }
-        }
+        //    }
+        //    else
+        //    {
+        //        MessageBox.Show("111111111111");
+        //    }
+        //}
 
         private void TreeViewListInit()
         {
@@ -88,7 +88,7 @@ namespace KDMSViewer.Model
             TreeDatas = _commonData.TreeListInit();
         }
 
-        public async void GetTrandData(List<long> ceqList, int type, DateTime fromDate, DateTime toDate, DateTime fromTime = new DateTime(), DateTime toTime = new DateTime())
+        public async void GetTrandData(List<long> ceqList, int type, DateTime fromDate, DateTime toDate)
         {
             var model = App.Current.Services.GetService<TrandViewModel>()!;
             if (model == null)
@@ -105,8 +105,6 @@ namespace KDMSViewer.Model
                                 CeqList = ceqList,
                                 FromDate = fromDate,
                                 ToDate = toDate,
-                                FromTime = fromTime,
-                                ToTime = toTime
                             };
 
                             var response = await _mediator.Send(request);
@@ -838,7 +836,7 @@ namespace KDMSViewer.Model
             }
         }
 
-        public async void GetSearchData(List<long> ceqList, int type, DateTime fromDate, DateTime toDate, DateTime fromTime = new DateTime(), DateTime toTime = new DateTime())
+        public async void GetSearchData(List<long> ceqList, int type, DateTime fromDate, DateTime toDate)
         {
             var dataModel = App.Current.Services.GetService<DataViewModel>()!;
             if (dataModel == null)
@@ -855,8 +853,6 @@ namespace KDMSViewer.Model
                                 CeqList = ceqList,
                                 FromDate = fromDate,
                                 ToDate = toDate,
-                                FromTime = fromTime,
-                                ToTime = toTime
                             };
 
                             var model = App.Current.Services.GetService<ViewModel_SwitchData>()!;
@@ -889,7 +885,7 @@ namespace KDMSViewer.Model
                             {
                                 CeqList = ceqList,
                                 FromDate = fromDate,
-                                ToDate = toDate
+                                ToDate = toDate,
                             };
 
                             var model = App.Current.Services.GetService<ViewModel_DayStatData>()!;
@@ -922,7 +918,7 @@ namespace KDMSViewer.Model
                             {
                                 CeqList = ceqList,
                                 FromDate = fromDate,
-                                ToDate = toDate
+                                ToDate = toDate,
                             };
 
                             var model = App.Current.Services.GetService<ViewModel_StatisticsMinData>()!;
@@ -955,7 +951,7 @@ namespace KDMSViewer.Model
                             {
                                 CeqList = ceqList,
                                 FromDate = fromDate,
-                                ToDate = toDate
+                                ToDate = toDate,
                             };
 
                             var model = App.Current.Services.GetService<ViewModel_StatisticsHourData>()!;
@@ -988,7 +984,7 @@ namespace KDMSViewer.Model
                             {
                                 CeqList = ceqList,
                                 FromDate = fromDate,
-                                ToDate = toDate
+                                ToDate = toDate,
                             };
 
                             var model = App.Current.Services.GetService<ViewModel_StatisticsDayData>()!;
@@ -1021,7 +1017,7 @@ namespace KDMSViewer.Model
                             {
                                 CeqList = ceqList,
                                 FromDate = fromDate,
-                                ToDate = toDate
+                                ToDate = toDate,
                             };
 
                             var model = App.Current.Services.GetService<ViewModel_StatisticsMonthData>()!;
@@ -1054,7 +1050,7 @@ namespace KDMSViewer.Model
                             {
                                 CeqList = ceqList,
                                 FromDate = fromDate,
-                                ToDate = toDate
+                                ToDate = toDate,
                             };
 
                             var model = App.Current.Services.GetService<ViewModel_StatisticsYearData>()!;
@@ -1087,7 +1083,7 @@ namespace KDMSViewer.Model
                             {
                                 CeqList = ceqList,
                                 FromDate = fromDate,
-                                ToDate = toDate
+                                ToDate = toDate,
                             };
 
                             var model = App.Current.Services.GetService<ViewModel_FiAlarmData>()!;
@@ -1120,7 +1116,7 @@ namespace KDMSViewer.Model
                             {
                                 CeqList = ceqList,
                                 FromDate = fromDate,
-                                ToDate = toDate
+                                ToDate = toDate,
                             };
 
                             var model = App.Current.Services.GetService<ViewModel_CommDayData>()!;
@@ -1153,7 +1149,7 @@ namespace KDMSViewer.Model
                             {
                                 CeqList = ceqList,
                                 FromDate = fromDate,
-                                ToDate = toDate
+                                ToDate = toDate,
                             };
 
                             var model = App.Current.Services.GetService<ViewModel_CommLogData>()!;
@@ -1289,7 +1285,6 @@ namespace KDMSViewer.Model
                         var configModel = App.Current.Services.GetService<ConfigViewModel>()!;
                         if (configModel != null)
                         {
-                            // 서버 상태
                             // 서버 상태
                             var serverState = ProgramHandler.GetProcID(configModel.serverName);
                             if (serverState > 0)

@@ -42,7 +42,7 @@ namespace KDMSViewer.Model
                 Substations = _kdmsContext.Substations.ToList();
                 Distributionlines = _kdmsContext.Distributionlines.ToList();
                 Compositeswitchs = _kdmsContext.Compositeswitches.ToList();
-                ConductingEquipments = _kdmsContext.PdbConductingequipments.ToList();
+                ConductingEquipments = _kdmsContext.PdbConductingequipments.Where(p => (p.Psrtype >= 58 && p.Psrtype <= 88) || p.Psrtype == 105).ToList();
                 //distributionLinesegments = _kdmsContext.PdbDistributionlinesegments.ToList();
                 TreeListInit();
             }
@@ -82,12 +82,12 @@ namespace KDMSViewer.Model
                         var compositList = multiSwList.Select(p => p.EcFk).ToList();
                         foreach (var compositeswitch in Compositeswitchs.Where(p => compositList.Any(x => x == p.Pid)))
                         {
-                            TreeDataModel composit = new TreeDataModel();
-                            composit.Type = TreeTypeCode.COMPOSITE;
-                            composit.Id = compositeswitch.Pid;
-                            composit.Name = compositeswitch.Name!.Trim() ?? string.Empty;
-                            composit.IsVisible = Visibility.Collapsed;
-                            dl.DataModels.Add(composit);
+                            //TreeDataModel composit = new TreeDataModel();
+                            //composit.Type = TreeTypeCode.COMPOSITE;
+                            //composit.Id = compositeswitch.Pid;
+                            //composit.Name = compositeswitch.Name!.Trim() ?? string.Empty;
+                            //composit.IsVisible = Visibility.Collapsed;
+                            //dl.DataModels.Add(composit);
 
                             foreach (var conductingEquipment in ConductingEquipments.Where(p => p.EcFk == compositeswitch.Pid))
                             {
@@ -95,7 +95,8 @@ namespace KDMSViewer.Model
                                 equipment.Type = TreeTypeCode.EQUIPMENT;
                                 equipment.Id = conductingEquipment.Ceqid;
                                 equipment.Name = conductingEquipment.Name!.Trim() ?? string.Empty;
-                                composit.DataModels.Add(equipment);
+                                //composit.DataModels.Add(equipment);
+                                dl.DataModels.Add(equipment);
                             }
                         }
                     }
@@ -201,7 +202,7 @@ namespace KDMSViewer.Model
             return treeDatas;
         }
 
-        public List<HistoryMinDatum> SwitchDataLoad(List<long> ceqList, DateTime fromDate, DateTime toDate, DateTime fromTime, DateTime toTime)
+        public List<HistoryMinDatum> SwitchDataLoad(List<long> ceqList, DateTime fromDate, DateTime toDate)
         {
             var lst = string.Join(", ", ceqList.ToArray());
             List<HistoryMinDatum> retList = new List<HistoryMinDatum>();
@@ -210,16 +211,16 @@ namespace KDMSViewer.Model
 
             if (fromDate.Day == toDate.Day)
             {
-                sb.AppendLine($"select * from history_min_data_{fromDate.ToString("yyyyMMdd")} where ceqid in ({lst}) and save_time >= '{fromDate.ToString($"yyyy-MM-dd {fromTime.ToString("HH:mm:00")}")}'  and save_time <= '{toDate.ToString($"yyyy-MM-dd {toTime.ToString("HH:mm:59")}")}'");
+                sb.AppendLine($"select * from history_min_data_{fromDate.ToString("yyyyMMdd")} where ceqid in ({lst}) and save_time >= '{fromDate.ToString($"yyyy-MM-dd HH:mm:ss")}' and save_time <= '{toDate.ToString($"yyyy-MM-dd HH:mm:ss")}'");
             }
             else
             {
                 for (DateTime st = fromDate; st < toDate; st = st.AddYears(1))
                 {
                     if (st.Day == fromDate.Day)
-                        sb.AppendLine($"select * from history_min_data_{st.ToString("yyyyMMdd")} where ceqid in ({lst}) and save_time >= '{st.ToString($"yyyy-MM-dd {fromTime.ToString("HH:mm:00")}")}'");
+                        sb.AppendLine($"select * from history_min_data_{st.ToString("yyyyMMdd")} where ceqid in ({lst}) and save_time >= '{st.ToString($"yyyy-MM-dd HH:mm:ss")}'");
                     else if (st.Day == toDate.Day)
-                        sb.AppendLine($"select * from history_min_data_{st.ToString("yyyyMMdd")} where ceqid in ({lst}) and save_time <= '{toDate.ToString($"yyyy-MM-dd {toTime.ToString("HH:mm:59")}")}'");
+                        sb.AppendLine($"select * from history_min_data_{st.ToString("yyyyMMdd")} where ceqid in ({lst}) and save_time <= '{toDate.ToString($"yyyy-MM-dd HH:mm:ss")}'");
                     else
                         sb.AppendLine($"select * from history_min_data_{st.ToString("yyyyMMdd")} where ceqid in ({lst}) and save_time >= '{st.ToString("yyyy-MM-dd 00:00:00")}' and save_time <= '{st.ToString("yyyy-MM-dd 23:59:59")}'");
 
@@ -243,16 +244,16 @@ namespace KDMSViewer.Model
             StringBuilder sb = new StringBuilder();
             if (fromDate.Year == toDate.Year)
             {
-                sb.AppendLine($"select * from history_daystat_data_{fromDate.ToString("yyyy")} where ceqid in ({lst}) and save_time >= '{fromDate.ToString("yyyy-MM-dd 00:00:00")}' and save_time <= '{toDate.ToString("yyyy-MM-dd 23:59:59")}'");
+                sb.AppendLine($"select * from history_daystat_data_{fromDate.ToString("yyyy")} where ceqid in ({lst}) and save_time >= '{fromDate.ToString("yyyy-MM-dd HH:mm:ss")}' and save_time <= '{toDate.ToString("yyyy-MM-dd HH:mm:ss")}'");
             }
             else
             {
                 for (DateTime st = fromDate; st < toDate; st = st.AddYears(1))
                 {
                     if (st.Year == fromDate.Year)
-                        sb.AppendLine($"select * from history_daystat_data_{st.ToString("yyyy")} where ceqid in ({lst}) and save_time >= '{st.ToString("yyyy-MM-dd 00:00:00")}'");
+                        sb.AppendLine($"select * from history_daystat_data_{st.ToString("yyyy")} where ceqid in ({lst}) and save_time >= '{st.ToString("yyyy-MM-dd HH:mm:ss")}'");
                     else if (st.Year == toDate.Year)
-                        sb.AppendLine($"select * from history_daystat_data_{st.ToString("yyyy")} where ceqid in ({lst}) and save_time <= '{toDate.ToString("yyyy-MM-dd 23:00:00")}'");
+                        sb.AppendLine($"select * from history_daystat_data_{st.ToString("yyyy")} where ceqid in ({lst}) and save_time <= '{toDate.ToString("yyyy-MM-dd HH:mm:ss")}'");
                     else
                         sb.AppendLine($"select * from history_daystat_data_{st.ToString("yyyy")} where ceqid in ({lst}) and save_time >= '{st.ToString("yyyy-01-01 00:00:00")}' and save_time <= '{st.ToString("yyyy-12-31 23:59:59")}'");
 

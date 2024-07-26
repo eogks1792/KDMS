@@ -8,14 +8,17 @@ using KDMS.EF.Core.Extensions;
 using KDMS.EF.Core.Infrastructure.Reverse;
 using KDMS.EF.Core.Infrastructure.Reverse.Models;
 using KdmsTcpSocket;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using Serilog;
 using System.Data;
 using System.IO;
+using System.Security.Claims;
 using System.Text;
 using System.Windows;
+using System.Windows.Markup;
 using System.Windows.Media;
 using static DevExpress.Utils.HashCodeHelper.Primitives;
 using static DevExpress.XtraPrinting.Native.ExportOptionsPropertiesNames;
@@ -33,7 +36,7 @@ namespace KDMSServer.Model
         public List<StorageInfo> StorageInfos { get; set; }
         public List<PdbList> pdbLists { get; set; }
         private List<AiInfo> AiInfos { get; set; }
-        private List<Distributionline> Distributionlines { get; set; }
+        private List<AlarmInfo> AlarmInfos { get; set; }
         private List<PdbRemoteunit> Remoteunits { get; set; }
 
         // PDB 데이터
@@ -43,9 +46,17 @@ namespace KDMSServer.Model
         public List<pdb_SetPoint> pdbSetPoints = new List<pdb_SetPoint>();
         public List<pdb_Accumulator> pdbAccumulators = new List<pdb_Accumulator>();
         public List<pdb_Dmc> pdbDmcs = new List<pdb_Dmc>();
-        public List<pdb_ConductingEquipment> PdbConductingequipments = new List<pdb_ConductingEquipment>();
         public List<rtdb_Analog> rtdbAnalogs = new List<rtdb_Analog>();
         public List<rtdb_Dmc> rtdbDmcs = new List<rtdb_Dmc>();
+
+        // PDB 데이터 => 데이터베이스 저장필요
+        public List<pdb_ConductingEquipment> pdbConductingequipments = new List<pdb_ConductingEquipment>();
+        public List<pdb_DistributionLineSegment> pdbDistributionLineSegments = new List<pdb_DistributionLineSegment>();
+        public List<pdb_GeographicalRegion> pdbGeographicalRegions = new List<pdb_GeographicalRegion>();
+        public List<pdb_SubGeographicalRegion> pdbSubGeographicalRegions = new List<pdb_SubGeographicalRegion>();
+        public List<pdb_SubStation> pdbSubStations = new List<pdb_SubStation>();
+        public List<pdb_DistributionLine> pdbDistributionLines = new List<pdb_DistributionLine>();
+        public List<pdb_PowerTransformer> pdbPowerTransformers = new List<pdb_PowerTransformer>();
 
         public CommonDataModel(KdmsContext kdmsContext, IConfiguration configuration, ILogger logger)
         {
@@ -63,7 +74,7 @@ namespace KDMSServer.Model
             pdbLists = _kdmsContext.PdbLists.ToList();
 
             AiInfos = _kdmsContext.AiInfos.ToList();
-            Distributionlines = _kdmsContext.Distributionlines.ToList();
+            AlarmInfos = _kdmsContext.AlarmInfos.ToList();
             Remoteunits = _kdmsContext.PdbRemoteunits.Where(p => p.DmcFk != 0).ToList();
         }
 
@@ -131,10 +142,20 @@ namespace KDMSServer.Model
         public void MinDataSave(DateTime date/*, List<rtdb_Analog> rtList, List<pdb_Analog> analogList, List<pdb_ConductingEquipment> equipmentList*/)
         {
             List<HistoryMinDatum> dataList = new List<HistoryMinDatum>();
-            foreach (var equipment in PdbConductingequipments)
+            foreach (var equipment in pdbConductingequipments)
             {
                 if (equipment.ceqid <= 0)
                     continue;
+
+                if (equipment.rtu_type == 1)    // RTU 타입이 1이면 수동
+                    continue;
+
+                var findDl = pdbDistributionLines.FirstOrDefault(p => p.dlid == equipment.dl_fk);
+                if (findDl.dlid <= 0)
+                {
+                    _logger.Debug($"[1분 실시간] DistributionLine DlId:0 / Equipment DlFk:{equipment.dl_fk}");
+                    continue;
+                }
 
                 var ceqAnalogList = pdbAnalogs.Where(p => p.ceq_fk == equipment.ceqid).ToList();
                 HistoryMinDatum data = new HistoryMinDatum();
@@ -161,7 +182,7 @@ namespace KDMSServer.Model
                             data.Name = GetStringData(equipment.name);
                             break;
                         case 7:
-                            data.Dl = Distributionlines.FirstOrDefault(p => p.Dlid == equipment.dl_fk)?.Name;
+                            data.Dl = GetStringData(findDl.name);
                             break;
                         case 8:
                             data.Diagnostics = (int)GetMinDataValue(ceqAnalogList, ai.Datapointid ?? 0);
@@ -316,10 +337,20 @@ namespace KDMSServer.Model
         public void StatisticsMinDataSave(DateTime date/*, List<rtdb_Analog> rtList, List<pdb_Analog> analogList, List<pdb_ConductingEquipment> equipmentList*/)
         {
             List<Statistics15min> dataList = new List<Statistics15min>();
-            foreach (var equipment in PdbConductingequipments)
+            foreach (var equipment in pdbConductingequipments)
             {
                 if (equipment.ceqid <= 0)
                     continue;
+
+                if (equipment.rtu_type == 1)    // RTU 타입이 1이면 수동
+                    continue;
+
+                var findDl = pdbDistributionLines.FirstOrDefault(p => p.dlid == equipment.dl_fk);
+                if (findDl.dlid <= 0)
+                {
+                    _logger.Debug($"[15분 실시간(평균부하전류)] DistributionLine DlId:0 / Equipment DlFk:{equipment.dl_fk}");
+                    continue;
+                }
 
                 var ceqAnalogList = pdbAnalogs.Where(p => p.ceq_fk == equipment.ceqid).ToList();
 
@@ -329,7 +360,7 @@ namespace KDMSServer.Model
                 data.Cpsid = (int)equipment.ec_fk;
                 data.Circuitno = GetMinDataCircuitno(ceqAnalogList, AiInfos.FirstOrDefault(p => p.No == 45)?.Datapointid ?? 0);
                 data.Name = GetStringData(equipment.name);
-                data.Dl = Distributionlines.FirstOrDefault(p => p.Dlid == equipment.dl_fk)?.Name;
+                data.Dl = GetStringData(findDl.name);
                 data.AverageCurrentA = GetMinDataValue(ceqAnalogList, 45);
                 data.AverageCurrentB = GetMinDataValue(ceqAnalogList, 46);
                 data.AverageCurrentC = GetMinDataValue(ceqAnalogList, 47);
@@ -442,43 +473,68 @@ namespace KDMSServer.Model
         public void CommStateDataSave(DateTime date/*, List<rtdb_Dmc> rtList, List<pdb_ConductingEquipment> equipmentList*/)
         {
             List<HistoryCommState> dataList = new List<HistoryCommState>();
-
             foreach(var remote in Remoteunits)
             {
-                if(remote.EqType == 1)
+                if (remote.EqType == 1)
                 {
-                    var equipment = PdbConductingequipments.FirstOrDefault(p => p.ceqid != 0 && p.ceqid == remote.EqFk);
+                    var equipment = pdbConductingequipments.FirstOrDefault(p => p.ceqid != 0 && p.ceqid == remote.EqFk);
                     if (equipment.ceqid <= 0)
+                    {
+                        _logger.Debug($"[통신 성공률] Conductingequipment CEQID:0 / Remote EqFk:{remote.EqFk}");
+                        continue;
+                    }
+
+                    if (equipment.rtu_type == 1)    // RTU 타입이 1이면 수동
                         continue;
 
-                        HistoryCommState data = new HistoryCommState();
-                        data.SaveTime = date;
-                        data.Dl = Distributionlines.FirstOrDefault(p => p.Dlid == equipment.dl_fk)?.Name;
-                        data.Name = GetStringData(equipment.name);
+                    var findDl = pdbDistributionLines.FirstOrDefault(p => p.dlid == equipment.dl_fk);
+                    if (findDl.dlid <= 0)
+                    {
+                        _logger.Debug($"[통신 성공률] DistributionLine DlId:0 / Equipment DlFk:{equipment.dl_fk}");
+                        continue;
+                    }
 
-                        data.EqType = remote.EqType ?? 0;
-                        data.Ceqid = (int)equipment.ceqid;
-                        data.Cpsid = 0;
+                    HistoryCommState data = new HistoryCommState();
+                    data.SaveTime = date;
+                    data.Dl = GetStringData(findDl.name);
+                    data.Name = GetStringData(equipment.name);
 
-                        data.CommSucessCount = (int)GetCommDataValue(Convert.ToInt32(remote.CommDmcFk + 3000 ?? 0));
-                        data.CommFailCount = (int)GetCommDataValue(Convert.ToInt32(remote.CommDmcFk + 6000 ?? 0));
-                        data.CommTotalCount = data.CommSucessCount + data.CommFailCount;
-                        data.CommSucessRate = GetCommDataValue(Convert.ToInt32(remote.CommDmcFk ?? 0));
-                        data.CommTime = GetCommDataTime(Convert.ToInt32(remote.CommDmcFk ?? 0), date);
+                    data.EqType = remote.EqType ?? 0;
+                    data.Ceqid = (int)equipment.ceqid;
+                    data.Cpsid = 0;
 
-                        dataList.Add(data);
+                    data.CommSucessCount = (int)GetCommDataValue(Convert.ToInt32(remote.CommDmcFk + 3000 ?? 0));
+                    data.CommFailCount = (int)GetCommDataValue(Convert.ToInt32(remote.CommDmcFk + 6000 ?? 0));
+                    data.CommTotalCount = data.CommSucessCount + data.CommFailCount;
+                    data.CommSucessRate = GetCommDataValue(Convert.ToInt32(remote.CommDmcFk ?? 0));
+                    data.CommTime = GetCommDataTime(Convert.ToInt32(remote.CommDmcFk ?? 0), date);
+
+                    dataList.Add(data);
                 }
                 else
                 {
-                    var findList = PdbConductingequipments.Where(p => p.ceqid != 0 && p.ec_fk == remote.EqFk).ToList();
+                    var findList = pdbConductingequipments.Where(p => p.ceqid != 0 && p.ec_fk == remote.EqFk).ToList();
                     if (findList.Count <= 0)
+                    {
+                        _logger.Debug($"[통신 성공률] Conductingequipment CEQID:0 / Remote EqFk:{remote.EqFk}");
                         continue;
+                    }
 
                     foreach (var equipment in findList)
                     {
+                        var findDl = pdbDistributionLines.FirstOrDefault(p => p.dlid == equipment.dl_fk);
+                        if (findDl.dlid <= 0)
+                        {
+                            _logger.Debug($"[통신 성공률] DistributionLine DlId:0 / Equipment DlFk:{equipment.dl_fk}");
+                            continue;
+                        }
+
+                        if (equipment.rtu_type == 1)    // RTU 타입이 1이면 수동
+                            continue;
+
                         HistoryCommState data = new HistoryCommState();
                         data.SaveTime = date;
-                        data.Dl = Distributionlines.FirstOrDefault(p => p.Dlid == equipment.dl_fk)?.Name;
+                        data.Dl = GetStringData(findDl.name);
                         data.Name = GetStringData(equipment.name);
 
                         data.EqType = remote.EqType ?? 0;
@@ -570,24 +626,35 @@ namespace KDMSServer.Model
         public void CommStateLogDataSave(List<rtdb_Alarm> alarmList)
         {
             var date = DateTime.Now;
-            List<HistoryCommStateLog> dataList = new List<HistoryCommStateLog>();
             foreach (var alarm in alarmList)
             {
                 var remote = Remoteunits.FirstOrDefault(p => p.Pid == alarm.uiRtuid);
                 if (remote == null)
+                {
+                    _logger.Debug($"[통신상태 이력] Remoteunit RTUID:{alarm.uiRtuid} 없음 ");
                     continue;
+                }
 
-                var dl = Distributionlines.FirstOrDefault(p => p.Dlid == alarm.uiDL);
-                if (dl == null)
+                var findDl = pdbDistributionLines.FirstOrDefault(p => p.dlid == alarm.uiDL);
+                if (findDl.dlid <= 0)
+                {
+                    _logger.Debug($"[통신상태 이력] DistributionLine DlId:0 / Alarm DlId:{alarm.uiDL}");
                     continue;
+                }
 
-                var equipment = PdbConductingequipments.FirstOrDefault(p => p.ceqid == alarm.uiEqid);
+                var equipment = pdbConductingequipments.FirstOrDefault(p => p.ceqid == alarm.uiEqid);
                 if (equipment.ceqid <= 0)
+                {
+                    _logger.Debug($"[통신상태 이력] Conductingequipment CEQID:0 / Alarm EqId:{alarm.uiEqid}");
+                    continue;
+                }
+
+                if (equipment.rtu_type == 1)    // RTU 타입이 1이면 수동
                     continue;
 
                 HistoryCommStateLog data = new HistoryCommStateLog();
                 data.SaveTime = date;
-                data.Dl = dl.Name;
+                data.Dl = GetStringData(findDl.name);
                 data.Name = GetStringData(equipment.name);
 
                 data.EqType = remote.EqType ?? 0;
@@ -600,38 +667,85 @@ namespace KDMSServer.Model
                 data.CommSucessRate = GetCommDataValue(Convert.ToInt32(remote.CommDmcFk ?? 0));
                 data.CommTime = GetCommDataTime(Convert.ToInt32(remote.CommDmcFk ?? 0), date);
 
-                dataList.Add(data);
-            }
-            
-            if (dataList.Count > 0)
-            {
                 try
                 {
-                    StringBuilder sb = new StringBuilder();
-                    sb.AppendLine($"insert into history_comm_state_log values ");
-                    int cnt = 0;
-                    foreach (var data in dataList)
-                    {
-                        cnt++;
-                        sb.Append($"('{data.SaveTime.ToString("yyyy-MM-dd HH:mm:ss")}', {data.EqType}, {data.Ceqid}, {data.Cpsid}, '{data.Name?.Trim()}', '{data.Dl?.Trim()}', {data.CommState}" +
-                            $" {data.CommTotalCount}, {data.CommSucessCount}, {data.CommFailCount}, {data.CommSucessRate:N2}, '{data.CommTime?.ToString("yyyy-MM-dd HH:mm:ss")}')");
-
-                        if (cnt != dataList.Count)
-                            sb.AppendLine(",");
-                        else
-                            sb.AppendLine(";");
-                    }
+                    string query = $"insert into history_comm_state_log values ('{data.SaveTime.ToString("yyyy-MM-dd HH:mm:ss")}', {data.EqType}, {data.Ceqid}, {data.Cpsid}, '{data.Name?.Trim()}', '{data.Dl?.Trim()}', {data.CommState}" +
+                        $" {data.CommTotalCount}, {data.CommSucessCount}, {data.CommFailCount}, {data.CommSucessRate:N2}, '{data.CommTime?.ToString("yyyy-MM-dd HH:mm:ss")}')";
 
                     using (MySqlMapper mapper = new MySqlMapper(_configuration))
                     {
-                        mapper.RunQuery(sb.ToString());
+                        mapper.RunQuery(query);
+                        _logger.ServerLog($"[통신상태 이력] CEQ:{data.Ceqid} 통신:{(data.CommState == true ? "성공" : "실패")} 데이터 입력 완료 ");
                     }
                 }
                 catch (Exception ex)
                 {
                     _logger.ServerLog($"[통신상태 이력] 데이터 입력중 예외 발생 ex:{ex.Message}");
                 }
+
             }
+        }
+
+        private bool AlarmFilterCheck(int pointType, int pointId)
+        {
+            bool retValue = false;
+            int dataPointId = 0;
+            switch (pointType)
+            {
+                case (int)PointTypeCode.BI:
+                    {
+                        var find = pdbDiscretes.FirstOrDefault(p => p.pid == pointId);
+                        if (find.pid > 0)
+                            dataPointId = (int)find.dp_fk;
+                    }
+                    break;
+                case (int)PointTypeCode.BO:
+                    {
+                        var find = pdbCommands.FirstOrDefault(p => p.pid == pointId);
+                        if (find.pid > 0)
+                            dataPointId = (int)find.dp_fk;
+                    }
+                    break;
+                case (int)PointTypeCode.AI:
+                    {
+                        var find = pdbAnalogs.FirstOrDefault(p => p.pid == pointId);
+                        if (find.pid > 0)
+                            dataPointId = (int)find.dp_fk;
+                    }
+                    break;
+                case (int)PointTypeCode.AO:
+                    {
+                        var find = pdbSetPoints.FirstOrDefault(p => p.pid == pointId);
+                        if (find.pid > 0)
+                            dataPointId = (int)find.dp_fk;
+                    }
+                    break;
+                case (int)PointTypeCode.COUNTER:
+                    {
+                        var find = pdbAccumulators.FirstOrDefault(p => p.pid == pointId);
+                        if (find.pid > 0)
+                            dataPointId = (int)find.dp_fk;
+                    }
+                    break;
+            }
+
+            if(dataPointId > 0)
+            {
+                var alarmFilter = AlarmInfos.FirstOrDefault(p => p.PointId == dataPointId);
+                if (alarmFilter != null)
+                {
+                    if (!alarmFilter.UseYn)
+                        _logger.ServerLog($"[알람 실시간] ALARM PID:{pointId} DATAPOINT ID:{alarmFilter.PointId} PN:{alarmFilter.PointName} 항목은 알람 필터링 대상.");
+                    else
+                        retValue = true;
+                }
+                else
+                    _logger.Debug($"[알람 실시간] ALARM PID:{pointId} DATAPOINT ID:{dataPointId} 알람 필터링 데이터가 없음.");
+            }
+            else
+                _logger.Debug($"[알람 실시간] ALARM PID:{pointId} DATAPOINT ID:0 알람 필터링 데이터가 없음.");
+
+            return retValue;
         }
 
         public void FiAlarmDataSave(List<rtdb_Alarm> alarmList)
@@ -641,23 +755,38 @@ namespace KDMSServer.Model
                 var date = DateTime.Now;
                 foreach (var alarm in  alarmList)
                 {
-                    var find = PdbConductingequipments.FirstOrDefault(p => p.ceqid == (int)alarm.uiEqid);
-                    if (find.ceqid <= 0)
+                    bool retValue = AlarmFilterCheck((int)alarm.uiPtType, (int)alarm.uiPid);
+                    if (!retValue)
                         continue;
 
-                    var dlName = Distributionlines.FirstOrDefault(p => p.Dlid == find.dl_fk)?.Name;
-                    var ceqAnalogList = pdbAnalogs.Where(p => p.ceq_fk == (int)alarm.uiEqid).ToList();
+                    var findDl = pdbDistributionLines.FirstOrDefault(p => p.dlid == alarm.uiDL);
+                    if (findDl.dlid <= 0)
+                    {
+                        _logger.Debug($"[알람 실시간] DistributionLine DlId:0 / Alarm DlId:{alarm.uiDL}");
+                        continue;
+                    }
+
+                    var equipment = pdbConductingequipments.FirstOrDefault(p => p.ceqid == (int)alarm.uiEqid);
+                    if (equipment.ceqid <= 0)
+                    {
+                        _logger.Debug($"[알람 실시간] Conductingequipment CEQID:0 / Alarm EqId:{alarm.uiEqid}");
+                        continue;
+                    }
+
+                    if (equipment.rtu_type == 1)    // RTU 타입이 1이면 수동
+                        continue;
 
                     HistoryFiAlarm data = new HistoryFiAlarm();
                     data.SaveTime = date;
                     data.Ceqid = (int)alarm.uiEqid;
                     data.LogTime = KdmsValueConverter.TimeTToDateTime(alarm.uiSVRTime).AddMilliseconds(alarm.uiSVRMics);
                     data.FrtuTime = KdmsValueConverter.TimeTToDateTime(alarm.uiRTUTime).AddMilliseconds(alarm.uiRTUMics);
-                    data.Cpsid = (int)find.ec_fk;
-                    data.Name = GetStringData(find.name);
-                    data.Dl = dlName;
+                    data.Cpsid = (int)equipment.ec_fk;
+                    data.Name = GetStringData(equipment.name);
+                    data.Dl = GetStringData(findDl.name);
                     data.Value = (float)alarm.fVal;
                     data.LogDesc = GetStringData(alarm.szDesc);
+
                     switch (alarm.uiPtType)
                     {
                         case (int)PointTypeCode.BI: 
@@ -690,14 +819,15 @@ namespace KDMSServer.Model
                                 data.Circuitno = (int)pdbAccumulators.FirstOrDefault(p => p.pid == alarm.uiPid).circuit_no;
                             }
                             break;
-                        case (int)PointTypeCode.DMC:
-                            {
-                                data.AlarmName = GetStringData(pdbDmcs.FirstOrDefault(p => p.pid == alarm.uiPid).name); 
-                                data.Circuitno = 0;
-                            }
-                            break;
+                        //case (int)PointTypeCode.DMC:
+                        //    {
+                        //        data.AlarmName = GetStringData(pdbDmcs.FirstOrDefault(p => p.pid == alarm.uiPid).name); 
+                        //        data.Circuitno = 0;
+                        //    }
+                        //    break;
                     }
 
+                    var ceqAnalogList = pdbAnalogs.Where(p => p.ceq_fk == (int)alarm.uiEqid).ToList();
                     data.FaultCurrentA = GetMinDataValue(ceqAnalogList, 51);
                     data.FaultCurrentB = GetMinDataValue(ceqAnalogList, 52);
                     data.FaultCurrentC = GetMinDataValue(ceqAnalogList, 53);
@@ -709,7 +839,7 @@ namespace KDMSServer.Model
                     using (MySqlMapper mapper = new MySqlMapper(_configuration))
                     {
                         mapper.RunQuery(query);
-                        //_logger.ServerLog($"[알람 실시간] {date.ToString("yyyy-MM-dd HH:mm:ss")} 데이터 입력 완료 CNT:{dataList.Count}");
+                        _logger.ServerLog($"[알람 실시간] CEQ:{data.Ceqid} NAME:{data.AlarmName} VALUE:{data.Value} 데이터 입력 완료 ");
                     }
                 }
             }
@@ -719,9 +849,244 @@ namespace KDMSServer.Model
             }
         }
 
-        private string GetStringData(byte[] bytes)
+        public string GetStringData(byte[] bytes)
         {
-            return Encoding.Default.GetString(bytes).Trim('\0');
+            var retValue = Encoding.Default.GetString(bytes).Trim('\0');
+            retValue = retValue.TrimStart();
+            retValue = retValue.TrimEnd();
+
+            return retValue;
+        }
+
+        public void ConductingequipmentSave()
+        {
+            if (pdbConductingequipments.Where(p => p.ceqid != 0).Count() <= 0)
+            {
+                _logger.ServerLog($"[PDB 파일] pdb_Conductingequipments 데이터가 없습니다.");
+                return;
+            }
+
+            var saveDatas = pdbConductingequipments.Where(p => p.ceqid != 0).Select(p => new PdbConductingequipment
+            {
+                Ceqid = p.ceqid,
+                EqFk = p.eq_fk,
+                EcFk = p.ec_fk,
+                StFk = p.st_fk,
+                DlFk = p.dl_fk,
+                LinkStFk = p.link_st_fk,
+                LinkDlFk = p.link_dl_fk,
+                Psrtype = (int)p.psrtype,
+                Name = GetStringData(p.name),
+                EcName = GetStringData(p.ec_name),
+                MeshNo = GetStringData(p.mesh_no),
+                SwType = p.sw_type,
+                RtuType = (int)p.rtu_type,
+                DevNo = GetStringData(p.dev_no),
+                DtrFk = p.dtr_fk,
+                PtrFk = p.ptr_fk,
+                LinkCbFk = p.link_cb_fk,
+                LinkBbsFk = p.link_bbs_fk,
+                BaseVoltage = (int)p.base_voltage,
+                Phases = (int)p.phases,
+                BusbarOrder = (int)p.busbar_order,
+                AiCnt = (int)p.ai_cnt,
+                AiPid = p.ai_pid,
+                AoCnt = (int)p.ao_cnt,
+                AoPid = p.ao_pid,
+                BiCnt = (int)p.bi_cnt,
+                BiPid = p.bi_pid,
+                PiCnt = (int)p.pi_cnt,
+                PiPid = p.pi_pid
+            }).ToList();
+
+            using (KdmsContext context = DbContextConfigurationExtensions.CreateServerContext(_configuration))
+            {
+                context.Database.ExecuteSqlRaw("TRUNCATE TABLE pdb_conductingequipment");
+                context.PdbConductingequipments.AddRange(saveDatas);
+                context.SaveChanges();
+
+                _logger.ServerLog($"[PDB 파일] pdb_Conductingequipments 데이터 데이터베이스 입력 성공 CNT: {pdbConductingequipments.Count}");
+            }
+        }
+
+        public void DistributionLineSegmentSave()
+        {
+            if (pdbDistributionLineSegments.Where(p => p.pid != 0).Count() <= 0)
+            {
+                _logger.ServerLog($"[PDB 파일] pdb_DistributionLineSegment 데이터가 없습니다.");
+                return;
+            }
+
+            var saveDatas = pdbDistributionLineSegments.Where(p => p.pid != 0).Select(p => new PdbDistributionlinesegment
+            {
+                Dlsid = p.pid,
+                CeqFk = p.ceq_fk,
+                DlFk = p.dl_fk,
+                PlsiAFk = p.plsiid_a_fk,
+                PlsiBFk = p.plsiid_b_fk,
+                PlsiCFk = p.plsiid_c_fk,
+                PlsiNFk = p.plsiid_n_fk,
+                Name = GetStringData(p.name),
+                Aliasname = GetStringData(p.aliasname),
+                Length = (float)p.length,
+                LengthUsFk = p.length_us_fk,
+                CeqFFk = p.ceq_f_fk,
+                SgrFFk = p.sgr_f_fk,
+                CeqBFk = p.ceq_b_fk,
+                SgrBFk = p.sgr_b_fk,
+                SecLoad = (float)p.secload,
+                SecLoadUsFk = p.secload_us_fk
+            }).ToList();
+
+            using (KdmsContext context = DbContextConfigurationExtensions.CreateServerContext(_configuration))
+            {
+                context.Database.ExecuteSqlRaw("TRUNCATE TABLE pdb_distributionlinesegment");
+                context.PdbDistributionlinesegments.AddRange(saveDatas);
+                context.SaveChanges();
+
+                _logger.ServerLog($"[PDB 파일] pdb_DistributionLineSegment 데이터 데이터베이스 입력 성공 CNT: {pdbConductingequipments.Count}");
+            }
+        }
+
+        public void GeographicalRegionSave()
+        {
+            if (pdbGeographicalRegions.Where(p => p.ggrid != 0).Count() <= 0)
+            {
+                _logger.ServerLog($"[PDB 파일] pdb_GeographicalRegion 데이터가 없습니다.");
+                return;
+            }
+
+            var saveDatas = pdbGeographicalRegions.Select(p => new Geographicalregion
+            {
+                Ggrid = (int)p.ggrid,
+                Name = GetStringData(p.name)
+            }).ToList();
+
+            using (KdmsContext context = DbContextConfigurationExtensions.CreateServerContext(_configuration))
+            {
+                context.Database.ExecuteSqlRaw("TRUNCATE TABLE geographicalregion");
+                context.Geographicalregions.AddRange(saveDatas);
+                context.SaveChanges();
+
+                _logger.ServerLog($"[PDB 파일] pdb_GeographicalRegion 데이터 데이터베이스 입력 성공 CNT: {pdbConductingequipments.Count}");
+            }
+        }
+
+        public void SubGeographicalRegionSave()
+        {
+            if (pdbSubGeographicalRegions.Where(p => p.sgrid != 0).Count() <= 0)
+            {
+                _logger.ServerLog($"[PDB 파일] pdb_SubGeographicalRegion 데이터가 없습니다.");
+                return;
+            }
+
+            var saveDatas = pdbSubGeographicalRegions.Select(p => new Subgeographicalregion
+            {
+                Sgrid = (int)p.sgrid,
+                GgrFk = (int)p.ggr_fk,
+                Name = GetStringData(p.name)
+            }).ToList();
+
+            using (KdmsContext context = DbContextConfigurationExtensions.CreateServerContext(_configuration))
+            {
+                context.Database.ExecuteSqlRaw("TRUNCATE TABLE subgeographicalregion");
+                context.Subgeographicalregions.AddRange(saveDatas);
+                context.SaveChanges();
+
+                _logger.ServerLog($"[PDB 파일] pdb_SubGeographicalRegion 데이터 데이터베이스 입력 성공 CNT: {pdbConductingequipments.Count}");
+            }
+        }
+
+        public void SubStationSave()
+        {
+            if (pdbSubStations.Where(p => p.stid != 0).Count() <= 0)
+            {
+                _logger.ServerLog($"[PDB 파일] pdb_SubStation 데이터가 없습니다.");
+                return;
+            }
+
+            var saveDatas = pdbSubStations.Select(p => new Substation
+            {
+                Stid = (int)p.stid,
+                SgrFk = p.sgr_fk,
+                Name = GetStringData(p.name)
+            }).ToList();
+
+            using (KdmsContext context = DbContextConfigurationExtensions.CreateServerContext(_configuration))
+            {
+                context.Database.ExecuteSqlRaw("TRUNCATE TABLE substation");
+                context.Substations.AddRange(saveDatas);
+                context.SaveChanges();
+
+                _logger.ServerLog($"[PDB 파일] pdb_SubStation 데이터 데이터베이스 입력 성공 CNT: {pdbConductingequipments.Count}");
+            }
+        }
+
+        public void DistributionLineSave()
+        {
+            if (pdbDistributionLines.Where(p => p.dlid != 0).Count() <= 0)
+            {
+                _logger.ServerLog($"[PDB 파일] pdb_DistributionLine 데이터가 없습니다.");
+                return;
+            }
+
+            var saveDatas = pdbDistributionLines.Where(p => p.dlid != 0).Select(p => new Distributionline
+            {
+                Dlid = p.dlid,
+                StFk = p.st_fk,
+                PtrFk = p.ptr_fk,
+                SwFk = p.sw_fk,
+                Name = GetStringData(p.name),
+                DlNo = (int)p.dlno,
+                Reliability = (int)p.reliability,
+                Priority = (int)p.priority,
+                RatedS = (int)p.rated_s,
+                RatedSUsFk = p.rated_s_usfk
+            }).ToList();
+
+            using (KdmsContext context = DbContextConfigurationExtensions.CreateServerContext(_configuration))
+            {
+                context.Database.ExecuteSqlRaw("TRUNCATE TABLE distributionline");
+                context.Distributionlines.AddRange(saveDatas);
+                context.SaveChanges();
+
+                _logger.ServerLog($"[PDB 파일] pdb_DistributionLine 데이터 데이터베이스 입력 성공 CNT: {pdbConductingequipments.Count}");
+            }
+        }
+
+        public void PowerTransformerSave()
+        {
+            if (pdbPowerTransformers.Where(p => p.ptrid != 0).Count() <= 0)
+            {
+                _logger.ServerLog($"[PDB 파일] pdb_PowerTransformer 데이터가 없습니다.");
+                return;
+            }
+
+            var saveDatas = pdbPowerTransformers.Where(p => p.ptrid != 0).Select(p => new Powertransformer
+            {
+                Pid = p.ptrid,
+                StFk = p.st_fk,
+                TapFk = p.tap_fk,
+                Trw1stFk = p.trw_1st_fk,
+                Trw2stFk = p.trw_2nd_fk,
+                Bbs1stFk = p.bbs_1st_fk,
+                Bbs2stFk = p.bbs_2nd_fk,
+                Name = GetStringData(p.name),
+                BankNo = (int)p.bank_no,
+                MtrImp = (int)p.mtr_imp,
+                MtrImpUsfk = p.mtr_imp_us_fk,
+                DispPos = (int)p.disp_pos,
+                StType = (int)p.st_type
+            }).ToList();
+
+            using (KdmsContext context = DbContextConfigurationExtensions.CreateServerContext(_configuration))
+            {
+                context.Database.ExecuteSqlRaw("TRUNCATE TABLE powertransformer");
+                context.Powertransformers.AddRange(saveDatas);
+                context.SaveChanges();
+
+                _logger.ServerLog($"[PDB 파일] pdb_PowerTransformer 데이터 데이터베이스 입력 성공 CNT: {pdbConductingequipments.Count}");
+            }
         }
 
         public List<HistoryMinDatum> MinDataLoad(DateTime date)
@@ -790,29 +1155,34 @@ namespace KDMSServer.Model
         }
 
 
-        public void DaystatDataInput(List<HistoryDaystatDatum> dataList, DateTime date)
+        public bool DaystatDataInput(List<HistoryDaystatDatum> dataList, DateTime date)
         {
-            try
+            bool retValue = false;
+
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine($"insert into history_daystat_data_{date.ToString("yyyy")} values ");
+            int cnt = 0;
+            foreach (var data in dataList)
             {
-                StringBuilder sb = new StringBuilder();
-                foreach (var data in dataList)
-                {
-                    sb.AppendLine($"insert into history_daystat_data_{date.ToString("yyyy")} " +
-                        $"values('{data.SaveTime.ToString("yyyy-MM-dd HH:mm:ss")}', {data.Ceqid}, '{data.CommTime?.ToString("yyyy-MM-dd HH:mm:ss")}', {data.Cpsid}, {data.Circuitno}, '{data.Name}', '{data.Dl}'," +
-                        $" {data.Diagnostics}, {data.VoltageUnbalance}, {data.CurrentUnbalance}, {data.Frequency}," +
-                        $" {data.AverageCurrentA}, {data.AverageCurrentB}, {data.AverageCurrentC}, {data.AverageCurrentN}," +
-                        $" {data.MaxCurrentA}, {data.MaxCurrentB}, {data.MaxCurrentC}, {data.MaxCurrentN}, '{data.MaxCommTime?.ToString("yyyy-MM-dd HH:mm:ss")}'," +
-                        $" {data.MinCurrentA}, {data.MinCurrentB}, {data.MinCurrentC}, {data.MinCurrentN}, '{data.MinCommTime?.ToString("yyyy-MM-dd HH:mm:ss")}');");
-                }
-                using (MySqlMapper mapper = new MySqlMapper(_configuration))
-                {
-                    mapper.RunQuery(sb.ToString());
-                }
+                cnt++;
+                sb.Append($"('{data.SaveTime.ToString("yyyy-MM-dd HH:mm:ss")}', {data.Ceqid}, '{data.CommTime?.ToString("yyyy-MM-dd HH:mm:ss")}', {data.Cpsid}, {data.Circuitno}, '{data.Name}', '{data.Dl}'," +
+                    $" {data.Diagnostics}, {data.VoltageUnbalance}, {data.CurrentUnbalance}, {data.Frequency}," +
+                    $" {data.AverageCurrentA}, {data.AverageCurrentB}, {data.AverageCurrentC}, {data.AverageCurrentN}," +
+                    $" {data.MaxCurrentA}, {data.MaxCurrentB}, {data.MaxCurrentC}, {data.MaxCurrentN}, '{data.MaxCommTime?.ToString("yyyy-MM-dd HH:mm:ss")}'," +
+                    $" {data.MinCurrentA}, {data.MinCurrentB}, {data.MinCurrentC}, {data.MinCurrentN}, '{data.MinCommTime?.ToString("yyyy-MM-dd HH:mm:ss")}')");
+
+                if (cnt != dataList.Count)
+                    sb.AppendLine(",");
+                else
+                    sb.AppendLine(";");
             }
-            catch (Exception ex)
+            using (MySqlMapper mapper = new MySqlMapper(_configuration))
             {
-                _logger.DbLog($"일일 통계 데이터 입력중 예외 발생 ex:{ex.Message}");
+                mapper.RunQuery(sb.ToString());
+                retValue = true;
             }
+
+            return retValue;
         }
 
         public void StatisticsHourDataInput(List<StatisticsHour> dataList)

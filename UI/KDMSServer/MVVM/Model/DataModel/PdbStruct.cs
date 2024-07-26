@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using KdmsTcpSocket;
+using MediatR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -404,16 +405,14 @@ namespace KDMSServer.Model
         public UInt32 psrtype;                                  //  PowerSystemResource Type ID             
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 64)]
         public byte[] name;
-        //[MarshalAs(UnmanagedType.ByValTStr, SizeConst = 64)]
-        //public string name;                                     //  Equipment Name 
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 64)]
-        public string ec_name;                                  //  parent Name 
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 12)]
-        public string mesh_no;                                  //	Equipment Mesh Number
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 64)]
+        public byte[] ec_name;                                  //  parent Name 
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 12)]
+        public byte[] mesh_no;                                  //	Equipment Mesh Number
         public UInt32 sw_type;                                  //  단말/상시연계 상태 표시      
         public UInt32 rtu_type;                                 //  Equipment RTU Type(1:NormalEquipment,2:MTR, 3:SVR, 4:Transformer 가공, 5:Transformer 지중, etc)    
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 12)]
-        public string dev_no;                                   //  Equipment Device Number        
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 12)]
+        public byte[] dev_no;                                   //  Equipment Device Number        
         public UInt32 dtr_fk;                                   //  distributionTransformer ID(Transformer 지중)        
         public UInt32 ptr_fk;                                   //  PowerTransformer ID(변전 설비-Busbarsection, Breaker, Disconnect, etc)        
         public UInt32 link_cb_fk;                               //  Link Breaker ID(Disconnect)        
@@ -437,5 +436,98 @@ namespace KDMSServer.Model
             return Marshal.SizeOf(this);
         }
     }
+
+    [Serializable]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct pdb_DistributionLineSegment
+    {
+        public UInt32 pid;                                          /*DistributionLineSegment ID		*/
+        public UInt32 ceq_fk;                                       /*CondutingEquipment ID				*/
+        public UInt32 dl_fk;                                        /*소속된 DistributionLine ID			*/
+        public UInt32 plsiid_a_fk;                                  /*PerLengthSequenceImpedance ID		*/
+        public UInt32 plsiid_b_fk;                                  /*PerLengthSequenceImpedance ID		*/
+        public UInt32 plsiid_c_fk;                                  /*PerLengthSequenceImpedance ID		*/
+        public UInt32 plsiid_n_fk;                                  /*PerLengthSequenceImpedance ID		*/
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 64)]
+        public byte[] name;                                         /*DistributionLineSegment Name		*/
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 64)]
+        public byte[] aliasname;                                    /*DistributionLineSegment AliasName	*/
+        public double length;                                       /*Line 길이							*/
+        public UInt32 length_us_fk;                                 // UnitSymbol                       
+        public UInt32 ceq_f_fk;                                     /*전단 CondutingEquipment ID			*/
+        public UInt32 sgr_f_fk;                                     /*전단 SGRegion ID					*/
+        public UInt32 ceq_b_fk;                                     /*후단 CondutingEquipment ID			*/
+        public UInt32 sgr_b_fk;                                     /*후단 SGRegion ID					*/
+        public double secload;                                                // Section 부하 
+        public UInt32 secload_us_fk;                                             //UnitSymbol
+    }
+
+    [Serializable]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct pdb_GeographicalRegion
+    {
+        public UInt32 ggrid;                                        /*지사(본부)ID			*/
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+        public byte[] name;
+    }
+
+    [Serializable]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct pdb_SubGeographicalRegion
+    {
+        public UInt32 sgrid;                                        /*지점 ID				*/
+        public UInt32 ggr_fk;                                       /*소속 지사(본부) ID		*/
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+        public byte[] name;                                         /*지점 명					*/
+    }
+
+    [Serializable]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct pdb_SubStation
+    {
+        public UInt32 stid;                                         /*변전소 ID				*/
+        public UInt32 sgr_fk;                                       /*소속 지점 ID			*/
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+        public byte[] name;							                /*변전소 명				*/
+    }
+
+    [Serializable]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct pdb_DistributionLine
+    {
+        public UInt32 dlid;                                         /*DistributionLine ID	*/
+        public UInt32 st_fk;                                        /*변전소 ID				*/
+        public UInt32 ptr_fk;                                       /*MTR ID				*/
+        public UInt32 sw_fk;                                        /*OCB ID				*/
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+        public byte[] name;                                         /*DistributionLine 명	*/
+        public UInt32 dlno;                                         /*회선번호				*/
+        public UInt32 reliability;                                  /*회선 가용량			*/
+        public UInt32 priority;                                     /*회선우선순위			*/
+        public UInt32 rated_s;                                      /*회선기준용량			*/
+        public UInt32 rated_s_usfk;									// UnitSymbol FK
+    }
+
+    [Serializable]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct pdb_PowerTransformer
+    {
+        public UInt32 ptrid;                                        /*PowerTransformer  ID		*/
+        public UInt32 st_fk;                                        /*소속변전소 ID */
+        public UInt32 tap_fk;                                       /*TabChanger ID */
+        public UInt32 trw_1st_fk;                                   /*TransformerWinding ID		*/
+        public UInt32 trw_2nd_fk;                                   /*TransformerWinding ID		*/
+        public UInt32 bbs_1st_fk;                                   /*BusbarSection 1차측 ID		*/
+        public UInt32 bbs_2nd_fk;                                   /*BusbarSection 2차측 ID		*/
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 64)]
+        public byte[] name;                                         /*PowerTransformer  Name	*/
+        public UInt32 bank_no;                                      /*Bank Number				*/
+        public UInt32 mtr_imp;                                      /*MTR%임피던스				*/
+        public UInt32 mtr_imp_us_fk;                                //   UnitSymbol
+        public UInt32 disp_pos;                                     /*Display Position(Left->Right Order	*/
+        public UInt32 st_type;										/*Station Type(GIS,MCSG,GIS+<CSG,ETC	*/
+    }
+
+
 
 }

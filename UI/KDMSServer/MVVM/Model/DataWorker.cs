@@ -23,6 +23,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Windows;
 using System.Windows.Interop;
+using static DevExpress.XtraPrinting.Native.ExportOptionsPropertiesNames;
 
 namespace KDMSServer.Model
 {
@@ -76,6 +77,7 @@ namespace KDMSServer.Model
         {
             ThreadFlag = false;
         }
+
         public void SocketClose()
         {
             if (rtaMaster != null)
@@ -135,13 +137,12 @@ namespace KDMSServer.Model
             var loginPwd = loginInfos.GetSection("LoginPwd").Value!;
 
             // config에서 IP, 포트 가져옴
-            //string serverAddr = "192.168.1.172";
-            //int rtPort = 29001, ctlPort = 29002, evtPort = 29003;
             bool isLogin = false;
             try
             {
                 TcpClient rtaClient = new TcpClient(serverAddr, scanPort);
                 rtaMaster = KdmsTcpClient.CreateKdmsSocketMaster(rtaClient);
+                rtaMaster.Transport.ReadTimeout = 10 * 1000;
 
                 //_logger.ServerLog($"KDMS SERVER LOGIN 정보 USER:{loginId} PWD:{loginPwd}");
                 var response = rtaMaster.SendData<OperLogReq>(KdmsCodeInfo.kdmsOperLoginReqs, KdmsCodeInfo.KdmsOperLoginReps
@@ -160,17 +161,24 @@ namespace KDMSServer.Model
                     {
                         // CTL/EVT 연결
                         //TcpClient ctlClient = new TcpClient(serverAddr, contorlPort);
-                        TcpClient evtClient = new TcpClient(serverAddr, alarmPort);
                         //ctlMaster = KdmsTcpClient.CreateKdmsSocketMaster(ctlClient);
+                        TcpClient evtClient = new TcpClient(serverAddr, alarmPort);
                         evtMaster = KdmsTcpClient.CreateKdmsSocketMaster(evtClient);
+                        evtMaster.Transport.ReadTimeout = 10 * 1000;
 
-                        _logger.ServerLog($"KDMS SERVER USER: {loginId} LOGIN SUCC");
+                        _logger.ServerLog($"[로그인] KDMS SERVER: {serverAddr} 사용자: {loginId} 연결 성공");
                     }
+                    else
+                        _logger.ServerLog($"[로그인] KDMS SERVER: {serverAddr} 사용자: {loginId} 연결 실패");
                 }
+            }
+            catch (TcpSocketTimeoutException ex)
+            {
+                _logger.Error($"[로그인] KDMS SERVER: {serverAddr} 연결 실패 타임아웃 발생(ex:{ex.Message})");
             }
             catch (Exception ex)
             {
-                _logger.ServerLog($"KDMS SERVER: {serverAddr} LOGIN FAIL(ex:{ex.Message})");
+                _logger.ServerLog($"[로그인] KDMS SERVER: {serverAddr} 연결 실패(ex:{ex.Message})");
                 SocketClose();
             }
             return isLogin;
@@ -189,7 +197,7 @@ namespace KDMSServer.Model
 
                         for (int i = 0; i < response.DataCount; i++)
                         {
-                            _logger.Debug($"PDB => ID:{pdbResult[i].iPdbId} PDB:{pdbResult[i].szPdbName} MD5:{pdbResult[i].szPdbMd5}");
+                            _logger.Debug($"[PDB 목록] ID:{pdbResult[i].iPdbId} PDB:{pdbResult[i].szPdbName} MD5:{pdbResult[i].szPdbMd5}");
                             var find = pdbLists.FirstOrDefault(p => p.PdbId == pdbResult[i].iPdbId);
                             if(find != null)
                             {
@@ -223,7 +231,7 @@ namespace KDMSServer.Model
             }
         }
 
-        public async void KdmsPdbFileDownload()
+        public void KdmsPdbFileDownload()
         {
             try
             {
@@ -234,7 +242,7 @@ namespace KDMSServer.Model
                     return;
                 }
 
-                await Task.Delay(500);
+                Thread.Sleep(500);
                 if (rtaMaster != null)
                 {
                     var min = pdbDatas.Min(p => p.iPdbId);
@@ -250,15 +258,20 @@ namespace KDMSServer.Model
                             if (response.RecvDatas != null)
                             {
                                 int pdbid = (response as KdmsPdbDataResponse).PdbId;
-                                // 파일 저장 처리
+
                                 var find = pdbLists.FirstOrDefault(p => p.PdbId == pdbid);
-                                if(find != null)
+                                if (find != null)
                                 {
-                                    if(find.PdbName.Trim() == "pdb_Discrete")
+                                    if (find.PdbName.Trim() == "pdb_Discrete")
                                     {
                                         var data = KdmsValueConverter.ByteToStructArray<pdb_Discrete>(response.RecvDatas);
                                         if (data != null && data.Length > 0)
                                             _commonData.pdbDiscretes = data.ToList();
+
+                                        //for (int idx = 0; idx < data.Length; idx++)
+                                        //{
+                                        //    _logger.Debug($"BI {data[idx].pid} - {_commonData.GetStringData(data[idx].name)}");
+                                        //}
                                     }
                                     else if (find.PdbName.Trim() == "pdb_Command")
                                     {
@@ -271,6 +284,11 @@ namespace KDMSServer.Model
                                         var data = KdmsValueConverter.ByteToStructArray<pdb_Analog>(response.RecvDatas);
                                         if (data != null && data.Length > 0)
                                             _commonData.pdbAnalogs = data.ToList();
+
+                                        //for(int idx = 0; idx < data.Length; idx++)
+                                        //{
+                                        //    _logger.Debug($"AI {data[idx].pid} - {_commonData.GetStringData(data[idx].name)}");
+                                        //}
                                     }
                                     else if (find.PdbName.Trim() == "pdb_SetPoint")
                                     {
@@ -290,14 +308,53 @@ namespace KDMSServer.Model
                                         if (data != null && data.Length > 0)
                                             _commonData.pdbDmcs = data.ToList();
                                     }
+
+                                    //////////// 이 아래 항목들은 PDB 수신 후 데이터베이스에 파일 입력 처리
                                     else if (find.PdbName.Trim() == "pdb_ConductingEquipment")
                                     {
                                         var data = KdmsValueConverter.ByteToStructArray<pdb_ConductingEquipment>(response.RecvDatas);
                                         if (data != null && data.Length > 0)
-                                            _commonData.PdbConductingequipments = data.ToList();
+                                            _commonData.pdbConductingequipments = data.ToList();
+                                    }
+                                    else if (find.PdbName.Trim() == "pdb_DistributionLineSegment")
+                                    {
+                                        var data = KdmsValueConverter.ByteToStructArray<pdb_DistributionLineSegment>(response.RecvDatas);
+                                        if (data != null && data.Length > 0)
+                                            _commonData.pdbDistributionLineSegments = data.ToList();
+                                    }
+                                    else if (find.PdbName.Trim() == "pdb_GeographicalRegion")
+                                    {
+                                        var data = KdmsValueConverter.ByteToStructArray<pdb_GeographicalRegion>(response.RecvDatas);
+                                        if (data != null && data.Length > 0)
+                                            _commonData.pdbGeographicalRegions = data.ToList();
+                                    }
+                                    else if (find.PdbName.Trim() == "pdb_SubGeographicalRegion")
+                                    {
+                                        var data = KdmsValueConverter.ByteToStructArray<pdb_SubGeographicalRegion>(response.RecvDatas);
+                                        if (data != null && data.Length > 0)
+                                            _commonData.pdbSubGeographicalRegions = data.ToList();
+                                    }
+                                    else if (find.PdbName.Trim() == "pdb_SubStation")
+                                    {
+                                        var data = KdmsValueConverter.ByteToStructArray<pdb_SubStation>(response.RecvDatas);
+                                        if (data != null && data.Length > 0)
+                                            _commonData.pdbSubStations = data.ToList();
+                                    }
+                                    else if (find.PdbName.Trim() == "pdb_DistributionLine")
+                                    {
+                                        var data = KdmsValueConverter.ByteToStructArray<pdb_DistributionLine>(response.RecvDatas);
+                                        if (data != null && data.Length > 0)
+                                            _commonData.pdbDistributionLines = data.ToList();
+                                    }
+                                    else if (find.PdbName.Trim() == "pdb_PowerTransformer")
+                                    {
+                                        var data = KdmsValueConverter.ByteToStructArray<pdb_PowerTransformer>(response.RecvDatas);
+                                        if (data != null && data.Length > 0)
+                                            _commonData.pdbPowerTransformers = data.ToList();
                                     }
                                 }
 
+                                // 파일 저장 처리
                                 PDBFIleSave(pdbid, response.RecvDatas, response.RecvDatas.Length);
                             }
                         }
@@ -308,17 +365,18 @@ namespace KDMSServer.Model
                             if (response.RequestCode == KdmsCodeInfo.KdmsPdbSyncComp)
                             {
                                 _logger.ServerLog($"[PDB 파일] 수신 완료(PDBID: {min} ~ {max})");
+                                PdbFileUPDate();
+
                                 // 동작 처리
-                                await Task.Run(() =>
+                                Task.Run(() =>
                                 {
                                     PdbRealTimeWorker();
                                 });
 
-                                await Task.Run(() =>
+                                Task.Run(() =>
                                 {
                                     KemsEVTReceive();
                                 });
-
                                 break;
                             }
                         }
@@ -410,7 +468,7 @@ namespace KDMSServer.Model
 
         public async void KemsEVTReceive()
         {
-            while(ThreadFlag)
+            while (ThreadFlag)
             {
                 try
                 {
@@ -419,42 +477,59 @@ namespace KDMSServer.Model
                         var response = evtMaster.Recv();
                         if (response != null)
                         {
-                            _logger.Information($"EVT RCV => FC:0x{response.RequestCode.ToString("X2")}");
-                            if (response.RecvDatas != null)
+                            switch (response.RequestCode)
                             {
-                                switch(response.RequestCode)
-                                {
-                                    case KdmsCodeInfo.KdmsAlarmEvent:
+                                case KdmsCodeInfo.KdmsAlarmEvent:
+                                    {
+                                        _logger.Information($"[Alarm 수신] FC:0x{response.RequestCode.ToString("X2")} AE_UPDATE 수신");
+                                        // 데이터 저장 처리
+                                        if (response.RecvDatas == null)
                                         {
-                                            // 데이터 저장 처리
-                                            var data = KdmsValueConverter.ByteToStructArray<rtdb_Alarm>(response.RecvDatas);
-                                            if(data != null && data.Length > 0)
+                                            _logger.Information($"[Alarm 수신] 알람/이벤트 데이터 없음");
+                                            continue;
+                                        }
+
+                                        var data = KdmsValueConverter.ByteToStructArray<rtdb_Alarm>(response.RecvDatas);
+                                        if (data != null && data.Length > 0)
+                                        {
+                                            var alarmList = data.ToList();
+                                            var allAlarmList = alarmList.Where(p => p.uiPtType != (int)PointTypeCode.DMC).ToList();
+                                            if (allAlarmList.Count > 0)
                                             {
-                                                var alarmList = data.ToList();
                                                 await Task.Run(() =>
                                                 {
                                                     _commonData.FiAlarmDataSave(alarmList);
                                                 });
+                                            }
 
-                                                var dmcAlarmList = alarmList.Where(p => p.uiPtType == (int)PointTypeCode.DMC).ToList();
-                                                if(dmcAlarmList.Count > 0)
+                                            var dmcAlarmList = alarmList.Where(p => p.uiPtType == (int)PointTypeCode.DMC).ToList();
+                                            if (dmcAlarmList.Count > 0)
+                                            {
+                                                await Task.Run(() =>
                                                 {
-                                                    await Task.Run(() =>
-                                                    {
-                                                        _commonData.CommStateLogDataSave(alarmList);
-                                                    });
-                                                }
+                                                    _commonData.CommStateLogDataSave(alarmList);
+                                                });
                                             }
                                         }
-                                        break;
-                                }
+                                    }
+                                    break;
+                                case KdmsCodeInfo.KdmsHeartBeat:
+                                    {
+                                        _logger.Debug($"[Alarm 수신] FC:0x{response.RequestCode.ToString("X2")} HEART_BEAT 수신");
+                                    }
+                                    break;
                             }
+
                         }
                     }
                 }
+                catch (TcpSocketTimeoutException ex)
+                {
+                    _logger.Error($"[Alarm 수신] 타임아웃 발생(ex:{ex.Message})");
+                }
                 catch (Exception ex)
                 {
-                    _logger.Error($"ALARM RCV FAIL(ex:{ex.Message})");
+                    _logger.Error($"[Alarm 수신] FAIL(ex:{ex.Message})");
                 }
 
                 await Task.Delay(1000);
@@ -473,15 +548,15 @@ namespace KDMSServer.Model
             DateTime minDataInitialTime = DateTimeHelper.GetNextDateTime(DateTime.Now, TimeDivisionCode.Minute, min: minDt.Minute);
             _logger.ServerLog($"[1분 실시간] 데이터 생성 시간: {minDataInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
 
-            string commstateString = _commonData.SchduleInfos.FirstOrDefault(x => x.SchduleId == (int)ProcTypeCode.COMMSTATE)!.SchduleValue.ToString();
-            DateTime commstateDt = Convert.ToDateTime(DateTime.Now.ToString(commstateString));
-            DateTime commstateDataInitialTime = DateTimeHelper.GetNextDateTime(DateTime.Now, TimeDivisionCode.None, hour: commstateDt.Hour, min: commstateDt.Minute);
-            _logger.ServerLog($"[통신 성공률] 데이터 생성 시간: {commstateDataInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
-
             string min15String = _commonData.SchduleInfos.FirstOrDefault(x => x.SchduleId == (int)ProcTypeCode.STATISTICSMIN)!.SchduleValue.ToString();
             int addMin = 15 - (DateTime.Now.Minute % 15);
             DateTime min15DataInitialTime = Convert.ToDateTime(DateTime.Now.AddMinutes(addMin).AddMinutes(Convert.ToInt32(min15String)).ToString("yyyy-MM-dd HH:mm:00"));
             _logger.ServerLog($"[15분 실시간(평균부하전류)] 데이터 생성 시간: {min15DataInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+
+            string commstateString = _commonData.SchduleInfos.FirstOrDefault(x => x.SchduleId == (int)ProcTypeCode.COMMSTATE)!.SchduleValue.ToString();
+            DateTime commstateDt = Convert.ToDateTime(DateTime.Now.ToString(commstateString));
+            DateTime commstateDataInitialTime = DateTimeHelper.GetNextDateTime(DateTime.Now, TimeDivisionCode.None, hour: commstateDt.Hour, min: commstateDt.Minute);
+            _logger.ServerLog($"[통신 성공률] 데이터 생성 시간: {commstateDataInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
 
             while (ThreadFlag)
             {
@@ -536,6 +611,11 @@ namespace KDMSServer.Model
                         KdmsPdbListDownload();
                         KdmsPdbFileDownload();
 
+                        await Task.Run(() =>
+                        {
+                            PdbFileUPDate();
+                        });
+
                         pdbModifyInitialTime = pdbModifyInitialTime.AddDays(1);
                         _logger.ServerLog($"[PDB 목록] NEXT 다운로드 시간: {pdbModifyInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
                     }
@@ -545,6 +625,47 @@ namespace KDMSServer.Model
 
                 }
                 await Task.Delay(1000);
+            }
+        }
+
+        private void PdbFileUPDate()
+        {
+            // 데이터 베이스 저장 처리
+            // PDB_CONDUCTINGEQUIPMENT [설비 정보]
+            // PDB_DISTRIBUTIONLINESEGMENT [선로 정보]
+            // GEOGRAPHICALREGION [조직 정보(지사)]
+            // SUBGEOGRAPHICALREGION [조직 정보(지점)]
+            // SUBSTATION [변전소 정보]
+            // DISTRIBUTIONLINE [배전선로(DL) 정보
+            // POWERTRANSFORMER [MTR 정보]
+
+            var pdbModifyList = pdbLists.Where(p => p.IsModify).ToList();
+            if (pdbModifyList.Count <= 0)
+                return;
+
+            foreach (var pdb in pdbModifyList)
+            {
+                try
+                {
+                    if (pdb.PdbName.Trim() == "pdb_ConductingEquipment")
+                        _commonData.ConductingequipmentSave();
+                    else if (pdb.PdbName.Trim() == "pdb_DistributionLineSegment")
+                        _commonData.DistributionLineSegmentSave();
+                    else if (pdb.PdbName.Trim() == "pdb_GeographicalRegion")
+                        _commonData.GeographicalRegionSave();
+                    else if (pdb.PdbName.Trim() == "pdb_SubGeographicalRegion")
+                        _commonData.SubGeographicalRegionSave();
+                    else if (pdb.PdbName.Trim() == "pdb_SubStation")
+                        _commonData.SubStationSave();
+                    else if (pdb.PdbName.Trim() == "pdb_DistributionLine")
+                        _commonData.DistributionLineSave();
+                    else if (pdb.PdbName.Trim() == "pdb_PowerTransformer")
+                        _commonData.PowerTransformerSave();
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error($"[PDB 파일] {pdb.PdbName.Trim()} 데이터 데이터베이스 입력중 에외발생(ex:{ex.Message})");
+                }
             }
         }
 
@@ -891,7 +1012,7 @@ namespace KDMSServer.Model
                                 model.IsSocketConnetionText = string.Empty;
                             }
 
-                            if (rtaMaster == null && evtMaster == null)
+                            if (rtaMaster == null || evtMaster == null)     // 소켓 상태가 한개라도 NULL 이면 전체 재연결 처리
                             {
                                 model.ScanState = false;
                                 model.EventState = false;
@@ -899,7 +1020,9 @@ namespace KDMSServer.Model
                                 model.IsSocketConnetion = false;
                                 model.IsSocketConnetionState = "실패";
 
-                                KdmsServerInit();
+                                SocketClose();      // 현재 소켓이 연결되어 있으면 연결 종료 처리
+                                Thread.Sleep(500);
+                                KdmsServerInit();   // 소켓 연결 처리
                             }
                             else
                             {

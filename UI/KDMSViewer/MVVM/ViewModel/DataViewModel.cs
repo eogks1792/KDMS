@@ -82,12 +82,6 @@ namespace KDMSViewer.ViewModel
         public string _timeEditMask = CultureInfo.CurrentCulture.DateTimeFormat.LongTimePattern;
 
         [ObservableProperty]
-        private DateTime _fromTime = Convert.ToDateTime(DateTime.Now.ToString("HH:00:00"));
-
-        [ObservableProperty]
-        private DateTime _toTime = Convert.ToDateTime(DateTime.Now.AddHours(1).ToString("HH:00:00"));
-
-        [ObservableProperty]
         private Visibility _switchVisibility = Visibility.Visible;
 
         [ObservableProperty]
@@ -101,7 +95,6 @@ namespace KDMSViewer.ViewModel
 
         [ObservableProperty]
         private ObservableCollection<ChartModel> _seriesItems;
-
 
         [ObservableProperty]
         private INotifyPropertyChanged _childViewModel;
@@ -123,8 +116,8 @@ namespace KDMSViewer.ViewModel
 
         private void DataInit()
         {
-            FromDate = Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd 00:00:00"));
-            ToDate = Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd 23:59:59"));
+            FromDate = Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd HH:00:00"));
+            ToDate = Convert.ToDateTime(DateTime.Now.AddHours(1).ToString("yyyy-MM-dd HH:00:00"));
 
             TreeItems = new ObservableCollection<TreeDataModel>(_worker.TreeDatas);
         }
@@ -171,11 +164,11 @@ namespace KDMSViewer.ViewModel
                 // 실시간 데이터
                 if (SwitchCheck)
                 {
-                    _worker.GetSearchData(CheckItems, (int)SearchTypeCode.MINDATA, FromDate, ToDate, FromTime, ToTime);
+                    _worker.GetSearchData(CheckItems, (int)SearchTypeCode.MINDATA, FromDate, ToDate);
                 }
                 else if (FiCheck)
                 {
-                    _worker.GetSearchData(CheckItems, (int)SearchTypeCode.FIALARM, FromDate, ToDate, FromTime, ToTime);
+                    _worker.GetSearchData(CheckItems, (int)SearchTypeCode.FIALARM, FromDate, ToDate);
                 }
             }
             else if (StatisticalCheck)
@@ -226,18 +219,14 @@ namespace KDMSViewer.ViewModel
             //    ChartDataInit();
             //}
 
-            //Application.Current.Dispatcher.Invoke(() =>
-            //{
-            //    view.Close();
-            //    IsInquiry = true;
-            //});
-
+            Application.Current.Dispatcher.Invoke(() => {Mouse.OverrideCursor = Cursors.Arrow;});
             IsInquiry = true;
         }
 
         [RelayCommand]
         private async void Inquiry()
         {
+            Mouse.OverrideCursor = Cursors.Wait;
             await Task.Run(() =>
             {
                 IsInquiry = false;
@@ -571,11 +560,11 @@ namespace KDMSViewer.ViewModel
                                     return;
                                 }
 
-                                header = "D/L 이름, 단말장치명, 전체횟수, 성공횟수, 실패횟수, 통신 성공률, 정보수집시간, DB기록시간";
+                                header = "D/L 이름, 단말장치명, CEQ ID, 장치 타입, 전체횟수, 성공횟수, 실패횟수, 통신 성공률, 정보수집시간, DB기록시간";
                                 outputFile.WriteLine(header);
                                 foreach (var data in dataList)
                                 {
-                                    writeData = $"{data.Dl}, {data.Name}, {data.CommTotalCount}, {data.CommSucessCount}, {data.CommFailCount}, {data.CommSucessRate}"
+                                    writeData = $"{data.Dl}, {data.Name}, {data.Ceqid}, {data.EqType}, {data.CommTotalCount}, {data.CommSucessCount}, {data.CommFailCount}, {data.CommSucessRate}"
                                             + $", {data.CommTime?.ToString("yyyy-MM-dd HH:mm:ss")}, {data.SaveTime.ToString("yyyy-MM-dd HH:mm:ss")}";
                                     outputFile.WriteLine(writeData);
                                 }
@@ -591,11 +580,11 @@ namespace KDMSViewer.ViewModel
                                     return;
                                 }
 
-                                header = "D/L 이름, 단말장치명, 성공여부, 전체횟수, 성공횟수, 실패횟수, 통신 성공률, 정보수집시간, DB기록시간";
+                                header = "D/L 이름, 단말장치명, CEQ ID, 장치 타입, 성공여부, 전체횟수, 성공횟수, 실패횟수, 통신 성공률, 정보수집시간, DB기록시간";
                                 outputFile.WriteLine(header);
                                 foreach (var data in dataList)
                                 {
-                                    writeData = $"{data.Dl}, {data.Name}, {data.CommState} {data.CommTotalCount}, {data.CommSucessCount}, {data.CommFailCount}, {data.CommSucessRate}"
+                                    writeData = $"{data.Dl}, {data.Name}, {data.Ceqid}, {data.EqType}, {data.CommState} {data.CommTotalCount}, {data.CommSucessCount}, {data.CommFailCount}, {data.CommSucessRate}"
                                             + $", {data.CommTime?.ToString("yyyy-MM-dd HH:mm:ss")}, {data.SaveTime.ToString("yyyy-MM-dd HH:mm:ss")}";
                                     outputFile.WriteLine(writeData);
                                 }
@@ -633,10 +622,10 @@ namespace KDMSViewer.ViewModel
         {
             RealDataCheck = false;
             CommCheck = false;
-            RealVisibility = Visibility.Collapsed;
+            RealVisibility = Visibility.Hidden;
             StatisticalVisibility = Visibility.Visible;
             CommVisibility = Visibility.Hidden;
-            SwitchVisibility = Visibility.Collapsed;
+            SwitchVisibility = Visibility.Visible;
             //SwitchCheck = false;
             //FiCheck = false;
             DayCheck = true;
@@ -653,10 +642,10 @@ namespace KDMSViewer.ViewModel
         {
             RealDataCheck = false;
             StatisticalCheck = false;
-            RealVisibility = Visibility.Collapsed;
+            RealVisibility = Visibility.Hidden;
             StatisticalVisibility = Visibility.Hidden;
             CommVisibility = Visibility.Visible;
-            SwitchVisibility = Visibility.Collapsed;
+            SwitchVisibility = Visibility.Visible;
 
             CommDayCheck = true;
             CommLogCheck = false;

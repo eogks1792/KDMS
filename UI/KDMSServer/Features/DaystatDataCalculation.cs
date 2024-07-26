@@ -108,9 +108,7 @@ namespace KDMSServer.Features
                         }
 
                         if(dataList.Count > 0)
-                            _commonData.DaystatDataInput(dataList, request.Time);
-                        
-                        response.Result = true;
+                            response.Result = _commonData.DaystatDataInput(dataList, request.Time);
                     }
                     else
                     {

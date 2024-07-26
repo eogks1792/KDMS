@@ -42,7 +42,7 @@ namespace KDMSViewer.Features
                 var response = new Response { Result = false };
                 try
                 {
-                    var datas = _commonData.SwitchDataLoad(request.CeqList, request.FromDate, request.ToDate, request.FromTime, request.ToTime);
+                    var datas = _commonData.SwitchDataLoad(request.CeqList, request.FromDate, request.ToDate);
                     if(datas != null && datas.Count > 0) 
                     {
                         response.datas = datas;
