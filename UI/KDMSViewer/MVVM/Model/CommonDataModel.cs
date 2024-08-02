@@ -24,7 +24,7 @@ namespace KDMSViewer.Model
         private List<Distributionline> Distributionlines;
         private List<Compositeswitch> Compositeswitchs;
         private List<PdbConductingequipment> ConductingEquipments;
-        //private List<PdbDistributionlinesegment> distributionLinesegments;
+        private List<PdbRemoteunit> Remoteunits;
 
         public CommonDataModel(KdmsContext kdmsContext, IConfiguration configuration)
         {
@@ -42,8 +42,20 @@ namespace KDMSViewer.Model
                 Substations = _kdmsContext.Substations.ToList();
                 Distributionlines = _kdmsContext.Distributionlines.ToList();
                 Compositeswitchs = _kdmsContext.Compositeswitches.ToList();
-                ConductingEquipments = _kdmsContext.PdbConductingequipments.Where(p => (p.Psrtype >= 58 && p.Psrtype <= 88) || p.Psrtype == 105).ToList();
-                //distributionLinesegments = _kdmsContext.PdbDistributionlinesegments.ToList();
+                Remoteunits = _kdmsContext.PdbRemoteunits.ToList();
+                ConductingEquipments = new List<PdbConductingequipment>();
+
+                var conductingEquipmentList = _kdmsContext.PdbConductingequipments.Where(p => (p.Psrtype >= 58 && p.Psrtype <= 88) || p.Psrtype == 105).ToList();
+                foreach (var equipment in conductingEquipmentList)
+                {
+                    //var findRemoteunit = Remoteunits.FirstOrDefault(p => p.EqFk == equipment.Ceqid);
+                    //if (findRemoteunit != null)
+                    //{
+                    //    if (findRemoteunit.ProtocolFk == 0 && findRemoteunit.CommType == 0)
+                    //        continue;
+                    //}
+                    ConductingEquipments.Add(equipment);
+                }
                 TreeListInit();
             }
             catch (Exception ex)
@@ -80,7 +92,7 @@ namespace KDMSViewer.Model
                     if (multiSwList.Count() > 0)
                     {
                         var compositList = multiSwList.Select(p => p.EcFk).ToList();
-                        foreach (var compositeswitch in Compositeswitchs.Where(p => compositList.Any(x => x == p.Pid)))
+                        foreach (var compositeswitch in Compositeswitchs.Where(p => p.DlFk == distributionline.Dlid && compositList.Any(x => x == p.Pid)))
                         {
                             //TreeDataModel composit = new TreeDataModel();
                             //composit.Type = TreeTypeCode.COMPOSITE;
@@ -329,10 +341,7 @@ namespace KDMSViewer.Model
         {
             using (var context = DbContextConfigurationExtensions.CreateServerContext(_configuration))
             {
-                if (context.HistoryCommStateLogs.Count() > 0)
-                    return context.HistoryCommStateLogs.Where(p => ceqList.Any(x => x == p.Ceqid) && p.SaveTime >= fromDate && p.SaveTime <= toDate).ToList();
-                else
-                    return new List<HistoryCommStateLog>();
+                return context.HistoryCommStateLogs.Where(p => ceqList.Any(x => x == p.Ceqid) && p.SaveTime >= fromDate && p.SaveTime <= toDate).ToList();
             }
         }
 

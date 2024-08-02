@@ -50,6 +50,8 @@ namespace KDMSServer.Model
         public List<rtdb_Dmc> rtdbDmcs = new List<rtdb_Dmc>();
 
         // PDB 데이터 => 데이터베이스 저장필요
+        public List<pdb_RemoteUnit> pdbRemoteUnits = new List<pdb_RemoteUnit>();
+        public List<pdb_CompositeSwitch> pdbCompositeSwitchs = new List<pdb_CompositeSwitch>();
         public List<pdb_ConductingEquipment> pdbConductingequipments = new List<pdb_ConductingEquipment>();
         public List<pdb_DistributionLineSegment> pdbDistributionLineSegments = new List<pdb_DistributionLineSegment>();
         public List<pdb_GeographicalRegion> pdbGeographicalRegions = new List<pdb_GeographicalRegion>();
@@ -149,6 +151,13 @@ namespace KDMSServer.Model
 
                 if (equipment.rtu_type == 1)    // RTU 타입이 1이면 수동
                     continue;
+
+                var findRemoteunit = Remoteunits.FirstOrDefault(p => p.EqFk == equipment.ceqid);
+                if(findRemoteunit != null)
+                {
+                    if(findRemoteunit.ProtocolFk == 0 && findRemoteunit.CommType == 0)
+                    continue;
+                }
 
                 var findDl = pdbDistributionLines.FirstOrDefault(p => p.dlid == equipment.dl_fk);
                 if (findDl.dlid <= 0)
@@ -345,6 +354,13 @@ namespace KDMSServer.Model
                 if (equipment.rtu_type == 1)    // RTU 타입이 1이면 수동
                     continue;
 
+                var findRemoteunit = Remoteunits.FirstOrDefault(p => p.EqFk == equipment.ceqid);
+                if (findRemoteunit != null)
+                {
+                    if (findRemoteunit.ProtocolFk == 0 && findRemoteunit.CommType == 0)
+                        continue;
+                }
+
                 var findDl = pdbDistributionLines.FirstOrDefault(p => p.dlid == equipment.dl_fk);
                 if (findDl.dlid <= 0)
                 {
@@ -475,6 +491,9 @@ namespace KDMSServer.Model
             List<HistoryCommState> dataList = new List<HistoryCommState>();
             foreach(var remote in Remoteunits)
             {
+                if (remote.ProtocolFk == 0 && remote.CommType == 0)
+                    continue;
+
                 if (remote.EqType == 1)
                 {
                     var equipment = pdbConductingequipments.FirstOrDefault(p => p.ceqid != 0 && p.ceqid == remote.EqFk);
@@ -628,12 +647,15 @@ namespace KDMSServer.Model
             var date = DateTime.Now;
             foreach (var alarm in alarmList)
             {
-                var remote = Remoteunits.FirstOrDefault(p => p.Pid == alarm.uiRtuid);
-                if (remote == null)
+                var findRemoteunit = Remoteunits.FirstOrDefault(p => p.Pid == alarm.uiRtuid);
+                if (findRemoteunit == null)
                 {
                     _logger.Debug($"[통신상태 이력] Remoteunit RTUID:{alarm.uiRtuid} 없음 ");
                     continue;
                 }
+
+                if (findRemoteunit.ProtocolFk == 0 && findRemoteunit.CommType == 0)
+                    continue;
 
                 var findDl = pdbDistributionLines.FirstOrDefault(p => p.dlid == alarm.uiDL);
                 if (findDl.dlid <= 0)
@@ -657,15 +679,15 @@ namespace KDMSServer.Model
                 data.Dl = GetStringData(findDl.name);
                 data.Name = GetStringData(equipment.name);
 
-                data.EqType = remote.EqType ?? 0;
+                data.EqType = findRemoteunit.EqType ?? 0;
                 data.Ceqid = (int)equipment.ceqid;
                 data.Cpsid = 0;
-                data.CommState = GetCommStateValue(Convert.ToInt32(remote.DmcFk ?? 0));
-                data.CommSucessCount = (int)GetCommDataValue(Convert.ToInt32(remote.CommDmcFk + 3000 ?? 0));
-                data.CommFailCount = (int)GetCommDataValue(Convert.ToInt32(remote.CommDmcFk + 6000 ?? 0));
+                data.CommState = GetCommStateValue(Convert.ToInt32(findRemoteunit.DmcFk ?? 0));
+                data.CommSucessCount = (int)GetCommDataValue(Convert.ToInt32(findRemoteunit.CommDmcFk + 3000 ?? 0));
+                data.CommFailCount = (int)GetCommDataValue(Convert.ToInt32(findRemoteunit.CommDmcFk + 6000 ?? 0));
                 data.CommTotalCount = data.CommSucessCount + data.CommFailCount;
-                data.CommSucessRate = GetCommDataValue(Convert.ToInt32(remote.CommDmcFk ?? 0));
-                data.CommTime = GetCommDataTime(Convert.ToInt32(remote.CommDmcFk ?? 0), date);
+                data.CommSucessRate = GetCommDataValue(Convert.ToInt32(findRemoteunit.CommDmcFk ?? 0));
+                data.CommTime = GetCommDataTime(Convert.ToInt32(findRemoteunit.CommDmcFk ?? 0), date);
 
                 try
                 {
@@ -757,6 +779,16 @@ namespace KDMSServer.Model
                 {
                     bool retValue = AlarmFilterCheck((int)alarm.uiPtType, (int)alarm.uiPid);
                     if (!retValue)
+                        continue;
+
+                    var findRemoteunit = Remoteunits.FirstOrDefault(p => p.Pid == alarm.uiRtuid);
+                    if (findRemoteunit == null)
+                    {
+                        _logger.Debug($"[알람 실시간] Remoteunit RTUID:{alarm.uiRtuid} 없음 ");
+                        continue;
+                    }
+
+                    if (findRemoteunit.ProtocolFk == 0 && findRemoteunit.CommType == 0)
                         continue;
 
                     var findDl = pdbDistributionLines.FirstOrDefault(p => p.dlid == alarm.uiDL);
@@ -851,11 +883,103 @@ namespace KDMSServer.Model
 
         public string GetStringData(byte[] bytes)
         {
-            var retValue = Encoding.Default.GetString(bytes).Trim('\0');
+            var retValue = Encoding.UTF8.GetString(bytes).Trim('\0');
             retValue = retValue.TrimStart();
             retValue = retValue.TrimEnd();
 
             return retValue;
+        }
+
+        public void RemoteUnitSave()
+        {
+            if (pdbRemoteUnits.Where(p => p.pid != 0).Count() <= 0)
+            {
+                _logger.ServerLog($"[PDB 파일] pdb_Remoteunit 데이터가 없습니다.");
+                return;
+            }
+
+            var saveDatas = pdbRemoteUnits.Where(p => p.pid != 0).Select(p => new PdbRemoteunit
+            {
+                Pid = p.pid,
+                DmcFk = p.dmc_fk,
+                CommDmcFk = p.comm_dmc_fk,
+                CidFk = p.cid_fk,
+                ChannelPrimary = p.channel_primary,
+                ChannelAlternate = p.channel_alternate,
+                DcpPrimeFk = p.dcp_prime_fk,
+                DcpBackupFk = p.dcp_backup_fk,
+                SbFk = p.sb_fk,
+                ProtocolFk = p.protocol_fk,
+                ProtocolName = GetStringData(p.protocol_name),
+                CommType = p.comm_type,
+                CommInfo = GetStringData(p.comm_info),
+                RtuMaker = p.rtu_maker,
+                RtuCompany = GetStringData(p.rtu_company),
+                EqMaker = p.eq_maker,
+                EqCompany = GetStringData(p.eq_company),
+                EqFk = (int)p.eq_fk,
+                EqType = (int)p.eq_type,
+                RtuMapFk = (int)p.rtu_map_fk,
+                Name = GetStringData(p.name),
+                MasterAddr = (int)p.master_addr,
+                SlaveAddr = (int)p.slave_addr,
+                Confirm = (int)p.confirm,
+                DlTimeout = (int)p.dl_timeout,
+                AppTimeout = (int)p.app_timeout,
+                Retry = (int)p.retry,
+                RtuSeralno = GetStringData(p.rtu_seralno),
+                RtuMakeDate = GetStringData(p.rtu_make_date),
+                RtuInstallDate = GetStringData(p.rtu_install_date),
+                RtuVersion = GetStringData(p.rtu_version),
+                EqSerialno = GetStringData(p.eq_serialno),
+                EqMakeDate = GetStringData(p.eq_make_date),
+                EqInstallDate = GetStringData(p.eq_install_date),
+                EqInstallManager = GetStringData(p.eq_install_manager),
+                FiedName = GetStringData(p.fied_name),
+                UseAoper = (int)p.use_aoper,
+                LinkAddrSize = (int)p.link_addr_size,
+                CotSize = (int)p.cot_size,
+                AsduAddrSize = (int)p.asdu_addr_size,
+                ObjectAddrSize = (int)p.object_addr_size,
+                WaveCommTypeFk = (int)p.wave_comm_type_fk
+            }).ToList();
+
+            using (KdmsContext context = DbContextConfigurationExtensions.CreateServerContext(_configuration))
+            {
+                context.Database.ExecuteSqlRaw("TRUNCATE TABLE pdb_remoteunit");
+                context.PdbRemoteunits.AddRange(saveDatas);
+                context.SaveChanges();
+
+                _logger.ServerLog($"[PDB 파일] pdb_Remoteunit 데이터 데이터베이스 입력 성공 CNT: {saveDatas.Count}");
+            }
+        }
+
+        public void CompositSwitchSave()
+        {
+            if (pdbCompositeSwitchs.Where(p => p.pid != 0).Count() <= 0)
+            {
+                _logger.ServerLog($"[PDB 파일] CompositSwitch 데이터가 없습니다.");
+                return;
+            }
+
+            var saveDatas = pdbCompositeSwitchs.Where(p => p.pid != 0).Select(p => new Compositeswitch
+            {
+                Pid = p.pid,
+                DlFk = p.dl_fk,
+                Psrtype = p.psrtype,
+                Name = GetStringData(p.name),
+                MeshNo = GetStringData(p.mesh_no),
+                Aliasname = GetStringData(p.aliasname)
+            }).ToList();
+
+            using (KdmsContext context = DbContextConfigurationExtensions.CreateServerContext(_configuration))
+            {
+                context.Database.ExecuteSqlRaw("TRUNCATE TABLE compositeswitch");
+                context.Compositeswitches.AddRange(saveDatas);
+                context.SaveChanges();
+
+                _logger.ServerLog($"[PDB 파일] CompositSwitch 데이터 데이터베이스 입력 성공 CNT: {saveDatas.Count}");
+            }
         }
 
         public void ConductingequipmentSave()
@@ -877,6 +1001,7 @@ namespace KDMSServer.Model
                 LinkDlFk = p.link_dl_fk,
                 Psrtype = (int)p.psrtype,
                 Name = GetStringData(p.name),
+                Desc = GetStringData(p.desc),
                 EcName = GetStringData(p.ec_name),
                 MeshNo = GetStringData(p.mesh_no),
                 SwType = p.sw_type,
@@ -905,7 +1030,7 @@ namespace KDMSServer.Model
                 context.PdbConductingequipments.AddRange(saveDatas);
                 context.SaveChanges();
 
-                _logger.ServerLog($"[PDB 파일] pdb_Conductingequipments 데이터 데이터베이스 입력 성공 CNT: {pdbConductingequipments.Count}");
+                _logger.ServerLog($"[PDB 파일] pdb_Conductingequipments 데이터 데이터베이스 입력 성공 CNT: {saveDatas.Count}");
             }
         }
 
@@ -944,7 +1069,7 @@ namespace KDMSServer.Model
                 context.PdbDistributionlinesegments.AddRange(saveDatas);
                 context.SaveChanges();
 
-                _logger.ServerLog($"[PDB 파일] pdb_DistributionLineSegment 데이터 데이터베이스 입력 성공 CNT: {pdbConductingequipments.Count}");
+                _logger.ServerLog($"[PDB 파일] pdb_DistributionLineSegment 데이터 데이터베이스 입력 성공 CNT: {saveDatas.Count}");
             }
         }
 
@@ -952,7 +1077,7 @@ namespace KDMSServer.Model
         {
             if (pdbGeographicalRegions.Where(p => p.ggrid != 0).Count() <= 0)
             {
-                _logger.ServerLog($"[PDB 파일] pdb_GeographicalRegion 데이터가 없습니다.");
+                _logger.ServerLog($"[PDB 파일] GeographicalRegion 데이터가 없습니다.");
                 return;
             }
 
@@ -968,7 +1093,7 @@ namespace KDMSServer.Model
                 context.Geographicalregions.AddRange(saveDatas);
                 context.SaveChanges();
 
-                _logger.ServerLog($"[PDB 파일] pdb_GeographicalRegion 데이터 데이터베이스 입력 성공 CNT: {pdbConductingequipments.Count}");
+                _logger.ServerLog($"[PDB 파일] GeographicalRegion 데이터 데이터베이스 입력 성공 CNT: {saveDatas.Count}");
             }
         }
 
@@ -976,7 +1101,7 @@ namespace KDMSServer.Model
         {
             if (pdbSubGeographicalRegions.Where(p => p.sgrid != 0).Count() <= 0)
             {
-                _logger.ServerLog($"[PDB 파일] pdb_SubGeographicalRegion 데이터가 없습니다.");
+                _logger.ServerLog($"[PDB 파일] SubGeographicalRegion 데이터가 없습니다.");
                 return;
             }
 
@@ -993,7 +1118,7 @@ namespace KDMSServer.Model
                 context.Subgeographicalregions.AddRange(saveDatas);
                 context.SaveChanges();
 
-                _logger.ServerLog($"[PDB 파일] pdb_SubGeographicalRegion 데이터 데이터베이스 입력 성공 CNT: {pdbConductingequipments.Count}");
+                _logger.ServerLog($"[PDB 파일] SubGeographicalRegion 데이터 데이터베이스 입력 성공 CNT: {saveDatas.Count}");
             }
         }
 
@@ -1001,7 +1126,7 @@ namespace KDMSServer.Model
         {
             if (pdbSubStations.Where(p => p.stid != 0).Count() <= 0)
             {
-                _logger.ServerLog($"[PDB 파일] pdb_SubStation 데이터가 없습니다.");
+                _logger.ServerLog($"[PDB 파일] SubStation 데이터가 없습니다.");
                 return;
             }
 
@@ -1018,7 +1143,7 @@ namespace KDMSServer.Model
                 context.Substations.AddRange(saveDatas);
                 context.SaveChanges();
 
-                _logger.ServerLog($"[PDB 파일] pdb_SubStation 데이터 데이터베이스 입력 성공 CNT: {pdbConductingequipments.Count}");
+                _logger.ServerLog($"[PDB 파일] SubStation 데이터 데이터베이스 입력 성공 CNT: {saveDatas.Count}");
             }
         }
 
@@ -1026,7 +1151,7 @@ namespace KDMSServer.Model
         {
             if (pdbDistributionLines.Where(p => p.dlid != 0).Count() <= 0)
             {
-                _logger.ServerLog($"[PDB 파일] pdb_DistributionLine 데이터가 없습니다.");
+                _logger.ServerLog($"[PDB 파일] DistributionLine 데이터가 없습니다.");
                 return;
             }
 
@@ -1050,7 +1175,7 @@ namespace KDMSServer.Model
                 context.Distributionlines.AddRange(saveDatas);
                 context.SaveChanges();
 
-                _logger.ServerLog($"[PDB 파일] pdb_DistributionLine 데이터 데이터베이스 입력 성공 CNT: {pdbConductingequipments.Count}");
+                _logger.ServerLog($"[PDB 파일] DistributionLine 데이터 데이터베이스 입력 성공 CNT: {saveDatas.Count}");
             }
         }
 
@@ -1058,7 +1183,7 @@ namespace KDMSServer.Model
         {
             if (pdbPowerTransformers.Where(p => p.ptrid != 0).Count() <= 0)
             {
-                _logger.ServerLog($"[PDB 파일] pdb_PowerTransformer 데이터가 없습니다.");
+                _logger.ServerLog($"[PDB 파일] PowerTransformer 데이터가 없습니다.");
                 return;
             }
 
@@ -1085,7 +1210,7 @@ namespace KDMSServer.Model
                 context.Powertransformers.AddRange(saveDatas);
                 context.SaveChanges();
 
-                _logger.ServerLog($"[PDB 파일] pdb_PowerTransformer 데이터 데이터베이스 입력 성공 CNT: {pdbConductingequipments.Count}");
+                _logger.ServerLog($"[PDB 파일] PowerTransformer 데이터 데이터베이스 입력 성공 CNT: {saveDatas.Count}");
             }
         }
 

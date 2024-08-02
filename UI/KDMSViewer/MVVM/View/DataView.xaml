@@ -12,30 +12,7 @@
              d:DesignHeight="1024" d:DesignWidth="1800">
 
     <!--xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"-->
-
     <UserControl.Resources>
-        
-        <Style TargetType="{x:Type TextBlock}" x:Key="pointTypeStyle">
-            <Setter Property="HorizontalAlignment" Value="Center" />
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding PointType}" Value="1">
-                    <Setter Property="Text" Value="BI"/>
-                </DataTrigger>
-                <DataTrigger Binding="{Binding PointType}" Value="2">
-                    <Setter Property="Text" Value="BO"/>
-                </DataTrigger>
-                <DataTrigger Binding="{Binding PointType}" Value="3">
-                    <Setter Property="Text" Value="AI"/>
-                </DataTrigger>
-                <DataTrigger Binding="{Binding PointType}" Value="4">
-                    <Setter Property="Text" Value="AO"/>
-                </DataTrigger>
-                <DataTrigger Binding="{Binding PointType}" Value="5">
-                    <Setter Property="Text" Value="COUNTER"/>
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-
         <Style TargetType="{x:Type GridViewColumnHeader}">
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="FontSize" Value="{StaticResource FontSizeRegular}" />
@@ -341,7 +318,7 @@
 
                                         <RadioButton Grid.Row="0"
                                                   Content="1분 실시간"
-                                                  Margin="10 5 6 5"
+                                                  Margin="10 5 5 5"
                                                   Style="{StaticResource radiobtnType}"
                                                   IsChecked="{Binding SwitchCheck}"
                                                   FontSize="{StaticResource FontSizeSmall}" 
@@ -362,7 +339,7 @@
 
                                         <RadioButton Grid.Row="0"
                                                      Content="15분 실시간"
-                                                     Margin="5 0 10 0"
+                                                     Margin="5 0 5 0"
                                                      Style="{StaticResource radiobtnType}"
                                                      IsChecked="{Binding StatisticMinCheck}"
                                                      FontSize="{StaticResource FontSizeSmall}" 
@@ -643,15 +620,210 @@
                     CornerRadius="0 0 5 0"
                     Margin="0 0 5 5">
 
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition />
-                        <RowDefinition Height="auto"/>
-                    </Grid.RowDefinitions>
-
                     <ScrollViewer HorizontalScrollBarVisibility="Auto"
                                   VerticalScrollBarVisibility="Auto">
-                        <ContentControl Content="{Binding ChildViewModel}"/>
+                        <Grid>
+                            <ContentControl Content="{Binding RealViewModel}"
+                                            HorizontalAlignment="Stretch"
+                                            VerticalAlignment="Stretch"
+                                            VirtualizingStackPanel.IsVirtualizing="True" 
+                                            VirtualizingStackPanel.VirtualizationMode="Recycling">
+                                <ContentControl.Style>
+                                    <Style TargetType="{x:Type ContentControl}">
+                                        <Setter Property="HorizontalAlignment" Value="Center" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding SwitchCheck}" Value="True">
+                                                <Setter Property="Content" Value="RealViewModel"/>
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding SwitchCheck}" Value="False">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ContentControl.Style>
+                            </ContentControl>
+
+                            <ContentControl Content="{Binding StatisticsMinViewModel}"
+                                            HorizontalAlignment="Stretch"
+                                            VerticalAlignment="Stretch"
+                                            VirtualizingStackPanel.IsVirtualizing="True" 
+                                            VirtualizingStackPanel.VirtualizationMode="Recycling">
+                                <ContentControl.Style>
+                                    <Style TargetType="{x:Type ContentControl}">
+                                        <Setter Property="HorizontalAlignment" Value="Center" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding StatisticMinCheck}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding StatisticMinCheck}" Value="False">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ContentControl.Style>
+                            </ContentControl>
+
+                            <ContentControl Content="{Binding FiViewModel}"
+                                            HorizontalAlignment="Stretch"
+                                            VerticalAlignment="Stretch"
+                                        VirtualizingStackPanel.IsVirtualizing="True" 
+                                        VirtualizingStackPanel.VirtualizationMode="Recycling">
+                                <ContentControl.Style>
+                                    <Style TargetType="{x:Type ContentControl}">
+                                        <Setter Property="HorizontalAlignment" Value="Center" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding FiCheck}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding FiCheck}" Value="False">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ContentControl.Style>
+                            </ContentControl>
+
+                            <ContentControl Content="{Binding DayStatViewModel}"
+                                            HorizontalAlignment="Stretch"
+                                            VerticalAlignment="Stretch"
+                                        VirtualizingStackPanel.IsVirtualizing="True" 
+                                        VirtualizingStackPanel.VirtualizationMode="Recycling">
+                                <ContentControl.Style>
+                                    <Style TargetType="{x:Type ContentControl}">
+                                        <Setter Property="HorizontalAlignment" Value="Center" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding DayCheck}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding DayCheck}" Value="False">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ContentControl.Style>
+                            </ContentControl>
+
+                            <ContentControl Content="{Binding StatisticsHourViewModel}"
+                                            HorizontalAlignment="Stretch"
+                                            VerticalAlignment="Stretch"                                            
+                                        VirtualizingStackPanel.IsVirtualizing="True" 
+                                        VirtualizingStackPanel.VirtualizationMode="Recycling">
+                                <ContentControl.Style>
+                                    <Style TargetType="{x:Type ContentControl}">
+                                        <Setter Property="HorizontalAlignment" Value="Center" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding StatisticHourCheck}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding StatisticHourCheck}" Value="False">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ContentControl.Style>
+                            </ContentControl>
+
+                            <ContentControl Content="{Binding StatisticsDayViewModel}"
+                                            HorizontalAlignment="Stretch"
+                                            VerticalAlignment="Stretch"                                           
+                                        VirtualizingStackPanel.IsVirtualizing="True" 
+                                        VirtualizingStackPanel.VirtualizationMode="Recycling">
+                                <ContentControl.Style>
+                                    <Style TargetType="{x:Type ContentControl}">
+                                        <Setter Property="HorizontalAlignment" Value="Center" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding StatisticDayCheck}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding StatisticDayCheck}" Value="False">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ContentControl.Style>
+                            </ContentControl>
+
+                            <ContentControl Content="{Binding StatisticsMonthViewModel}"
+                                            HorizontalAlignment="Stretch"
+                                            VerticalAlignment="Stretch"                                            
+                                        VirtualizingStackPanel.IsVirtualizing="True" 
+                                        VirtualizingStackPanel.VirtualizationMode="Recycling">
+                                <ContentControl.Style>
+                                    <Style TargetType="{x:Type ContentControl}">
+                                        <Setter Property="HorizontalAlignment" Value="Center" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding StatisticMonthCheck}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding StatisticMonthCheck}" Value="False">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ContentControl.Style>
+                            </ContentControl>
+
+                            <ContentControl Content="{Binding StatisticsYearViewModel}"
+                                            HorizontalAlignment="Stretch"
+                                            VerticalAlignment="Stretch"                                            
+                                        VirtualizingStackPanel.IsVirtualizing="True" 
+                                        VirtualizingStackPanel.VirtualizationMode="Recycling">
+                                <ContentControl.Style>
+                                    <Style TargetType="{x:Type ContentControl}">
+                                        <Setter Property="HorizontalAlignment" Value="Center" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding StatisticYearCheck}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding StatisticYearCheck}" Value="False">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ContentControl.Style>
+                            </ContentControl>
+
+                            <ContentControl Content="{Binding CommStateViewModel}"
+                                            HorizontalAlignment="Stretch"
+                                            VerticalAlignment="Stretch"                                            
+                                        VirtualizingStackPanel.IsVirtualizing="True" 
+                                        VirtualizingStackPanel.VirtualizationMode="Recycling">
+                                <ContentControl.Style>
+                                    <Style TargetType="{x:Type ContentControl}">
+                                        <Setter Property="HorizontalAlignment" Value="Center" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding CommDayCheck}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding CommDayCheck}" Value="False">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ContentControl.Style>
+                            </ContentControl>
+
+                            <ContentControl Content="{Binding CommStateLogViewModel}"
+                                            HorizontalAlignment="Stretch"
+                                            VerticalAlignment="Stretch"                                            
+                                        VirtualizingStackPanel.IsVirtualizing="True" 
+                                        VirtualizingStackPanel.VirtualizationMode="Recycling">
+                                <ContentControl.Style>
+                                    <Style TargetType="{x:Type ContentControl}">
+                                        <Setter Property="HorizontalAlignment" Value="Center" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding CommLogCheck}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding CommLogCheck}" Value="False">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ContentControl.Style>
+                            </ContentControl>
+                        </Grid>
                     </ScrollViewer>
 
                     <!--<ListView Margin="0 0 0 0"
@@ -926,7 +1098,6 @@
                     </Expander>-->
                     
                     
-                </Grid>
             </Border>
         </Grid>
     </Grid>

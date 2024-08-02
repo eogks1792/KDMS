@@ -49,6 +49,7 @@ namespace KDMSViewer
             //ViewModels
             services.AddSingleton<MainViewModel>();
             services.AddSingleton<DataViewModel>();
+            services.AddSingleton<TrandViewModel>();
             services.AddSingleton<OperationViewModel>();
             services.AddSingleton<OperationBiViewModel>();
             services.AddSingleton<OperationAiViewModel>();
@@ -56,7 +57,6 @@ namespace KDMSViewer
             services.AddSingleton<OperationSchduleViewModel>();
             services.AddSingleton<OperationStorageViewModel>();
             services.AddSingleton<ConfigViewModel>();
-            services.AddSingleton<TrandViewModel>();
 
             services.AddSingleton<ViewModel_SwitchData>();
             services.AddSingleton<ViewModel_FiAlarmData>();
@@ -72,6 +72,7 @@ namespace KDMSViewer
             //Views
             services.AddSingleton<MainWindow>();
             services.AddSingleton<DataView>();
+            services.AddSingleton<TrandView>();
             services.AddSingleton<OperationView>();
             services.AddSingleton<OperationBiView>();
             services.AddSingleton<OperationAiView>();

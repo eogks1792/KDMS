@@ -330,10 +330,9 @@
         <Grid Visibility="Hidden">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="60"/>
-                <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="100"/>
-                <ColumnDefinition Width="120"/>
                 <ColumnDefinition Width="140"/>
+                <ColumnDefinition Width="120"/>
 
                 <ColumnDefinition Width="100"/>
                 <ColumnDefinition Width="150"/>
@@ -372,45 +371,44 @@
                 <ColumnDefinition Width="30"/>
             </Grid.ColumnDefinitions>
             <Grid Grid.Column="0" x:Name="no"/>
-            <Grid Grid.Column="1" x:Name="subs"/>
-            <Grid Grid.Column="2" x:Name="dl"/>
-            <Grid Grid.Column="3" x:Name="sw"/>
-            <Grid Grid.Column="4" x:Name="ceq"/>
+            <Grid Grid.Column="1" x:Name="dl"/>
+            <Grid Grid.Column="2" x:Name="sw"/>
+            <Grid Grid.Column="3" x:Name="ceq"/>
 
-            <Grid Grid.Column="5" x:Name="circuit"/>
-            <Grid Grid.Column="6" x:Name="diagnostics"/>
-            <Grid Grid.Column="7" x:Name="vol_unbalance"/>
-            <Grid Grid.Column="8" x:Name="cur_unbalance"/>
-            <Grid Grid.Column="9" x:Name="frequency"/>
+            <Grid Grid.Column="4" x:Name="circuit"/>
+            <Grid Grid.Column="5" x:Name="diagnostics"/>
+            <Grid Grid.Column="6" x:Name="vol_unbalance"/>
+            <Grid Grid.Column="7" x:Name="cur_unbalance"/>
+            <Grid Grid.Column="8" x:Name="frequency"/>
 
-            <Grid Grid.Column="10" x:Name="cur_a"/>
-            <Grid Grid.Column="11" x:Name="cur_b"/>
-            <Grid Grid.Column="12" x:Name="cur_c"/>
-            <Grid Grid.Column="13" x:Name="cur_n"/>
-            <Grid Grid.Column="14" x:Name="vol_a"/>
-            <Grid Grid.Column="15" x:Name="vol_b"/>
-            <Grid Grid.Column="16" x:Name="vol_c"/>
-            <Grid Grid.Column="17" x:Name="app_power_a"/>
-            <Grid Grid.Column="18" x:Name="app_power_b"/>
-            <Grid Grid.Column="19" x:Name="app_power_c"/>
-            <Grid Grid.Column="20" x:Name="powerfac_3p"/>
-            <Grid Grid.Column="21" x:Name="powerfac_a"/>
-            <Grid Grid.Column="22" x:Name="powerfac_b"/>
-            <Grid Grid.Column="23" x:Name="powerfac_c"/>
-            <Grid Grid.Column="24" x:Name="fi_cur_a"/>
-            <Grid Grid.Column="25" x:Name="fi_cur_b"/>
-            <Grid Grid.Column="26" x:Name="fi_cur_c"/>
-            <Grid Grid.Column="27" x:Name="fi_cur_n"/>
-            <Grid Grid.Column="28" x:Name="cur_ph_a"/>
-            <Grid Grid.Column="29" x:Name="cur_ph_b"/>
-            <Grid Grid.Column="30" x:Name="cur_ph_c"/>
-            <Grid Grid.Column="31" x:Name="cur_ph_n"/>
-            <Grid Grid.Column="32" x:Name="vol_ph_a"/>
-            <Grid Grid.Column="33" x:Name="vol_ph_b"/>
-            <Grid Grid.Column="34" x:Name="vol_ph_c"/>
+            <Grid Grid.Column="9" x:Name="cur_a"/>
+            <Grid Grid.Column="10" x:Name="cur_b"/>
+            <Grid Grid.Column="11" x:Name="cur_c"/>
+            <Grid Grid.Column="12" x:Name="cur_n"/>
+            <Grid Grid.Column="13" x:Name="vol_a"/>
+            <Grid Grid.Column="14" x:Name="vol_b"/>
+            <Grid Grid.Column="15" x:Name="vol_c"/>
+            <Grid Grid.Column="16" x:Name="app_power_a"/>
+            <Grid Grid.Column="17" x:Name="app_power_b"/>
+            <Grid Grid.Column="18" x:Name="app_power_c"/>
+            <Grid Grid.Column="19" x:Name="powerfac_3p"/>
+            <Grid Grid.Column="20" x:Name="powerfac_a"/>
+            <Grid Grid.Column="21" x:Name="powerfac_b"/>
+            <Grid Grid.Column="22" x:Name="powerfac_c"/>
+            <Grid Grid.Column="23" x:Name="fi_cur_a"/>
+            <Grid Grid.Column="24" x:Name="fi_cur_b"/>
+            <Grid Grid.Column="25" x:Name="fi_cur_c"/>
+            <Grid Grid.Column="26" x:Name="fi_cur_n"/>
+            <Grid Grid.Column="27" x:Name="cur_ph_a"/>
+            <Grid Grid.Column="28" x:Name="cur_ph_b"/>
+            <Grid Grid.Column="29" x:Name="cur_ph_c"/>
+            <Grid Grid.Column="30" x:Name="cur_ph_n"/>
+            <Grid Grid.Column="31" x:Name="vol_ph_a"/>
+            <Grid Grid.Column="32" x:Name="vol_ph_b"/>
+            <Grid Grid.Column="33" x:Name="vol_ph_c"/>
 
-            <Grid Grid.Column="35" x:Name="comm_time"/>
-            <Grid Grid.Column="36" x:Name="save_time"/>
+            <Grid Grid.Column="34" x:Name="comm_time"/>
+            <Grid Grid.Column="35" x:Name="save_time"/>
         </Grid>
     </Grid>
 </UserControl>

@@ -151,7 +151,7 @@
                 <ColumnDefinition Width="60"/>
                 <ColumnDefinition Width="100"/>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="140"/>
+                <ColumnDefinition Width="120"/>
 
                 <ColumnDefinition Width="100"/>
                 <ColumnDefinition Width="130"/>

@@ -267,11 +267,6 @@ namespace KDMSServer.Model
                                         var data = KdmsValueConverter.ByteToStructArray<pdb_Discrete>(response.RecvDatas);
                                         if (data != null && data.Length > 0)
                                             _commonData.pdbDiscretes = data.ToList();
-
-                                        //for (int idx = 0; idx < data.Length; idx++)
-                                        //{
-                                        //    _logger.Debug($"BI {data[idx].pid} - {_commonData.GetStringData(data[idx].name)}");
-                                        //}
                                     }
                                     else if (find.PdbName.Trim() == "pdb_Command")
                                     {
@@ -284,11 +279,6 @@ namespace KDMSServer.Model
                                         var data = KdmsValueConverter.ByteToStructArray<pdb_Analog>(response.RecvDatas);
                                         if (data != null && data.Length > 0)
                                             _commonData.pdbAnalogs = data.ToList();
-
-                                        //for(int idx = 0; idx < data.Length; idx++)
-                                        //{
-                                        //    _logger.Debug($"AI {data[idx].pid} - {_commonData.GetStringData(data[idx].name)}");
-                                        //}
                                     }
                                     else if (find.PdbName.Trim() == "pdb_SetPoint")
                                     {
@@ -310,6 +300,18 @@ namespace KDMSServer.Model
                                     }
 
                                     //////////// 이 아래 항목들은 PDB 수신 후 데이터베이스에 파일 입력 처리
+                                    else if (find.PdbName.Trim() == "pdb_RemoteUnit")
+                                    {
+                                        var data = KdmsValueConverter.ByteToStructArray<pdb_RemoteUnit>(response.RecvDatas);
+                                        if (data != null && data.Length > 0)
+                                            _commonData.pdbRemoteUnits = data.ToList();
+                                    }
+                                    else if (find.PdbName.Trim() == "pdb_CompositSwitch")
+                                    {
+                                        var data = KdmsValueConverter.ByteToStructArray<pdb_CompositeSwitch>(response.RecvDatas);
+                                        if (data != null && data.Length > 0)
+                                            _commonData.pdbCompositeSwitchs = data.ToList();
+                                    }
                                     else if (find.PdbName.Trim() == "pdb_ConductingEquipment")
                                     {
                                         var data = KdmsValueConverter.ByteToStructArray<pdb_ConductingEquipment>(response.RecvDatas);
@@ -647,7 +649,11 @@ namespace KDMSServer.Model
             {
                 try
                 {
-                    if (pdb.PdbName.Trim() == "pdb_ConductingEquipment")
+                    if (pdb.PdbName.Trim() == "pdb_RemoteUnit")
+                        _commonData.RemoteUnitSave();
+                    else if (pdb.PdbName.Trim() == "pdb_CompositSwitch")
+                        _commonData.CompositSwitchSave();
+                    else if (pdb.PdbName.Trim() == "pdb_ConductingEquipment")
                         _commonData.ConductingequipmentSave();
                     else if (pdb.PdbName.Trim() == "pdb_DistributionLineSegment")
                         _commonData.DistributionLineSegmentSave();

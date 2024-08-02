@@ -89,7 +89,7 @@
                     <GridViewColumn Header="CEQ ID" Width="{Binding ElementName=ceq, Path=ActualWidth}">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding CeqID}" TextAlignment="Center"/>
+                                <TextBlock Text="{Binding Ceqid}" TextAlignment="Center"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>

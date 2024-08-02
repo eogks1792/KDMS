@@ -390,7 +390,6 @@ namespace KDMSServer.Model
         }
     }
 
-
     [Serializable]
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct pdb_ConductingEquipment
@@ -405,6 +404,8 @@ namespace KDMSServer.Model
         public UInt32 psrtype;                                  //  PowerSystemResource Type ID             
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 64)]
         public byte[] name;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
+        public byte[] desc;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 64)]
         public byte[] ec_name;                                  //  parent Name 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 12)]
@@ -528,6 +529,82 @@ namespace KDMSServer.Model
         public UInt32 st_type;										/*Station Type(GIS,MCSG,GIS+<CSG,ETC	*/
     }
 
+    [Serializable]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct pdb_RemoteUnit
+    {
+        public UInt32 pid;                                      // FRTU/FIED ID
+        public UInt32 dmc_fk;                                   // DMC Point ID 
+        public UInt32 comm_dmc_fk;                              // DMC Point ID 
+        public UInt32 cid_fk;                                   // CID FILE ID
+        public UInt32 channel_primary;                          // Prime Channel ID
+        public UInt32 channel_alternate;                        // Backup Channel ID
+        public UInt32 dcp_prime_fk;                             // Prime DCP ID
+        public UInt32 dcp_backup_fk;                            // Backup DCP ID
+        public UInt32 sb_fk;                                    // RTU Scan Intrval(AI,AO,BI,BO,Counter,EMS)
+        public UInt32 protocol_fk;                              // Use RTU Protocol ID
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+        public byte[] protocol_name;                            // Protocol Name
+        public UInt32 comm_type;                                // Use RTU Coummunication Type
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+        public byte[] comm_info;                                // Coummunication Name
+        public UInt32 rtu_maker;                                // RTU Maker ID
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+        public byte[] rtu_company;                              // RTU Maker Name
+        public UInt32 eq_maker;                                 // Equipment Maker ID
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+        public byte[] eq_company;                               // Equipment Maker Name
+        public UInt32 eq_fk;                                    // Equipment ID(CEQID, CPSID, MTRID, MTR Bank ID)
+        public UInt32 eq_type;                                  // Equipment Type CEQ, CPS, MTR)
+        public UInt32 rtu_map_fk;                               // Use RTU Map ID
+        public UInt32 rtu_type;                                 // RTU Type(Not Connected RTU, FRTU, FIED)
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 64)]
+        public byte[] name;                                     // RTU Name 
+        public UInt32 master_addr;                              // DCP Communication Master Address(DCP)
+        public UInt32 slave_addr;                               // RTU Communication Slave Address(단말장치)
+        public UInt32 confirm;                                  // Use Comnication Confirm 
+        public UInt32 dl_timeout;                               // Data Link TimeOut
+        public UInt32 app_timeout;                              // Application Link TimeOut
+        public UInt32 retry;                                     // Failed Retry Count
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+        public byte[] rtu_seralno;                              // RTU SeralNo
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 20)]
+        public byte[] rtu_make_date;                            // RTU 제작일자 
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 20)]
+        public byte[] rtu_install_date;                         // RTU 설지일자 
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+        public byte[] rtu_version;                              // RTU Version
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+        public byte[] eq_serialno;                              // Equipment SeralNo
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 20)]
+        public byte[] eq_make_date;                             // Equipment 제작일자
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 20)]
+        public byte[] eq_install_date;                          // Equipment 설지일자
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
+        public byte[] eq_install_manager;                       // Equipment 설치자
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 64)]
+        public byte[] fied_name;                                // FIED NAME
+        public UInt32 use_aoper;                                // Operration Use
+        public UInt32 link_addr_size;                           // 60870
+        public UInt32 cot_size;                                 // 60870
+        public UInt32 asdu_addr_size;                           // 60870
+        public UInt32 object_addr_size;                         // 60870
+        public UInt32 wave_comm_type_fk;					    // Wave 처리 유형(DNP, FTP)	
+    }
 
+    [Serializable]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct pdb_CompositeSwitch
+    {
+        public UInt32 pid;                                      /*CompositSwitch ID			*/
+        public UInt32 dl_fk;                                    /*D/L ID					*/
+        public UInt32 psrtype;                                  /*PSRType ID				*/
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 64)]
+        public byte[] name;                                     /*CompositSwitch Name		*/
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 12)]
+        public byte[] mesh_no;                                  // 전산화번호 
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 64)]
+        public byte[] aliasname;			                    /*CompositSwitch AliasName	*/
+    }
 
 }

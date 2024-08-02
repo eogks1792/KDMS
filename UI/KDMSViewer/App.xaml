@@ -27,6 +27,10 @@
                 <view:DataView/>
             </DataTemplate>
 
+            <DataTemplate DataType="{x:Type model:TrandViewModel}">
+                <view:TrandView/>
+            </DataTemplate>
+
             <DataTemplate DataType="{x:Type model:ViewModel_SwitchData}">
                 <view:View_SwitchData/>
             </DataTemplate>
@@ -90,11 +94,6 @@
             <DataTemplate DataType="{x:Type model:ConfigViewModel}">
                 <view:ConfigView/>
             </DataTemplate>
-
-            <DataTemplate DataType="{x:Type model:TrandViewModel}">
-                <view:TrandView/>
-            </DataTemplate>
-
 
         </ResourceDictionary>
     </Application.Resources>

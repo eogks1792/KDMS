@@ -18,7 +18,6 @@
             <ColumnDefinition Width="5*"/>
         </Grid.ColumnDefinitions>
 
-
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition />
@@ -155,7 +154,7 @@
                     </Grid.ColumnDefinitions>
 
                     <GroupBox Grid.Column="0"
-                                  Margin="5 0 5 0">
+                                  Margin="5 0 5 5">
                         <GroupBox.Header>
                             <CheckBox Content="전류"
                                           Style="{StaticResource checkboxType}"
@@ -248,7 +247,7 @@
                     </GroupBox>
 
                     <GroupBox Grid.Column="1"
-                                  Margin="0 0 5 0"
+                                  Margin="0 0 5 5"
                                   Visibility="{Binding StatisticalVisibility}">
                         <GroupBox.Header>
                             <CheckBox Content="타입"
@@ -325,7 +324,7 @@
                     </GroupBox>
 
                     <GroupBox Grid.Column="2"
-                                  Margin="0 0 5 0"
+                                  Margin="0 0 5 5"
                                   Visibility="{Binding RealVisibility}">
                         <GroupBox.Header>
                             <CheckBox Content="전압"
@@ -413,6 +412,7 @@
                             <ColumnDefinition Width="auto"/>
                             <ColumnDefinition Width="30"/>
                             <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
                         </Grid.ColumnDefinitions>
 
                         <dxe:DateEdit Grid.Row="0" 
@@ -481,6 +481,16 @@
                                 Command="{Binding InquiryCommand}"
                                 IsEnabled="{Binding IsInquiry}"
                                 Tag="1"/>
+
+                        <Button Grid.Column="8"
+                                Margin="0 0 5 0"
+                                Width="80"
+                                Height="40"
+                                Content="저장"
+                                FontSize="{StaticResource FontSizeRegular}"
+                                Style="{StaticResource btnMainType}"
+                                Click="OnChartImageSave"
+                                Tag="1"/> <!--Command="{Binding ImageSaveCommand}"-->
                     </Grid>
                 </Grid>
             </Border>
@@ -493,7 +503,8 @@
                     Background="#292929"
                     CornerRadius="0 0 10 0">
 
-                <dxc:ChartControl BorderThickness="0"
+                <dxc:ChartControl x:Name="chart"
+                                  BorderThickness="0"
                                   Margin="5"
                                   CrosshairEnabled="True" 
                                   ToolTipEnabled="False">

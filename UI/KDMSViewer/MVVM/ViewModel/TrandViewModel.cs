@@ -1,27 +1,23 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevExpress.Mvvm.Native;
-using DevExpress.Office.Utils;
-using KDMS.EF.Core.Infrastructure.Reverse.Models;
 using KDMSViewer.Model;
-using KDMSViewer.View;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using Microsoft.Extensions.DependencyInjection;
+using KDMSViewer.View;
+using System.IO;
+using Microsoft.Win32;
+using DevExpress.XtraPrinting;
+using System.Drawing.Imaging;
+using System.Windows.Media;
 
 namespace KDMSViewer.ViewModel
 {
     public partial class TrandViewModel : ObservableObject
     {
-        private readonly CommonDataModel _commonData;
         private readonly DataWorker _worker;
         [ObservableProperty]
         private ObservableCollection<TreeDataModel> _treeItems;
@@ -129,7 +125,7 @@ namespace KDMSViewer.ViewModel
                 {
                     check = $"{name}_A";
                     retList.AddRange(PointItems.Where(p => p.PointName.Contains(check)).ToList());
-                    
+
                 }
                 if (CurrentB)
                 {
@@ -436,7 +432,7 @@ namespace KDMSViewer.ViewModel
 
         private void GetData()
         {
-            if(TreeSelected == null)
+            if (TreeSelected == null)
             {
                 MessageBox.Show("선택된 데이터가 없습니다. \n\r개페기 및 다회로 스위치를 선택하세요.", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
@@ -453,7 +449,7 @@ namespace KDMSViewer.ViewModel
             {
                 TreeSelected.Id
             };
-            
+
             if (MinDataCheck)
             {
                 _worker.GetTrandData(ceqList, (int)SearchTypeCode.MINDATA, FromDate, ToDate);
@@ -532,6 +528,38 @@ namespace KDMSViewer.ViewModel
                 GetData();
             });
         }
+
+        //[RelayCommand]
+        //private void ImageSave()
+        //{
+        //    var folder = $"{AppDomain.CurrentDomain.BaseDirectory}Image";
+        //    if (!Directory.Exists(folder))
+        //        Directory.CreateDirectory(folder);
+
+        //    SaveFileDialog saveDialog = new SaveFileDialog();
+        //    saveDialog.InitialDirectory = folder;
+        //    saveDialog.Filter = "Image files (*.png)|*.png|All files (*.*)|*.*";
+        //    saveDialog.FilterIndex = 1;
+
+        //    if (saveDialog.ShowDialog() == true)
+        //    {
+        //        var view = App.Current.Services.GetService<TrandView>()!;
+        //        if (view != null)
+        //        {
+        //            var imageExportOptions = new ImageExportOptions
+        //            {
+        //                Format = ImageFormat.Png,
+        //                ExportMode = ImageExportMode.SingleFile,
+        //                PageBorderColor = System.Drawing.Color.White,
+        //                PageBorderWidth = 0,
+        //                TextRenderingMode = DevExpress.XtraPrinting.TextRenderingMode.AntiAliasGridFit,
+        //                Resolution = 96
+        //            };
+
+        //            view.chart.ExportToImage(saveDialog.FileName, imageExportOptions, DevExpress.Xpf.Charts.PrintSizeMode.None);
+        //        }
+        //    }
+        //}
 
         [RelayCommand]
         private void MinData()

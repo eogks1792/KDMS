@@ -1,35 +1,21 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using DevExpress.ClipboardSource.SpreadsheetML;
 using DevExpress.Mvvm.POCO;
-using DevExpress.Mvvm;
-using DevExpress.Xpf.Editors;
-using DevExpress.XtraRichEdit.Commands;
 using KDMS.EF.Core.Infrastructure.Reverse.Models;
 using KDMSViewer.Model;
-using KDMSViewer.View;
 using Microsoft.Extensions.DependencyInjection;
-
 //using LiveCharts;
 //using LiveCharts.Defaults;
 //using LiveCharts.Wpf;
 using Microsoft.Win32;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
+using System.Globalization;
 using System.IO;
-using System.Reflection;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Threading;
-using DevExpress.Mvvm.UI;
-using System;
-using System.Globalization;
-using System.Text;
-using DevExpress.Utils.CommonDialogs;
 
 namespace KDMSViewer.ViewModel
 {
@@ -57,7 +43,7 @@ namespace KDMSViewer.ViewModel
         [ObservableProperty]
         private bool _statisticMinCheck; // STATISTIC
         [ObservableProperty]
-        private bool _StatisticHourCheck;
+        private bool _statisticHourCheck;
         [ObservableProperty]
         private bool _statisticDayCheck;
         [ObservableProperty]
@@ -97,7 +83,38 @@ namespace KDMSViewer.ViewModel
         private ObservableCollection<ChartModel> _seriesItems;
 
         [ObservableProperty]
-        private INotifyPropertyChanged _childViewModel;
+        private INotifyPropertyChanged _realViewModel;
+
+        [ObservableProperty]
+        private INotifyPropertyChanged _fiViewModel;
+
+        [ObservableProperty]
+        private INotifyPropertyChanged _statisticsMinViewModel;
+
+        [ObservableProperty]
+        private INotifyPropertyChanged _dayStatViewModel;
+
+        [ObservableProperty]
+        private INotifyPropertyChanged _statisticsHourViewModel;
+
+        [ObservableProperty]
+        private INotifyPropertyChanged _statisticsDayViewModel;
+
+        [ObservableProperty]
+        private INotifyPropertyChanged _statisticsMonthViewModel;
+
+        [ObservableProperty]
+        private INotifyPropertyChanged _statisticsYearViewModel;
+
+        [ObservableProperty]
+        private INotifyPropertyChanged _commStateViewModel;
+
+        [ObservableProperty]
+        private INotifyPropertyChanged _commStateLogViewModel;
+
+
+        //[ObservableProperty]
+        //private INotifyPropertyChanged _childViewModel;
 
         private List<long> CheckItems { get; set; }
 
@@ -111,7 +128,7 @@ namespace KDMSViewer.ViewModel
             _worker = worker;
             DataInit();
 
-            ChildViewModel = (INotifyPropertyChanged)App.Current.Services.GetService<ViewModel_SwitchData>()!;
+            RealViewModel = (INotifyPropertyChanged)App.Current.Services.GetService<ViewModel_SwitchData>()!;
         }
 
         private void DataInit()
@@ -154,6 +171,7 @@ namespace KDMSViewer.ViewModel
             if (CheckItems.Count <= 0)
             {
                 IsInquiry = true;
+                Application.Current.Dispatcher.Invoke(() => { Mouse.OverrideCursor = Cursors.Arrow; });
                 MessageBox.Show("선택된 데이터가 없습니다.", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
@@ -170,6 +188,10 @@ namespace KDMSViewer.ViewModel
                 {
                     _worker.GetSearchData(CheckItems, (int)SearchTypeCode.FIALARM, FromDate, ToDate);
                 }
+                else if (StatisticMinCheck)
+                {
+                    _worker.GetSearchData(CheckItems, (int)SearchTypeCode.STATISTICSMIN, FromDate, ToDate);
+                }
             }
             else if (StatisticalCheck)
             {
@@ -179,12 +201,7 @@ namespace KDMSViewer.ViewModel
                 }
                 else
                 {
-                    // 통계 데이터
-                    if (StatisticMinCheck)
-                    {
-                        _worker.GetSearchData(CheckItems, (int)SearchTypeCode.STATISTICSMIN, FromDate, ToDate);
-                    }
-                    else if (StatisticHourCheck)
+                    if (StatisticHourCheck)
                     {
                         _worker.GetSearchData(CheckItems, (int)SearchTypeCode.STATISTICSHOUR, FromDate, ToDate);
                     }
@@ -219,7 +236,7 @@ namespace KDMSViewer.ViewModel
             //    ChartDataInit();
             //}
 
-            Application.Current.Dispatcher.Invoke(() => {Mouse.OverrideCursor = Cursors.Arrow;});
+            Application.Current.Dispatcher.Invoke(() => { Mouse.OverrideCursor = Cursors.Arrow; });
             IsInquiry = true;
         }
 
@@ -607,15 +624,19 @@ namespace KDMSViewer.ViewModel
             RealVisibility = Visibility.Visible;
             CommVisibility = Visibility.Hidden;
             SwitchVisibility = Visibility.Visible;
-            //DayCheck = false;
-            //ElectricMinCheck = false;
-            //ElectricHourCheck = false;
-            //ElectricDayCheck = false;
-            //ElectricMonthCheck = false;
-            //ElectricYearCheck = false;
+
             SwitchCheck = true;
             FiCheck = false;
-            ChildViewModel = (INotifyPropertyChanged)App.Current.Services.GetService<ViewModel_SwitchData>()!;
+            DayCheck = false;
+            StatisticMinCheck = false;
+            StatisticHourCheck = false;
+            StatisticDayCheck = false;
+            StatisticMonthCheck = false;
+            StatisticYearCheck = false;
+            CommDayCheck = false;
+            CommLogCheck = false;
+
+            RealViewModel = (INotifyPropertyChanged)App.Current.Services.GetService<ViewModel_SwitchData>()!;
         }
 
         public void OnStatisticalChecked(object sender, RoutedEventArgs e)
@@ -626,16 +647,19 @@ namespace KDMSViewer.ViewModel
             StatisticalVisibility = Visibility.Visible;
             CommVisibility = Visibility.Hidden;
             SwitchVisibility = Visibility.Visible;
-            //SwitchCheck = false;
-            //FiCheck = false;
+
+            SwitchCheck = false;
+            FiCheck = false;
             DayCheck = true;
             StatisticMinCheck = false;
             StatisticHourCheck = false;
             StatisticDayCheck = false;
             StatisticMonthCheck = false;
             StatisticYearCheck = false;
+            CommDayCheck = false;
+            CommLogCheck = false;
 
-            ChildViewModel = (INotifyPropertyChanged)App.Current.Services.GetService<ViewModel_DayStatData>()!;
+            DayStatViewModel = (INotifyPropertyChanged)App.Current.Services.GetService<ViewModel_DayStatData>()!;
         }
 
         public void OnCommChecked(object sender, RoutedEventArgs e)
@@ -647,123 +671,187 @@ namespace KDMSViewer.ViewModel
             CommVisibility = Visibility.Visible;
             SwitchVisibility = Visibility.Visible;
 
+            SwitchCheck = false;
+            FiCheck = false;
+            DayCheck = false;
+            StatisticMinCheck = false;
+            StatisticHourCheck = false;
+            StatisticDayCheck = false;
+            StatisticMonthCheck = false;
+            StatisticYearCheck = false;
             CommDayCheck = true;
             CommLogCheck = false;
 
-            ChildViewModel = (INotifyPropertyChanged)App.Current.Services.GetService<ViewModel_CommDayData>()!;
+            CommStateViewModel = (INotifyPropertyChanged)App.Current.Services.GetService<ViewModel_CommDayData>()!;
         }
 
         public void OnSwitchChecked(object sender, RoutedEventArgs e)
         {
             SwitchCheck = true;
             FiCheck = false;
+            DayCheck = false;
+            StatisticMinCheck = false;
+            StatisticHourCheck = false;
+            StatisticDayCheck = false;
+            StatisticMonthCheck = false;
+            StatisticYearCheck = false;
+            CommDayCheck = false;
+            CommLogCheck = false;
             SwitchVisibility = Visibility.Visible;
 
-            ChildViewModel = (INotifyPropertyChanged)App.Current.Services.GetService<ViewModel_SwitchData>()!;
+            RealViewModel = (INotifyPropertyChanged)App.Current.Services.GetService<ViewModel_SwitchData>()!;
         }
 
         public void OnFiChecked(object sender, RoutedEventArgs e)
         {
             SwitchCheck = false;
             FiCheck = true;
+            DayCheck = false;
+            StatisticMinCheck = false;
+            StatisticHourCheck = false;
+            StatisticDayCheck = false;
+            StatisticMonthCheck = false;
+            StatisticYearCheck = false;
+            CommDayCheck = false;
+            CommLogCheck = false;
             SwitchVisibility = Visibility.Collapsed;
 
-            ChildViewModel = (INotifyPropertyChanged)App.Current.Services.GetService<ViewModel_FiAlarmData>()!;
+            FiViewModel = (INotifyPropertyChanged)App.Current.Services.GetService<ViewModel_FiAlarmData>()!;
         }
 
         public void OnDayStatChecked(object sender, RoutedEventArgs e)
         {
+            SwitchCheck = false;
+            FiCheck = false;
             DayCheck = true;
             StatisticMinCheck = false;
             StatisticHourCheck = false;
             StatisticDayCheck = false;
             StatisticMonthCheck = false;
             StatisticYearCheck = false;
+            CommDayCheck = false;
+            CommLogCheck = false;
 
-            ChildViewModel = (INotifyPropertyChanged)App.Current.Services.GetService<ViewModel_DayStatData>()!;
+            DayStatViewModel = (INotifyPropertyChanged)App.Current.Services.GetService<ViewModel_DayStatData>()!;
             SwitchVisibility = Visibility.Collapsed;
         }
 
         public void OnMinChecked(object sender, RoutedEventArgs e)
         {
+            SwitchCheck = false;
+            FiCheck = false;
             DayCheck = false;
             StatisticMinCheck = true;
             StatisticHourCheck = false;
             StatisticDayCheck = false;
             StatisticMonthCheck = false;
             StatisticYearCheck = false;
+            CommDayCheck = false;
+            CommLogCheck = false;
 
-            ChildViewModel = (INotifyPropertyChanged)App.Current.Services.GetService<ViewModel_StatisticsMinData>()!;
+            StatisticsMinViewModel = (INotifyPropertyChanged)App.Current.Services.GetService<ViewModel_StatisticsMinData>()!;
             SwitchVisibility = Visibility.Collapsed;
         }
 
         public void OnHourChecked(object sender, RoutedEventArgs e)
         {
+            SwitchCheck = false;
+            FiCheck = false;
             DayCheck = false;
             StatisticMinCheck = false;
             StatisticHourCheck = true;
             StatisticDayCheck = false;
             StatisticMonthCheck = false;
             StatisticYearCheck = false;
+            CommDayCheck = false;
+            CommLogCheck = false;
 
-            ChildViewModel = (INotifyPropertyChanged)App.Current.Services.GetService<ViewModel_StatisticsHourData>()!;
+            StatisticsHourViewModel = (INotifyPropertyChanged)App.Current.Services.GetService<ViewModel_StatisticsHourData>()!;
             SwitchVisibility = Visibility.Collapsed;
         }
 
         public void OnDayChecked(object sender, RoutedEventArgs e)
         {
+            SwitchCheck = false;
+            FiCheck = false;
             DayCheck = false;
             StatisticMinCheck = false;
             StatisticHourCheck = false;
             StatisticDayCheck = true;
             StatisticMonthCheck = false;
             StatisticYearCheck = false;
+            CommDayCheck = false;
+            CommLogCheck = false;
 
-            ChildViewModel = (INotifyPropertyChanged)App.Current.Services.GetService<ViewModel_StatisticsDayData>()!;
+            StatisticsDayViewModel = (INotifyPropertyChanged)App.Current.Services.GetService<ViewModel_StatisticsDayData>()!;
             SwitchVisibility = Visibility.Collapsed;
         }
 
         public void OnMonthChecked(object sender, RoutedEventArgs e)
         {
+            SwitchCheck = false;
+            FiCheck = false;
             DayCheck = false;
             StatisticMinCheck = false;
             StatisticHourCheck = false;
             StatisticDayCheck = false;
             StatisticMonthCheck = true;
             StatisticYearCheck = false;
+            CommDayCheck = false;
+            CommLogCheck = false;
 
-            ChildViewModel = (INotifyPropertyChanged)App.Current.Services.GetService<ViewModel_StatisticsMonthData>()!;
+            StatisticsMonthViewModel = (INotifyPropertyChanged)App.Current.Services.GetService<ViewModel_StatisticsMonthData>()!;
             SwitchVisibility = Visibility.Collapsed;
         }
 
         public void OnYearChecked(object sender, RoutedEventArgs e)
         {
+            SwitchCheck = false;
+            FiCheck = false;
             DayCheck = false;
             StatisticMinCheck = false;
             StatisticHourCheck = false;
             StatisticDayCheck = false;
             StatisticMonthCheck = false;
             StatisticYearCheck = true;
+            CommDayCheck = false;
+            CommLogCheck = false;
 
-            ChildViewModel = (INotifyPropertyChanged)App.Current.Services.GetService<ViewModel_StatisticsYearData>()!;
+            StatisticsYearViewModel = (INotifyPropertyChanged)App.Current.Services.GetService<ViewModel_StatisticsYearData>()!;
             SwitchVisibility = Visibility.Collapsed;
         }
 
         public void OnCommDayChecked(object sender, RoutedEventArgs e)
         {
+            SwitchCheck = false;
+            FiCheck = false;
+            DayCheck = false;
+            StatisticMinCheck = false;
+            StatisticHourCheck = false;
+            StatisticDayCheck = false;
+            StatisticMonthCheck = false;
+            StatisticYearCheck = false;
             CommDayCheck = true;
             CommLogCheck = false;
 
-            ChildViewModel = (INotifyPropertyChanged)App.Current.Services.GetService<ViewModel_CommDayData>()!;
+            CommStateViewModel = (INotifyPropertyChanged)App.Current.Services.GetService<ViewModel_CommDayData>()!;
             SwitchVisibility = Visibility.Collapsed;
         }
 
         public void OnCommLogChecked(object sender, RoutedEventArgs e)
         {
+            SwitchCheck = false;
+            FiCheck = false;
+            DayCheck = false;
+            StatisticMinCheck = false;
+            StatisticHourCheck = false;
+            StatisticDayCheck = false;
+            StatisticMonthCheck = false;
+            StatisticYearCheck = false;
             CommDayCheck = false;
             CommLogCheck = true;
 
-            ChildViewModel = (INotifyPropertyChanged)App.Current.Services.GetService<ViewModel_CommLogData>()!;
+            CommStateLogViewModel = (INotifyPropertyChanged)App.Current.Services.GetService<ViewModel_CommLogData>()!;
             SwitchVisibility = Visibility.Collapsed;
         }
 

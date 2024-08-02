@@ -252,10 +252,9 @@
             <Grid Visibility="Hidden">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="60"/>
-                    <ColumnDefinition Width="auto"/>
                     <ColumnDefinition Width="100"/>
-                    <ColumnDefinition Width="120"/>
                     <ColumnDefinition Width="140"/>
+                    <ColumnDefinition Width="120"/>
 
                     <ColumnDefinition Width="100"/>
                     <ColumnDefinition Width="150"/>
@@ -281,34 +280,33 @@
                     <ColumnDefinition Width="30"/>
                 </Grid.ColumnDefinitions>
                 <Grid Grid.Column="0" x:Name="no"/>
-                <Grid Grid.Column="1" x:Name="subs"/>
-                <Grid Grid.Column="2" x:Name="dl"/>
-                <Grid Grid.Column="3" x:Name="sw"/>
-                <Grid Grid.Column="4" x:Name="ceq"/>
+                <Grid Grid.Column="1" x:Name="dl"/>
+                <Grid Grid.Column="2" x:Name="sw"/>
+                <Grid Grid.Column="3" x:Name="ceq"/>
                 
-                <Grid Grid.Column="5" x:Name="circuit"/>
+                <Grid Grid.Column="4" x:Name="circuit"/>
 
-                <Grid Grid.Column="6" x:Name="diagnostics"/>
-                <Grid Grid.Column="7" x:Name="vol_unbalance"/>
-                <Grid Grid.Column="8" x:Name="cur_unbalance"/>
-                <Grid Grid.Column="9" x:Name="frequency"/>
+                <Grid Grid.Column="5" x:Name="diagnostics"/>
+                <Grid Grid.Column="6" x:Name="vol_unbalance"/>
+                <Grid Grid.Column="7" x:Name="cur_unbalance"/>
+                <Grid Grid.Column="8" x:Name="frequency"/>
 
-                <Grid Grid.Column="10" x:Name="avg_cur_a"/>
-                <Grid Grid.Column="11" x:Name="avg_cur_b"/>
-                <Grid Grid.Column="12" x:Name="avg_cur_c"/>
-                <Grid Grid.Column="13" x:Name="avg_cur_n"/>
-                <Grid Grid.Column="14" x:Name="max_cur_a"/>
-                <Grid Grid.Column="15" x:Name="max_cur_b"/>
-                <Grid Grid.Column="16" x:Name="max_cur_c"/>
-                <Grid Grid.Column="17" x:Name="max_cur_n"/>
-                <Grid Grid.Column="18" x:Name="max_time"/>
-                <Grid Grid.Column="19" x:Name="min_cur_a"/>
-                <Grid Grid.Column="20" x:Name="min_cur_b"/>
-                <Grid Grid.Column="21" x:Name="min_cur_c"/>
-                <Grid Grid.Column="22" x:Name="min_cur_n"/>
-                <Grid Grid.Column="23" x:Name="min_time"/>
-                <Grid Grid.Column="24" x:Name="comm_time"/>
-                <Grid Grid.Column="25" x:Name="save_time"/>
+                <Grid Grid.Column="9" x:Name="avg_cur_a"/>
+                <Grid Grid.Column="10" x:Name="avg_cur_b"/>
+                <Grid Grid.Column="11" x:Name="avg_cur_c"/>
+                <Grid Grid.Column="12" x:Name="avg_cur_n"/>
+                <Grid Grid.Column="13" x:Name="max_cur_a"/>
+                <Grid Grid.Column="14" x:Name="max_cur_b"/>
+                <Grid Grid.Column="15" x:Name="max_cur_c"/>
+                <Grid Grid.Column="16" x:Name="max_cur_n"/>
+                <Grid Grid.Column="17" x:Name="max_time"/>
+                <Grid Grid.Column="18" x:Name="min_cur_a"/>
+                <Grid Grid.Column="19" x:Name="min_cur_b"/>
+                <Grid Grid.Column="20" x:Name="min_cur_c"/>
+                <Grid Grid.Column="21" x:Name="min_cur_n"/>
+                <Grid Grid.Column="22" x:Name="min_time"/>
+                <Grid Grid.Column="23" x:Name="comm_time"/>
+                <Grid Grid.Column="24" x:Name="save_time"/>
             </Grid>
         </Grid>
     </ScrollViewer>
