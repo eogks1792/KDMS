@@ -18,6 +18,8 @@ namespace KDMSServer.Model
         FIALARM,
         COMMSTATE,
         COMMSTATELOG,
+        MINTABLECREATE,
+        DAYSTATTABLECREATE,
     }
 
     public enum PointTypeCode

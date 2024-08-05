@@ -42,7 +42,8 @@ namespace KDMSServer.Model
 
         private List<PdbListModel> pdbLists = new List<PdbListModel>();
 
-        private bool ThreadFlag { get; set; } = true;
+        private bool SocketThreadFlag { get; set; } = false;
+        private bool DBThreadFlag { get; set; } = true;
         public DataWorker(ILogger logger, IMediator mediator, IConfiguration configuration, CommonDataModel commonData)
         {
             _logger = logger;
@@ -75,11 +76,13 @@ namespace KDMSServer.Model
 
         public void ThreadClose()
         {
-            ThreadFlag = false;
+            DBThreadFlag = false;
         }
 
         public void SocketClose()
         {
+            SocketThreadFlag = false;
+            pdbLists.Clear();
             if (rtaMaster != null)
             {
                 rtaMaster.Dispose();
@@ -97,6 +100,8 @@ namespace KDMSServer.Model
                 evtMaster.Dispose();
                 evtMaster = null;
             }
+
+            Thread.Sleep(2000);
         }
 
         ///////////////////////////////////////////////////////////////////////     통신     ////////////////////////////////////////////////////////////////////////////
@@ -228,6 +233,7 @@ namespace KDMSServer.Model
             catch (Exception ex)
             {
                 _logger.Error($"[PDB 목록] RCV FAIL(ex:{ex.Message})");
+                SocketClose();
             }
         }
 
@@ -369,6 +375,7 @@ namespace KDMSServer.Model
                                 _logger.ServerLog($"[PDB 파일] 수신 완료(PDBID: {min} ~ {max})");
                                 PdbFileUPDate();
 
+                                SocketThreadFlag = true;
                                 // 동작 처리
                                 Task.Run(() =>
                                 {
@@ -388,6 +395,7 @@ namespace KDMSServer.Model
             catch (Exception ex)
             {
                 _logger.Error($"[PDB 파일] RCV FAIL(ex:{ex.Message})");
+                SocketClose();
             }
         }
 
@@ -450,6 +458,7 @@ namespace KDMSServer.Model
             catch (Exception ex)
             {
                 _logger.Error($"[PDB 파일] RCV FAIL(ex:{ex.Message})");
+                SocketClose();
             }
         }
 
@@ -470,7 +479,8 @@ namespace KDMSServer.Model
 
         public async void KemsEVTReceive()
         {
-            while (ThreadFlag)
+            _logger.ServerLog($"[서버] 이벤트 쓰레드 시작");
+            while (SocketThreadFlag)
             {
                 try
                 {
@@ -532,15 +542,19 @@ namespace KDMSServer.Model
                 catch (Exception ex)
                 {
                     _logger.Error($"[Alarm 수신] FAIL(ex:{ex.Message})");
+                    SocketClose();
                 }
 
                 await Task.Delay(1000);
             }
+
+            _logger.ServerLog($"[서버] 이벤트 쓰레드 종료");
         }
 
         private async void PdbRealTimeWorker()
         {
             Thread.Sleep(1000);
+            _logger.ServerLog($"[서버] 실시간 쓰레드 시작");
 
             DateTime pdbModifyInitialTime = DateTimeHelper.GetNextDateTime(DateTime.Now, TimeDivisionCode.Day, hour: 1, min: 0);
             _logger.ServerLog($"[PDB 목록] 다운로드 시간: {pdbModifyInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
@@ -560,7 +574,7 @@ namespace KDMSServer.Model
             DateTime commstateDataInitialTime = DateTimeHelper.GetNextDateTime(DateTime.Now, TimeDivisionCode.None, hour: commstateDt.Hour, min: commstateDt.Minute);
             _logger.ServerLog($"[통신 성공률] 데이터 생성 시간: {commstateDataInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
 
-            while (ThreadFlag)
+            while (SocketThreadFlag)
             {
                 try
                 {
@@ -588,6 +602,12 @@ namespace KDMSServer.Model
                                 _logger.ServerLog($"[15분 실시간(평균부하전류)] NEXT 데이터 생성 시간: {min15DataInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
                             }
                         }
+
+                        // DMC 데이터 테스트
+                        //if (_commonData.rtdbDmcs.Count > 0)
+                        //{
+                        //    _commonData.DMCDataView();
+                        //}
 
                         minDataInitialTime = minDataInitialTime.AddMinutes(1);
                         //_logger.ServerLog($"[1분 실시간] NEXT 데이터 생성 시간: {minDataInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
@@ -628,6 +648,8 @@ namespace KDMSServer.Model
                 }
                 await Task.Delay(1000);
             }
+
+            _logger.ServerLog($"[서버] 실시간 쓰레드 종료");
         }
 
         private void PdbFileUPDate()
@@ -802,7 +824,25 @@ namespace KDMSServer.Model
                     break;
                 case (int)ProcTypeCode.COMMSTATELOG:
                     {
-                        
+
+                    }
+                    break;
+                case (int)ProcTypeCode.MINTABLECREATE:
+                    {
+                        bool retval = _commonData.SingleMinDataTableCreate(time);
+                        if (retval)
+                        {
+                            _logger.DbLog($"[1분 실시간] history_min_data_{time.ToString("yyyyMMdd")} 테이블 생성 성공");
+                        }
+                    }
+                    break;
+                case (int)ProcTypeCode.DAYSTATTABLECREATE:
+                    {
+                        bool retval = _commonData.SingleDayStatTableCreate(time);
+                        if (retval)
+                        {
+                            _logger.DbLog($"[1일 통계] history_daystat_data_{time.ToString("yyyy")} 테이블 생성 성공");
+                        }
                     }
                     break;
             }
@@ -816,6 +856,7 @@ namespace KDMSServer.Model
         private async void SchudleDataWorker()
         {
             Thread.Sleep(2500);
+            _logger.DbLog($"[서버] 스케줄 쓰레드 시작");
 
             string HourString = _commonData.SchduleInfos.FirstOrDefault(x=>x.SchduleId == (int)ProcTypeCode.STATISTICSHOUR)!.SchduleValue.ToString();
             string DayString = _commonData.SchduleInfos.FirstOrDefault(x => x.SchduleId == (int)ProcTypeCode.STATISTICSDAY)!.SchduleValue.ToString();
@@ -842,7 +883,7 @@ namespace KDMSServer.Model
             DateTime dayInitialTimeForOneMinute = DateTimeHelper.GetNextDateTime(DateTime.Now, TimeDivisionCode.Day, hour: DayForOneMinute.Hour, min: DayForOneMinute.Minute, sec: DayForOneMinute.Second);
             _logger.DbLog($"[1일 통계(1분실시간전류)] 데이터 생성 시간: {dayInitialTimeForOneMinute.ToString("yyyy-MM-dd HH:mm:ss")}");
 
-            while (ThreadFlag)
+            while (DBThreadFlag)
             {
                 try
                 {
@@ -854,7 +895,7 @@ namespace KDMSServer.Model
                             if (model.IsDBConnetion)
                                 GetProcData((int)ProcTypeCode.STATISTICSHOUR, hourInitialTime.AddHours(-1));
                             else
-                                _logger.DbLog($"{hourInitialTime.AddHours(-1).ToString("yyyy-MM-dd HH:00:00")} [시간 통계(평균부하전류)] 데이터 생성 실패 (DB 접속 실패) ");
+                                _logger.DbLog($"[시간 통계(평균부하전류)] {hourInitialTime.AddHours(-1).ToString("yyyy-MM-dd HH:00:00")} 데이터 생성 실패 (DB 접속 실패) ");
                         }
                         hourInitialTime = hourInitialTime.AddHours(1);
                         _logger.DbLog($"[시간 통계(평균부하전류)] NEXT 데이터 생성 시간: {hourInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
@@ -868,7 +909,7 @@ namespace KDMSServer.Model
                             if (model.IsDBConnetion)
                                 GetProcData((int)ProcTypeCode.STATISTICSDAY, dayInitialTime.AddDays(-1));
                             else
-                                _logger.DbLog($"{dayInitialTime.AddDays(-1).ToString("yyyy-MM-dd")} [일 통계(평균부하전류)] 데이터 생성 실패 (DB 접속 실패) ");
+                                _logger.DbLog($"[일 통계(평균부하전류)] {dayInitialTime.AddDays(-1).ToString("yyyy-MM-dd")} 데이터 생성 실패 (DB 접속 실패) ");
                         }
                         dayInitialTime = dayInitialTime.AddDays(1);
                         _logger.DbLog($"[일 통계(평균부하전류)] NEXT 데이터 생성 시간: {dayInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
@@ -882,7 +923,7 @@ namespace KDMSServer.Model
                             if (model.IsDBConnetion)
                                 GetProcData((int)ProcTypeCode.STATISTICSMONTH, monthInitialTime.AddMonths(-1));
                             else
-                                _logger.DbLog($"{monthInitialTime.AddMonths(-1).ToString("yyyy-MM")} [월 통계(평균부하전류)] 데이터 생성 실패 (DB 접속 실패) ");
+                                _logger.DbLog($"[월 통계(평균부하전류)] {monthInitialTime.AddMonths(-1).ToString("yyyy-MM")} 데이터 생성 실패 (DB 접속 실패) ");
                         }
                         monthInitialTime = monthInitialTime.AddMonths(1);
                         _logger.DbLog($"[월 통계(평균부하전류)] NEXT 데이터 생성 시간: {monthInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
@@ -896,7 +937,7 @@ namespace KDMSServer.Model
                             if (model.IsDBConnetion)
                                 GetProcData((int)ProcTypeCode.STATISTICSYEAR, yearhInitialTime.AddYears(-1));
                             else
-                                _logger.DbLog($"{yearhInitialTime.AddYears(-1).ToString("yyyy")} [년 통계(평균부하전류)] 데이터 생성 실패 (DB 접속 실패) ");
+                                _logger.DbLog($"[년 통계(평균부하전류)] {yearhInitialTime.AddYears(-1).ToString("yyyy")} 데이터 생성 실패 (DB 접속 실패) ");
                         }
                         yearhInitialTime = yearhInitialTime.AddYears(1);
                         _logger.DbLog($"[년 통계(평균부하전류)] NEXT 데이터 생성 시간: {yearhInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
@@ -910,10 +951,10 @@ namespace KDMSServer.Model
                             if (model.IsDBConnetion)
                                 GetProcData((int)ProcTypeCode.DAYSTATDATA, dayInitialTimeForOneMinute.AddDays(-1));
                             else
-                                _logger.DbLog($"{dayInitialTimeForOneMinute.AddDays(-1).ToString("yyyy-MM-dd HH:mm:ss")} [1일 통계(1분활용)] 데이터 생성 실패 (DB 접속 실패) ");
+                                _logger.DbLog($"[1일 통계(1분실시간전류)] {dayInitialTimeForOneMinute.AddDays(-1).ToString("yyyy-MM-dd")} 데이터 생성 실패 (DB 접속 실패) ");
                         }
                         dayInitialTimeForOneMinute = dayInitialTimeForOneMinute.AddDays(1);
-                        _logger.DbLog($"[1일 통계(1분활용)] NEXT 데이터 생성 시간: {dayInitialTimeForOneMinute.ToString("yyyy-MM-dd HH:mm:ss")}");
+                        _logger.DbLog($"[1일 통계(1분실시간전류)] NEXT 데이터 생성 시간: {dayInitialTimeForOneMinute.ToString("yyyy-MM-dd HH:mm:ss")}");
                     }
                 }
                 catch
@@ -922,18 +963,21 @@ namespace KDMSServer.Model
                 }
                 await Task.Delay(1000);
             }
+
+            _logger.DbLog($"[서버] 스케줄 쓰레드 종료");
         }
 
         private async void TableCreateWorker()
         {
             Thread.Sleep(1000);
+            _logger.DbLog($"[서버] 테이블 생성 쓰레드 시작");
 
             DateTime yearInitialTime = DateTimeHelper.GetNextDateTime(DateTime.Now.AddYears(-1), TimeDivisionCode.Year, month:12, day:31, hour:1);
             _logger.DbLog($"[1일 통계(1분실시간전류)] 테이블 생성 시간: {yearInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
             DateTime dayInitialTime = DateTimeHelper.GetNextDateTime(DateTime.Now, TimeDivisionCode.Day, hour: 23, min:55);
             _logger.DbLog($"[1분 실시간] 테이블 생성 시간: {dayInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
 
-            while (ThreadFlag)
+            while (DBThreadFlag)
             {
                 try
                 {
@@ -987,6 +1031,8 @@ namespace KDMSServer.Model
                 }
                 await Task.Delay(1000);
             }
+
+            _logger.DbLog($"[서버] 테이블 생성 쓰레드 종료");
         }
 
         /////////////////////////////////////////////////////////////////////// 상태 체크 ////////////////////////////////////////////////////////////////////////////
@@ -995,7 +1041,7 @@ namespace KDMSServer.Model
         {
             int checkSocketCnt = 0;
             string checkSocketText = string.Empty;
-            while (ThreadFlag)
+            while (DBThreadFlag)
             {
                 try
                 {
@@ -1027,7 +1073,6 @@ namespace KDMSServer.Model
                                 model.IsSocketConnetionState = "실패";
 
                                 SocketClose();      // 현재 소켓이 연결되어 있으면 연결 종료 처리
-                                Thread.Sleep(500);
                                 KdmsServerInit();   // 소켓 연결 처리
                             }
                             else
@@ -1061,7 +1106,7 @@ namespace KDMSServer.Model
         {
             int checkDBCnt = 0;
             string checkDBText = string.Empty;
-            while (ThreadFlag)
+            while (DBThreadFlag)
             {
                 try
                 {

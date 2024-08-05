@@ -37,7 +37,7 @@ namespace KDMSServer.Model
         public List<PdbList> pdbLists { get; set; }
         private List<AiInfo> AiInfos { get; set; }
         private List<AlarmInfo> AlarmInfos { get; set; }
-        private List<PdbRemoteunit> Remoteunits { get; set; }
+        //private List<PdbRemoteunit> Remoteunits { get; set; }
 
         // PDB 데이터
         public List<pdb_Discrete> pdbDiscretes = new List<pdb_Discrete>();
@@ -77,7 +77,7 @@ namespace KDMSServer.Model
 
             AiInfos = _kdmsContext.AiInfos.ToList();
             AlarmInfos = _kdmsContext.AlarmInfos.ToList();
-            Remoteunits = _kdmsContext.PdbRemoteunits.Where(p => p.DmcFk != 0).ToList();
+            //Remoteunits = _kdmsContext.PdbRemoteunits.Where(p => p.DmcFk != 0).ToList();
         }
 
         public string PdbFileName(int pdbId)
@@ -152,10 +152,10 @@ namespace KDMSServer.Model
                 if (equipment.rtu_type == 1)    // RTU 타입이 1이면 수동
                     continue;
 
-                var findRemoteunit = Remoteunits.FirstOrDefault(p => p.EqFk == equipment.ceqid);
-                if(findRemoteunit != null)
+                var findRemoteunit = pdbRemoteUnits.FirstOrDefault(p => p.eq_fk == equipment.ceqid);
+                if(findRemoteunit.pid > 0)
                 {
-                    if(findRemoteunit.ProtocolFk == 0 && findRemoteunit.CommType == 0)
+                    if(findRemoteunit.protocol_fk == 0 && findRemoteunit.comm_type == 0)
                     continue;
                 }
 
@@ -354,10 +354,10 @@ namespace KDMSServer.Model
                 if (equipment.rtu_type == 1)    // RTU 타입이 1이면 수동
                     continue;
 
-                var findRemoteunit = Remoteunits.FirstOrDefault(p => p.EqFk == equipment.ceqid);
-                if (findRemoteunit != null)
+                var findRemoteunit = pdbRemoteUnits.FirstOrDefault(p => p.eq_fk == equipment.ceqid);
+                if (findRemoteunit.pid > 0)
                 {
-                    if (findRemoteunit.ProtocolFk == 0 && findRemoteunit.CommType == 0)
+                    if (findRemoteunit.protocol_fk == 0 && findRemoteunit.comm_type == 0)
                         continue;
                 }
 
@@ -463,7 +463,7 @@ namespace KDMSServer.Model
             if (rtdbDmcs.Count <= 0)
                 return false;
 
-            return rtdbDmcs.FirstOrDefault(p => p.pid == dmcFk).value == 1 ? true : false;
+            return rtdbDmcs.FirstOrDefault(p => p.pid == dmcFk).value == 4 ? true : false;
         }
 
         private float GetCommDataValue(int commDmcFk)
@@ -489,17 +489,17 @@ namespace KDMSServer.Model
         public void CommStateDataSave(DateTime date/*, List<rtdb_Dmc> rtList, List<pdb_ConductingEquipment> equipmentList*/)
         {
             List<HistoryCommState> dataList = new List<HistoryCommState>();
-            foreach(var remote in Remoteunits)
+            foreach(var remote in pdbRemoteUnits)
             {
-                if (remote.ProtocolFk == 0 && remote.CommType == 0)
+                if (remote.protocol_fk == 0 && remote.comm_type == 0)
                     continue;
 
-                if (remote.EqType == 1)
+                if (remote.eq_type == 1)
                 {
-                    var equipment = pdbConductingequipments.FirstOrDefault(p => p.ceqid != 0 && p.ceqid == remote.EqFk);
+                    var equipment = pdbConductingequipments.FirstOrDefault(p => p.ceqid != 0 && p.ceqid == remote.eq_fk);
                     if (equipment.ceqid <= 0)
                     {
-                        _logger.Debug($"[통신 성공률] Conductingequipment CEQID:0 / Remote EqFk:{remote.EqFk}");
+                        _logger.Debug($"[통신 성공률] Conductingequipment CEQID:0 / Remote EqFk:{remote.eq_fk}");
                         continue;
                     }
 
@@ -518,24 +518,24 @@ namespace KDMSServer.Model
                     data.Dl = GetStringData(findDl.name);
                     data.Name = GetStringData(equipment.name);
 
-                    data.EqType = remote.EqType ?? 0;
+                    data.EqType = (int)remote.eq_fk;
                     data.Ceqid = (int)equipment.ceqid;
                     data.Cpsid = 0;
 
-                    data.CommSucessCount = (int)GetCommDataValue(Convert.ToInt32(remote.CommDmcFk + 3000 ?? 0));
-                    data.CommFailCount = (int)GetCommDataValue(Convert.ToInt32(remote.CommDmcFk + 6000 ?? 0));
+                    data.CommSucessCount = (int)GetCommDataValue(Convert.ToInt32(remote.comm_dmc_fk + 3000));
+                    data.CommFailCount = (int)GetCommDataValue(Convert.ToInt32(remote.comm_dmc_fk + 6000));
                     data.CommTotalCount = data.CommSucessCount + data.CommFailCount;
-                    data.CommSucessRate = GetCommDataValue(Convert.ToInt32(remote.CommDmcFk ?? 0));
-                    data.CommTime = GetCommDataTime(Convert.ToInt32(remote.CommDmcFk ?? 0), date);
+                    data.CommSucessRate = GetCommDataValue(Convert.ToInt32(remote.comm_dmc_fk));
+                    data.CommTime = GetCommDataTime(Convert.ToInt32(remote.comm_dmc_fk), date);
 
                     dataList.Add(data);
                 }
                 else
                 {
-                    var findList = pdbConductingequipments.Where(p => p.ceqid != 0 && p.ec_fk == remote.EqFk).ToList();
+                    var findList = pdbConductingequipments.Where(p => p.ceqid != 0 && p.ec_fk == remote.eq_fk).ToList();
                     if (findList.Count <= 0)
                     {
-                        _logger.Debug($"[통신 성공률] Conductingequipment CEQID:0 / Remote EqFk:{remote.EqFk}");
+                        _logger.Debug($"[통신 성공률] Conductingequipment CEQID:0 / Remote EqFk:{remote.eq_fk}");
                         continue;
                     }
 
@@ -556,15 +556,15 @@ namespace KDMSServer.Model
                         data.Dl = GetStringData(findDl.name);
                         data.Name = GetStringData(equipment.name);
 
-                        data.EqType = remote.EqType ?? 0;
+                        data.EqType = (int)remote.eq_fk;
                         data.Ceqid = (int)equipment.ceqid;
                         data.Cpsid = (int)equipment.ec_fk;
 
-                        data.CommSucessCount = (int)GetCommDataValue(Convert.ToInt32(remote.CommDmcFk + 3000 ?? 0));
-                        data.CommFailCount = (int)GetCommDataValue(Convert.ToInt32(remote.CommDmcFk + 6000 ?? 0));
+                        data.CommSucessCount = (int)GetCommDataValue(Convert.ToInt32(remote.comm_dmc_fk + 3000));
+                        data.CommFailCount = (int)GetCommDataValue(Convert.ToInt32(remote.comm_dmc_fk + 6000));
                         data.CommTotalCount = data.CommSucessCount + data.CommFailCount;
-                        data.CommSucessRate = GetCommDataValue(Convert.ToInt32(remote.CommDmcFk ?? 0));
-                        data.CommTime = GetCommDataTime(Convert.ToInt32(remote.CommDmcFk ?? 0), date);
+                        data.CommSucessRate = GetCommDataValue(Convert.ToInt32(remote.comm_dmc_fk));
+                        data.CommTime = GetCommDataTime(Convert.ToInt32(remote.comm_dmc_fk), date);
 
                         dataList.Add(data);
                     }
@@ -642,19 +642,37 @@ namespace KDMSServer.Model
             }
         }
 
+        //public void DMCDataView()
+        //{
+        //    foreach (var remote in pdbRemoteUnits)
+        //    {
+        //        var findDmc = rtdbDmcs.FirstOrDefault(p => p.pid == remote.dmc_fk);
+        //        if (findDmc.pid > 0)
+        //        {
+        //            _logger.ServerLog($"PID:{findDmc.pid} VAL:{findDmc.value}");
+        //        }
+        //    }
+        //}
+
         public void CommStateLogDataSave(List<rtdb_Alarm> alarmList)
         {
             var date = DateTime.Now;
             foreach (var alarm in alarmList)
             {
-                var findRemoteunit = Remoteunits.FirstOrDefault(p => p.Pid == alarm.uiRtuid);
-                if (findRemoteunit == null)
+                var findRemoteunit = pdbRemoteUnits.FirstOrDefault(p => p.pid == alarm.uiRtuid);
+                if (findRemoteunit.pid <= 0)
                 {
                     _logger.Debug($"[통신상태 이력] Remoteunit RTUID:{alarm.uiRtuid} 없음 ");
                     continue;
                 }
 
-                if (findRemoteunit.ProtocolFk == 0 && findRemoteunit.CommType == 0)
+                if (findRemoteunit.dmc_fk == 0 && findRemoteunit.comm_dmc_fk == 0)
+                {
+                    _logger.Debug($"[통신상태 이력] Remoteunit DMCFK:0 / COMMDMC_FK:0 → RTDM DMC PID NOT FOUND");
+                    continue;
+                }
+
+                if (findRemoteunit.protocol_fk == 0 && findRemoteunit.comm_type == 0)
                     continue;
 
                 var findDl = pdbDistributionLines.FirstOrDefault(p => p.dlid == alarm.uiDL);
@@ -679,19 +697,19 @@ namespace KDMSServer.Model
                 data.Dl = GetStringData(findDl.name);
                 data.Name = GetStringData(equipment.name);
 
-                data.EqType = findRemoteunit.EqType ?? 0;
+                data.EqType = (int)findRemoteunit.eq_fk;
                 data.Ceqid = (int)equipment.ceqid;
                 data.Cpsid = 0;
-                data.CommState = GetCommStateValue(Convert.ToInt32(findRemoteunit.DmcFk ?? 0));
-                data.CommSucessCount = (int)GetCommDataValue(Convert.ToInt32(findRemoteunit.CommDmcFk + 3000 ?? 0));
-                data.CommFailCount = (int)GetCommDataValue(Convert.ToInt32(findRemoteunit.CommDmcFk + 6000 ?? 0));
+                data.CommState = GetCommStateValue(Convert.ToInt32(findRemoteunit.dmc_fk));
+                data.CommSucessCount = (int)GetCommDataValue(Convert.ToInt32(findRemoteunit.comm_dmc_fk + 3000));
+                data.CommFailCount = (int)GetCommDataValue(Convert.ToInt32(findRemoteunit.comm_dmc_fk + 6000));
                 data.CommTotalCount = data.CommSucessCount + data.CommFailCount;
-                data.CommSucessRate = GetCommDataValue(Convert.ToInt32(findRemoteunit.CommDmcFk ?? 0));
-                data.CommTime = GetCommDataTime(Convert.ToInt32(findRemoteunit.CommDmcFk ?? 0), date);
+                data.CommSucessRate = GetCommDataValue(Convert.ToInt32(findRemoteunit.comm_dmc_fk));
+                data.CommTime = GetCommDataTime(Convert.ToInt32(findRemoteunit.comm_dmc_fk), date);
 
                 try
                 {
-                    string query = $"insert into history_comm_state_log values ('{data.SaveTime.ToString("yyyy-MM-dd HH:mm:ss")}', {data.EqType}, {data.Ceqid}, {data.Cpsid}, '{data.Name?.Trim()}', '{data.Dl?.Trim()}', {data.CommState}" +
+                    string query = $"insert into history_comm_state_log values ('{data.SaveTime.ToString("yyyy-MM-dd HH:mm:ss")}', {data.EqType}, {data.Ceqid}, {data.Cpsid}, '{data.Name?.Trim()}', '{data.Dl?.Trim()}', {data.CommState}," +
                         $" {data.CommTotalCount}, {data.CommSucessCount}, {data.CommFailCount}, {data.CommSucessRate:N2}, '{data.CommTime?.ToString("yyyy-MM-dd HH:mm:ss")}')";
 
                     using (MySqlMapper mapper = new MySqlMapper(_configuration))
@@ -781,14 +799,14 @@ namespace KDMSServer.Model
                     if (!retValue)
                         continue;
 
-                    var findRemoteunit = Remoteunits.FirstOrDefault(p => p.Pid == alarm.uiRtuid);
-                    if (findRemoteunit == null)
+                    var findRemoteunit = pdbRemoteUnits.FirstOrDefault(p => p.pid == alarm.uiRtuid);
+                    if (findRemoteunit.pid <= 0)
                     {
                         _logger.Debug($"[알람 실시간] Remoteunit RTUID:{alarm.uiRtuid} 없음 ");
                         continue;
                     }
 
-                    if (findRemoteunit.ProtocolFk == 0 && findRemoteunit.CommType == 0)
+                    if (findRemoteunit.protocol_fk == 0 && findRemoteunit.comm_type == 0)
                         continue;
 
                     var findDl = pdbDistributionLines.FirstOrDefault(p => p.dlid == alarm.uiDL);
@@ -859,7 +877,7 @@ namespace KDMSServer.Model
                         //    break;
                     }
 
-                    var ceqAnalogList = pdbAnalogs.Where(p => p.ceq_fk == (int)alarm.uiEqid).ToList();
+                    var ceqAnalogList = pdbAnalogs.Where(p => p.ceq_fk == (int)alarm.uiEqid && p.pid == alarm.uiPid).ToList();
                     data.FaultCurrentA = GetMinDataValue(ceqAnalogList, 51);
                     data.FaultCurrentB = GetMinDataValue(ceqAnalogList, 52);
                     data.FaultCurrentC = GetMinDataValue(ceqAnalogList, 53);
@@ -920,6 +938,7 @@ namespace KDMSServer.Model
                 EqFk = (int)p.eq_fk,
                 EqType = (int)p.eq_type,
                 RtuMapFk = (int)p.rtu_map_fk,
+                RtuType = (int)p.rtu_type,
                 Name = GetStringData(p.name),
                 MasterAddr = (int)p.master_addr,
                 SlaveAddr = (int)p.slave_addr,
@@ -1346,6 +1365,27 @@ namespace KDMSServer.Model
             }
         }
 
+        public bool SingleMinDataTableCreate(DateTime date)
+        {
+            bool retval = false;
+            try
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.AppendLine($"call min_data_create('history_min_data_{date.ToString("yyyyMMdd")}');");
+
+                using (MySqlMapper mapper = new MySqlMapper(_configuration))
+                {
+                    retval = mapper.RunQuery(sb.ToString());
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.DbLog($"[1분 실시간] history_min_data_{date.ToString("yyyyMMdd")} 테이블 생성 실패 ex:{ex.Message}");
+            }
+
+            return retval;
+        }
+
         public bool MinDataTableCreate(DateTime date)
         {
             bool retval = false;
@@ -1362,10 +1402,28 @@ namespace KDMSServer.Model
             }
             catch (Exception ex)
             {
-                _logger.DbLog($"{date.AddDays(1).ToString("yyyyMMdd")} 이력 실시간 테이블 생성 실패 ex:{ex.Message}");
-                _logger.DbLog($"{date.AddDays(2).ToString("yyyyMMdd")} 이력 실시간 테이블 생성 실패 ex:{ex.Message}");
+                _logger.DbLog($"[1분 실시간] history_min_data_{date.AddDays(1).ToString("yyyyMMdd")} 테이블 생성 실패 ex:{ex.Message}");
+                _logger.DbLog($"[1분 실시간] history_min_data_{date.AddDays(2).ToString("yyyyMMdd")} 테이블 생성 실패 ex:{ex.Message}");
             }
 
+            return retval;
+        }
+
+        public bool SingleDayStatTableCreate(DateTime date)
+        {
+            bool retval = false;
+            try
+            {
+                string query = $"call daystat_data_create('history_daystat_data_{date.ToString("yyyy")}');";
+                using (MySqlMapper mapper = new MySqlMapper(_configuration))
+                {
+                    retval = mapper.RunQuery(query);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.DbLog($"[1일 통계] history_daystat_data_{date.ToString("yyyy")} 테이블 생성 실패 ex:{ex.Message}");
+            }
             return retval;
         }
 
@@ -1382,7 +1440,7 @@ namespace KDMSServer.Model
             }
             catch (Exception ex)
             {
-                _logger.DbLog($"{date.AddYears(1).ToString("yyyy")} 이력 통계 테이블 생성 실패 ex:{ex.Message}");
+                _logger.DbLog($"[1일 통계] history_daystat_data_{date.AddYears(1).ToString("yyyy")} 테이블 생성 실패 ex:{ex.Message}");
             }
             return retval;
         }

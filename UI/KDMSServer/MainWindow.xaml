@@ -665,6 +665,8 @@
                             <ComboBoxItem Content="전류 일 통계 생성" Tag="5"/>
                             <ComboBoxItem Content="전류 월 통계 생성" Tag="6"/>
                             <ComboBoxItem Content="전류 년 통계 생성" Tag="7"/>
+                            <ComboBoxItem Content="1분 실시간 테이블 생성" Tag="11"/>
+                            <ComboBoxItem Content="1일 통계 테이블 생성" Tag="12"/>
                         </ComboBox>
 
                         <Button Grid.Column="5"
