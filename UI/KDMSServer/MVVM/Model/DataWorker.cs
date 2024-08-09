@@ -1,29 +1,17 @@
-﻿using DevExpress.Data.Linq.Helpers;
-using DevExpress.Data.Mask.Internal;
-using DevExpress.Data.ODataLinq;
-using DevExpress.Mvvm.Native;
-using DevExpress.Pdf.Native;
-using DevExpress.Xpf.Editors.Validation;
+﻿using DevExpress.Mvvm.Native;
 using KDMS.EF.Core.Contexts;
-using KDMS.EF.Core.Infrastructure.Reverse.Models;
 using KDMSServer.Features;
 using KDMSServer.MVVM.Model;
 using KDMSServer.ViewModel;
 using KdmsTcpSocket;
 using KdmsTcpSocket.Interfaces;
-using KdmsTcpSocket.KdmsTcpStruct;
 using KdmsTcpSocket.Message;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Net.Sockets;
-using System.Text;
-using System.Windows;
-using System.Windows.Interop;
-using static DevExpress.XtraPrinting.Native.ExportOptionsPropertiesNames;
 
 namespace KDMSServer.Model
 {
@@ -35,7 +23,6 @@ namespace KDMSServer.Model
         private readonly CommonDataModel _commonData;
 
         private ITcpSocketMaster? rtaMaster = null;
-        //private ITcpSocketMaster? ctlMaster = null;
         private ITcpSocketMaster? evtMaster = null;
 
         private SocketConnectionType socketConnectionType { get; set; }
@@ -44,6 +31,11 @@ namespace KDMSServer.Model
 
         private bool SocketThreadFlag { get; set; } = false;
         private bool DBThreadFlag { get; set; } = true;
+
+        private MainViewModel MainModel
+        {
+            get { return App.Current.Services.GetService<MainViewModel>()!; }
+        }
         public DataWorker(ILogger logger, IMediator mediator, IConfiguration configuration, CommonDataModel commonData)
         {
             _logger = logger;
@@ -72,6 +64,11 @@ namespace KDMSServer.Model
             {
                 SchudleDataWorker();
             });
+
+            Task.Run(() =>
+            {
+                TableDataDeleteWorker();
+            });
         }
 
         public void ThreadClose()
@@ -83,25 +80,14 @@ namespace KDMSServer.Model
         {
             SocketThreadFlag = false;
             pdbLists.Clear();
-            if (rtaMaster != null)
-            {
-                rtaMaster.Dispose();
-                rtaMaster = null;
-            }
 
-            //if (ctlMaster != null)
-            //{
-            //    ctlMaster.Dispose();
-            //    ctlMaster = null;
-            //}
+            rtaMaster?.Dispose();
+            rtaMaster = null;
 
-            if (evtMaster != null)
-            {
-                evtMaster.Dispose();
-                evtMaster = null;
-            }
+            evtMaster?.Dispose();
+            evtMaster = null;
 
-            Thread.Sleep(2000);
+            Thread.Sleep(3000);
         }
 
         ///////////////////////////////////////////////////////////////////////     통신     ////////////////////////////////////////////////////////////////////////////
@@ -112,7 +98,7 @@ namespace KDMSServer.Model
             var backupIP = serverInfos.GetSection("BackupServer").Value!;
 
             bool retValue = KdmsTcpServerLogin(primeIP, SocketConnectionType.PRIME);
-            if(!retValue)   // 연결 실패시 backup IP로 대체 다시 로그인 처리
+            if (!retValue)   // 연결 실패시 backup IP로 대체 다시 로그인 처리
             {
                 retValue = KdmsTcpServerLogin(backupIP, SocketConnectionType.BACKUP);
                 if (retValue)
@@ -127,7 +113,7 @@ namespace KDMSServer.Model
                 KdmsPdbFileDownload();
             }
         }
-        
+
         public bool KdmsTcpServerLogin(string serverAddr, SocketConnectionType type)
         {
             socketConnectionType = type;
@@ -153,20 +139,18 @@ namespace KDMSServer.Model
                 var response = rtaMaster.SendData<OperLogReq>(KdmsCodeInfo.kdmsOperLoginReqs, KdmsCodeInfo.KdmsOperLoginReps
                        , new OperLogReq { szUserId = loginId, szUserPw = loginPwd });
 
-                if(response == null)
+                if (response == null)
                     throw new Exception("Response DATA NULL");
 
                 if (response.RecvDatas != null)
                 {
                     var loginResult = KdmsValueConverter.ByteToStruct<OperLogRes>(response.RecvDatas);
-                    if (loginResult.usSt == 1) 
+                    if (loginResult.usSt == 1)
                         isLogin = true;
 
                     if (isLogin)
                     {
                         // CTL/EVT 연결
-                        //TcpClient ctlClient = new TcpClient(serverAddr, contorlPort);
-                        //ctlMaster = KdmsTcpClient.CreateKdmsSocketMaster(ctlClient);
                         TcpClient evtClient = new TcpClient(serverAddr, alarmPort);
                         evtMaster = KdmsTcpClient.CreateKdmsSocketMaster(evtClient);
                         evtMaster.Transport.ReadTimeout = 10 * 1000;
@@ -185,6 +169,7 @@ namespace KDMSServer.Model
             {
                 _logger.ServerLog($"[로그인] KDMS SERVER: {serverAddr} 연결 실패(ex:{ex.Message})");
                 SocketClose();
+                _logger.ServerLog($"[서버] KDMS SERVER 소켓 종료");
             }
             return isLogin;
         }
@@ -204,7 +189,7 @@ namespace KDMSServer.Model
                         {
                             _logger.Debug($"[PDB 목록] ID:{pdbResult[i].iPdbId} PDB:{pdbResult[i].szPdbName} MD5:{pdbResult[i].szPdbMd5}");
                             var find = pdbLists.FirstOrDefault(p => p.PdbId == pdbResult[i].iPdbId);
-                            if(find != null)
+                            if (find != null)
                             {
                                 if (find.PdbMd5 != pdbResult[i].szPdbMd5)
                                 {
@@ -234,6 +219,7 @@ namespace KDMSServer.Model
             {
                 _logger.Error($"[PDB 목록] RCV FAIL(ex:{ex.Message})");
                 SocketClose();
+                _logger.ServerLog($"[서버] KDMS SERVER 소켓 종료");
             }
         }
 
@@ -242,7 +228,7 @@ namespace KDMSServer.Model
             try
             {
                 var pdbDatas = pdbLists.Where(p => p.IsModify).Select(x => new PdbDataReqs { iPdbId = x.PdbId }).ToList();
-                if(pdbDatas.Count <= 0)
+                if (pdbDatas.Count <= 0)
                 {
                     _logger.ServerLog($"[PDB 파일] 변경 사항 없음");
                     return;
@@ -396,6 +382,7 @@ namespace KDMSServer.Model
             {
                 _logger.Error($"[PDB 파일] RCV FAIL(ex:{ex.Message})");
                 SocketClose();
+                _logger.ServerLog($"[서버] KDMS SERVER 소켓 종료");
             }
         }
 
@@ -423,7 +410,7 @@ namespace KDMSServer.Model
                             {
                                 int pdbid = (response as KdmsPdbDataResponse).PdbId;
                                 // 파일 저장 처리
-                                switch(pdbid)
+                                switch (pdbid)
                                 {
                                     case 57:
                                         {
@@ -459,6 +446,7 @@ namespace KDMSServer.Model
             {
                 _logger.Error($"[PDB 파일] RCV FAIL(ex:{ex.Message})");
                 SocketClose();
+                _logger.ServerLog($"[서버] KDMS SERVER 소켓 종료");
             }
         }
 
@@ -615,7 +603,7 @@ namespace KDMSServer.Model
 
                     if (commstateDataInitialTime <= nowTime)
                     {
-                        if(_commonData.rtdbDmcs.Count > 0)
+                        if (_commonData.rtdbDmcs.Count > 0)
                         {
                             _logger.ServerLog($"[통신 성공률] {commstateDataInitialTime.ToString("yyyy-MM-dd HH:mm:ss")} 데이터 입력 시작");
                             await Task.Run(() =>
@@ -655,6 +643,8 @@ namespace KDMSServer.Model
         private void PdbFileUPDate()
         {
             // 데이터 베이스 저장 처리
+            // pdb_RemoteUnit FRTU 정보
+            // pdb_CompositSwitch 다회로 설비 ID 정보
             // PDB_CONDUCTINGEQUIPMENT [설비 정보]
             // PDB_DISTRIBUTIONLINESEGMENT [선로 정보]
             // GEOGRAPHICALREGION [조직 정보(지사)]
@@ -729,7 +719,7 @@ namespace KDMSServer.Model
                     break;
                 case (int)ProcTypeCode.STATISTICSMIN:
                     {
-                        
+
                     }
                     break;
                 case (int)ProcTypeCode.STATISTICSHOUR:
@@ -814,12 +804,12 @@ namespace KDMSServer.Model
                     break;
                 case (int)ProcTypeCode.FIALARM:
                     {
-                       
+
                     }
                     break;
                 case (int)ProcTypeCode.COMMSTATE:
                     {
-                      
+
                     }
                     break;
                 case (int)ProcTypeCode.COMMSTATELOG:
@@ -841,42 +831,41 @@ namespace KDMSServer.Model
                         bool retval = _commonData.SingleDayStatTableCreate(time);
                         if (retval)
                         {
-                            _logger.DbLog($"[1일 통계] history_daystat_data_{time.ToString("yyyy")} 테이블 생성 성공");
+                            _logger.DbLog($"[1일 통계(1분실시간전류)] history_daystat_data_{time.ToString("yyyy")} 테이블 생성 성공");
                         }
                     }
                     break;
             }
 
-            var model = App.Current.Services.GetService<MainViewModel>()!;
-            if (model != null)
-                model.IsInput = true;
+
+            MainModel.IsInput = true;
         }
-       
+
 
         private async void SchudleDataWorker()
         {
             Thread.Sleep(2500);
             _logger.DbLog($"[서버] 스케줄 쓰레드 시작");
 
-            string HourString = _commonData.SchduleInfos.FirstOrDefault(x=>x.SchduleId == (int)ProcTypeCode.STATISTICSHOUR)!.SchduleValue.ToString();
+            string HourString = _commonData.SchduleInfos.FirstOrDefault(x => x.SchduleId == (int)ProcTypeCode.STATISTICSHOUR)!.SchduleValue.ToString();
             string DayString = _commonData.SchduleInfos.FirstOrDefault(x => x.SchduleId == (int)ProcTypeCode.STATISTICSDAY)!.SchduleValue.ToString();
             string MonthString = _commonData.SchduleInfos.FirstOrDefault(x => x.SchduleId == (int)ProcTypeCode.STATISTICSMONTH)!.SchduleValue.ToString();
             string YearString = _commonData.SchduleInfos.FirstOrDefault(x => x.SchduleId == (int)ProcTypeCode.STATISTICSYEAR)!.SchduleValue.ToString();
-            string DayStringForOneMinute = _commonData.SchduleInfos.FirstOrDefault(p => p.SchduleId == (int)ProcTypeCode.DAYSTATDATA)?.SchduleValue.ToString();
+            string DayStringForOneMinute = _commonData.SchduleInfos.FirstOrDefault(p => p.SchduleId == (int)ProcTypeCode.DAYSTATDATA)!.SchduleValue.ToString();
             DateTime HourDt = Convert.ToDateTime(DateTime.Now.ToString(HourString));
-            DateTime hourInitialTime = DateTimeHelper.GetNextDateTime(DateTime.Now, TimeDivisionCode.Hour, min:HourDt.Minute);
+            DateTime hourInitialTime = DateTimeHelper.GetNextDateTime(DateTime.Now, TimeDivisionCode.Hour, min: HourDt.Minute);
             _logger.DbLog($"[시간 통계(평균부하전류)] 데이터 생성 시간: {hourInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
 
             DateTime DayDt = Convert.ToDateTime(DateTime.Now.ToString(DayString));
-            DateTime dayInitialTime = DateTimeHelper.GetNextDateTime(DateTime.Now, TimeDivisionCode.Day, hour:DayDt.Hour);
+            DateTime dayInitialTime = DateTimeHelper.GetNextDateTime(DateTime.Now, TimeDivisionCode.Day, hour: DayDt.Hour);
             _logger.DbLog($"[일 통계(평균부하전류)] 데이터 생성 시간: {dayInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
 
             DateTime MonthDt = Convert.ToDateTime(DateTime.Now.ToString(MonthString));
-            DateTime monthInitialTime = DateTimeHelper.GetNextDateTime(DateTime.Now, TimeDivisionCode.Month, day:MonthDt.Day, hour:MonthDt.Hour);
+            DateTime monthInitialTime = DateTimeHelper.GetNextDateTime(DateTime.Now, TimeDivisionCode.Month, day: MonthDt.Day, hour: MonthDt.Hour);
             _logger.DbLog($"[월 통계(평균부하전류)] 데이터 생성 시간: {monthInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
 
             DateTime YearDt = Convert.ToDateTime(DateTime.Now.ToString(YearString));
-            DateTime yearhInitialTime = DateTimeHelper.GetNextDateTime(DateTime.Now, TimeDivisionCode.Year, month:YearDt.Month, day:YearDt.Day, hour:YearDt.Hour);
+            DateTime yearhInitialTime = DateTimeHelper.GetNextDateTime(DateTime.Now, TimeDivisionCode.Year, month: YearDt.Month, day: YearDt.Day, hour: YearDt.Hour);
             _logger.DbLog($"[년 통계(평균부하전류)] 데이터 생성 시간: {yearhInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
 
             DateTime DayForOneMinute = Convert.ToDateTime(DateTime.Now.ToString(DayStringForOneMinute));
@@ -887,74 +876,56 @@ namespace KDMSServer.Model
             {
                 try
                 {
-                    if (hourInitialTime <= DateTime.Now)
+                    var nowTime = DateTime.Now;
+                    if (dayInitialTimeForOneMinute <= nowTime)
                     {
-                        var model = App.Current.Services.GetService<MainViewModel>()!;
-                        if (model != null)
-                        {
-                            if (model.IsDBConnetion)
-                                GetProcData((int)ProcTypeCode.STATISTICSHOUR, hourInitialTime.AddHours(-1));
-                            else
-                                _logger.DbLog($"[시간 통계(평균부하전류)] {hourInitialTime.AddHours(-1).ToString("yyyy-MM-dd HH:00:00")} 데이터 생성 실패 (DB 접속 실패) ");
-                        }
-                        hourInitialTime = hourInitialTime.AddHours(1);
-                        _logger.DbLog($"[시간 통계(평균부하전류)] NEXT 데이터 생성 시간: {hourInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+                        if (MainModel.IsDBConnetion)
+                            GetProcData((int)ProcTypeCode.DAYSTATDATA, dayInitialTimeForOneMinute.AddDays(-1));
+                        else
+                            _logger.DbLog($"[1일 통계(1분실시간전류)] {dayInitialTimeForOneMinute.AddDays(-1).ToString("yyyy-MM-dd")} 데이터 생성 실패 (DB 접속 실패) ");
+                        dayInitialTimeForOneMinute = dayInitialTimeForOneMinute.AddDays(1);
+                        _logger.DbLog($"[1일 통계(1분실시간전류)] NEXT 데이터 생성 시간: {dayInitialTimeForOneMinute.ToString("yyyy-MM-dd HH:mm:ss")}");
                     }
 
-                    if (dayInitialTime <= DateTime.Now)
+                    if (hourInitialTime <= nowTime)
                     {
-                        var model = App.Current.Services.GetService<MainViewModel>()!;
-                        if (model != null)
+                        if (MainModel.IsDBConnetion)
+                            GetProcData((int)ProcTypeCode.STATISTICSHOUR, hourInitialTime.AddHours(-1));
+                        else
+                            _logger.DbLog($"[시간 통계(평균부하전류)] {hourInitialTime.AddHours(-1).ToString("yyyy-MM-dd HH:00:00")} 데이터 생성 실패 (DB 접속 실패) ");
+                        hourInitialTime = hourInitialTime.AddHours(1);
+                        _logger.DbLog($"[시간 통계(평균부하전류)] NEXT 데이터 생성 시간: {hourInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+
+                        if (dayInitialTime <= nowTime)
                         {
-                            if (model.IsDBConnetion)
+                            if (MainModel.IsDBConnetion)
                                 GetProcData((int)ProcTypeCode.STATISTICSDAY, dayInitialTime.AddDays(-1));
                             else
                                 _logger.DbLog($"[일 통계(평균부하전류)] {dayInitialTime.AddDays(-1).ToString("yyyy-MM-dd")} 데이터 생성 실패 (DB 접속 실패) ");
-                        }
-                        dayInitialTime = dayInitialTime.AddDays(1);
-                        _logger.DbLog($"[일 통계(평균부하전류)] NEXT 데이터 생성 시간: {dayInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
-                    }
+                            dayInitialTime = dayInitialTime.AddDays(1);
+                            _logger.DbLog($"[일 통계(평균부하전류)] NEXT 데이터 생성 시간: {dayInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
 
-                    if (monthInitialTime <= DateTime.Now)
-                    {
-                        var model = App.Current.Services.GetService<MainViewModel>()!;
-                        if (model != null)
-                        {
-                            if (model.IsDBConnetion)
-                                GetProcData((int)ProcTypeCode.STATISTICSMONTH, monthInitialTime.AddMonths(-1));
-                            else
-                                _logger.DbLog($"[월 통계(평균부하전류)] {monthInitialTime.AddMonths(-1).ToString("yyyy-MM")} 데이터 생성 실패 (DB 접속 실패) ");
-                        }
-                        monthInitialTime = monthInitialTime.AddMonths(1);
-                        _logger.DbLog($"[월 통계(평균부하전류)] NEXT 데이터 생성 시간: {monthInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
-                    }
+                            if (monthInitialTime <= nowTime)
+                            {
 
-                    if (yearhInitialTime <= DateTime.Now)
-                    {
-                        var model = App.Current.Services.GetService<MainViewModel>()!;
-                        if (model != null)
-                        {
-                            if (model.IsDBConnetion)
-                                GetProcData((int)ProcTypeCode.STATISTICSYEAR, yearhInitialTime.AddYears(-1));
-                            else
-                                _logger.DbLog($"[년 통계(평균부하전류)] {yearhInitialTime.AddYears(-1).ToString("yyyy")} 데이터 생성 실패 (DB 접속 실패) ");
-                        }
-                        yearhInitialTime = yearhInitialTime.AddYears(1);
-                        _logger.DbLog($"[년 통계(평균부하전류)] NEXT 데이터 생성 시간: {yearhInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
-                    }
+                                if (MainModel.IsDBConnetion)
+                                    GetProcData((int)ProcTypeCode.STATISTICSMONTH, monthInitialTime.AddMonths(-1));
+                                else
+                                    _logger.DbLog($"[월 통계(평균부하전류)] {monthInitialTime.AddMonths(-1).ToString("yyyy-MM")} 데이터 생성 실패 (DB 접속 실패) ");
+                                monthInitialTime = monthInitialTime.AddMonths(1);
+                                _logger.DbLog($"[월 통계(평균부하전류)] NEXT 데이터 생성 시간: {monthInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
 
-                    if (dayInitialTimeForOneMinute <= DateTime.Now)
-                    {
-                        var model = App.Current.Services.GetService<MainViewModel>()!;
-                        if (model != null)
-                        {
-                            if (model.IsDBConnetion)
-                                GetProcData((int)ProcTypeCode.DAYSTATDATA, dayInitialTimeForOneMinute.AddDays(-1));
-                            else
-                                _logger.DbLog($"[1일 통계(1분실시간전류)] {dayInitialTimeForOneMinute.AddDays(-1).ToString("yyyy-MM-dd")} 데이터 생성 실패 (DB 접속 실패) ");
+                                if (yearhInitialTime <= nowTime)
+                                {
+                                    if (MainModel.IsDBConnetion)
+                                        GetProcData((int)ProcTypeCode.STATISTICSYEAR, yearhInitialTime.AddYears(-1));
+                                    else
+                                        _logger.DbLog($"[년 통계(평균부하전류)] {yearhInitialTime.AddYears(-1).ToString("yyyy")} 데이터 생성 실패 (DB 접속 실패) ");
+                                    yearhInitialTime = yearhInitialTime.AddYears(1);
+                                    _logger.DbLog($"[년 통계(평균부하전류)] NEXT 데이터 생성 시간: {yearhInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+                                }
+                            }
                         }
-                        dayInitialTimeForOneMinute = dayInitialTimeForOneMinute.AddDays(1);
-                        _logger.DbLog($"[1일 통계(1분실시간전류)] NEXT 데이터 생성 시간: {dayInitialTimeForOneMinute.ToString("yyyy-MM-dd HH:mm:ss")}");
                     }
                 }
                 catch
@@ -967,14 +938,216 @@ namespace KDMSServer.Model
             _logger.DbLog($"[서버] 스케줄 쓰레드 종료");
         }
 
+        private async void TableDataDeleteWorker()
+        {
+            Thread.Sleep(3500);
+            _logger.DbLog($"[서버] 보관주기 쓰레드 시작");
+
+            int minDataValue = Convert.ToInt32(_commonData.StorageInfos.FirstOrDefault(x => x.StorageId == (int)ProcTypeCode.MINDATA)!.StorageValue);
+            int dayStatValue = Convert.ToInt32(_commonData.StorageInfos.FirstOrDefault(x => x.StorageId == (int)ProcTypeCode.DAYSTATDATA)!.StorageValue);
+            int statisticsMinValue = Convert.ToInt32(_commonData.StorageInfos.FirstOrDefault(x => x.StorageId == (int)ProcTypeCode.STATISTICSMIN)!.StorageValue);
+            int statisticsHourValue = Convert.ToInt32(_commonData.StorageInfos.FirstOrDefault(x => x.StorageId == (int)ProcTypeCode.STATISTICSHOUR)!.StorageValue);
+            int statisticsDayValue = Convert.ToInt32(_commonData.StorageInfos.FirstOrDefault(x => x.StorageId == (int)ProcTypeCode.STATISTICSDAY)!.StorageValue);
+            int statisticsMonthValue = Convert.ToInt32(_commonData.StorageInfos.FirstOrDefault(x => x.StorageId == (int)ProcTypeCode.STATISTICSMONTH)!.StorageValue);
+            int statisticsYearValue = Convert.ToInt32(_commonData.StorageInfos.FirstOrDefault(x => x.StorageId == (int)ProcTypeCode.STATISTICSYEAR)!.StorageValue);
+            int fiAlarmValue = Convert.ToInt32(_commonData.StorageInfos.FirstOrDefault(x => x.StorageId == (int)ProcTypeCode.FIALARM)!.StorageValue);
+            int commStateValue = Convert.ToInt32(_commonData.StorageInfos.FirstOrDefault(x => x.StorageId == (int)ProcTypeCode.COMMSTATE)!.StorageValue);
+            int commStateLogValue = Convert.ToInt32(_commonData.StorageInfos.FirstOrDefault(x => x.StorageId == (int)ProcTypeCode.COMMSTATELOG)!.StorageValue);
+
+            DateTime minDataInitialTime = DateTimeHelper.GetNextDateTime(minDataValue == 0 ? DateTime.MaxValue : DateTime.Now.AddDays(minDataValue), TimeDivisionCode.Day);
+            //DateTime minDataInitialTime = DateTimeHelper.GetNextDateTime(DateTime.Now, TimeDivisionCode.Minute, min:1);
+            _logger.DbLog($"[1분 실시간] 보관주기 시간: {minDataInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+
+            DateTime dayStatInitialTime = DateTimeHelper.GetNextDateTime(dayStatValue == 0 ? DateTime.MaxValue : DateTime.Now.AddDays(dayStatValue), TimeDivisionCode.Day);
+            _logger.DbLog($"[1일 통계(1분실시간전류)] 보관주기 시간: {dayStatInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+            
+            DateTime statisticsMinInitialTime = DateTimeHelper.GetNextDateTime(statisticsMinValue == 0 ? DateTime.MaxValue : DateTime.Now.AddDays(statisticsMinValue), TimeDivisionCode.Day);
+            _logger.DbLog($"[15분 실시간(평균부하전류)] 보관주기 시간: {statisticsMinInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+            
+            DateTime statisticsHourInitialTime = DateTimeHelper.GetNextDateTime(statisticsHourValue == 0 ? DateTime.MaxValue : DateTime.Now.AddDays(statisticsHourValue), TimeDivisionCode.Day);
+            _logger.DbLog($"[시간 통계(평균부하전류)] 보관주기 시간: {statisticsHourInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+
+            DateTime statisticsDayInitialTime = DateTimeHelper.GetNextDateTime(statisticsDayValue == 0 ? DateTime.MaxValue : DateTime.Now.AddDays(statisticsDayValue), TimeDivisionCode.Day);
+            _logger.DbLog($"[일 통계(평균부하전류)] 보관주기 시간: {statisticsDayInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+
+            DateTime statisticsMonthInitialTime = DateTimeHelper.GetNextDateTime(statisticsMonthValue == 0 ? DateTime.MaxValue : DateTime.Now.AddDays(statisticsMonthValue), TimeDivisionCode.Day);
+            _logger.DbLog($"[월 통계(평균부하전류)] 보관주기 시간: {statisticsMonthInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+
+            DateTime statisticsYearInitialTime = DateTimeHelper.GetNextDateTime(statisticsYearValue == 0 ? DateTime.MaxValue : DateTime.Now.AddDays(statisticsYearValue), TimeDivisionCode.Day);
+            _logger.DbLog($"[년 통계(평균부하전류)] 보관주기 시간: {statisticsYearInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+
+            DateTime fiAlarmInitialTime = DateTimeHelper.GetNextDateTime(fiAlarmValue == 0 ? DateTime.MaxValue : DateTime.Now.AddDays(fiAlarmValue), TimeDivisionCode.Day);
+            _logger.DbLog($"[알람 실시간] 보관주기 시간: {fiAlarmInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+
+            DateTime commStateInitialTime = DateTimeHelper.GetNextDateTime(commStateValue == 0 ? DateTime.MaxValue : DateTime.Now.AddDays(commStateValue), TimeDivisionCode.Day);
+            _logger.DbLog($"[통신 성공률] 보관주기 시간: {commStateInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+
+            DateTime commStateLogInitialTime = DateTimeHelper.GetNextDateTime(commStateLogValue == 0 ? DateTime.MaxValue : DateTime.Now.AddDays(commStateLogValue), TimeDivisionCode.Day);
+            _logger.DbLog($"[통신 상태 이력] 보관주기 시간: {commStateLogInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+
+            while (DBThreadFlag)
+            {
+                try
+                {
+                    var nowTime = DateTime.Now;
+                    if (minDataInitialTime <= nowTime)
+                    {
+                        if(minDataValue > 0)
+                        {
+                            _commonData.MinDataTableDrop(minDataInitialTime, minDataValue);
+                            minDataInitialTime = minDataInitialTime.AddDays(minDataValue);
+                        }
+                        else
+                        {
+                            minDataInitialTime = minDataInitialTime.AddDays(365);
+                        }
+                        _logger.DbLog($"[1분 실시간] NEXT 보관주기 시간: {minDataInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+                    }
+
+                    if (dayStatInitialTime <= nowTime)
+                    {
+                        if(dayStatValue > 0)
+                        {
+                            _commonData.DayStatTableDrop(dayStatInitialTime, dayStatValue);
+                            dayStatInitialTime = dayStatInitialTime.AddDays(dayStatValue);
+                        }
+                        else
+                        {
+                            dayStatInitialTime = dayStatInitialTime.AddDays(365);
+                        }
+                        _logger.DbLog($"[1일 통계(1분실시간전류)] NEXT 보관주기 시간: {dayStatInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+                    }
+
+                    if (statisticsMinInitialTime <= nowTime)
+                    {
+                        if (statisticsMinValue > 0)
+                        {
+                            _commonData.StatisticsMinTableDelete(statisticsMinInitialTime, statisticsMinValue);
+                            statisticsMinInitialTime = statisticsMinInitialTime.AddDays(statisticsMinValue);
+                        }
+                        else
+                        {
+                            statisticsMinInitialTime = statisticsMinInitialTime.AddDays(365);
+                        }
+                        _logger.DbLog($"[15분 실시간(평균부하전류)] NEXT 보관주기 시간: {statisticsMinInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+                    }
+
+                    if (statisticsHourInitialTime <= nowTime)
+                    {
+                        if (statisticsHourValue > 0)
+                        {
+                            _commonData.StatisticsHourTableDelete(statisticsHourInitialTime, statisticsHourValue);
+                            statisticsHourInitialTime = statisticsHourInitialTime.AddDays(statisticsHourValue);
+                        }
+                        else
+                        {
+                            statisticsHourInitialTime = statisticsHourInitialTime.AddDays(365);
+                        }
+                        _logger.DbLog($"[시간 통계(평균부하전류)] NEXT 보관주기 시간: {statisticsHourInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+                    }
+
+                    if (statisticsDayInitialTime <= nowTime)
+                    {
+                        if (statisticsDayValue > 0)
+                        {
+                            _commonData.StatisticsDayTableDelete(statisticsDayInitialTime, statisticsDayValue);
+                            statisticsDayInitialTime = statisticsDayInitialTime.AddDays(statisticsDayValue);
+                        }
+                        else
+                        {
+                            statisticsDayInitialTime = statisticsDayInitialTime.AddDays(365);
+                        }
+                        _logger.DbLog($"[일 통계(평균부하전류)] NEXT 보관주기 시간: {statisticsDayInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+                    }
+
+                    if (statisticsMonthInitialTime <= nowTime)
+                    {
+                        if (statisticsMonthValue > 0)
+                        {
+                            _commonData.StatisticsMonthTableDelete(statisticsMonthInitialTime, statisticsMonthValue);
+                            statisticsMonthInitialTime = statisticsMonthInitialTime.AddDays(statisticsMonthValue);
+                        }
+                        else
+                        {
+                            statisticsMonthInitialTime = statisticsMonthInitialTime.AddDays(365);
+                        }
+                        _logger.DbLog($"[월 통계(평균부하전류)] NEXT 보관주기 시간: {statisticsMonthInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+                    }
+
+                    if (statisticsYearInitialTime <= nowTime)
+                    {
+                        if (statisticsYearValue > 0)
+                        {
+                            _commonData.StatisticsYearTableDelete(statisticsYearInitialTime, statisticsYearValue);
+                            statisticsYearInitialTime = statisticsYearInitialTime.AddDays(statisticsYearValue);
+                        }
+                        else
+                        {
+                            statisticsYearInitialTime = statisticsYearInitialTime.AddDays(365);
+                        }
+                        _logger.DbLog($"[년 통계(평균부하전류)] NEXT 보관주기 시간: {statisticsYearInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+                    }
+
+                    if (fiAlarmInitialTime <= nowTime)
+                    {
+                        if (fiAlarmValue > 0)
+                        {
+                            _commonData.FiAlarmTableDelete(fiAlarmInitialTime, fiAlarmValue);
+                            fiAlarmInitialTime = fiAlarmInitialTime.AddDays(fiAlarmValue);
+                        }
+                        else
+                        {
+                            fiAlarmInitialTime = fiAlarmInitialTime.AddDays(365);
+                        }
+                        _logger.DbLog($"[실시간 알람] NEXT 보관주기 시간: {fiAlarmInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+                    }
+
+                    if (commStateInitialTime <= nowTime)
+                    {
+                        if (commStateValue > 0)
+                        {
+                            _commonData.CommStateTableDelete(commStateInitialTime, commStateValue);
+                            commStateInitialTime = commStateInitialTime.AddDays(commStateValue);
+                        }
+                        else
+                        {
+                            commStateInitialTime = commStateInitialTime.AddDays(365);
+                        }
+                        _logger.DbLog($"[통신 성공률] NEXT 보관주기 시간: {commStateInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+                    }
+
+                    if (commStateLogInitialTime <= nowTime)
+                    {
+                        if (commStateLogValue > 0)
+                        {
+                            _commonData.CommStateLogTableDelete(commStateLogInitialTime, commStateLogValue);
+                            commStateLogInitialTime = commStateLogInitialTime.AddDays(commStateLogValue);
+                        }
+                        else
+                        {
+                            commStateLogInitialTime = commStateLogInitialTime.AddDays(365);
+                        }
+                        _logger.DbLog($"[통신 상태 이력] NEXT 보관주기 시간: {commStateLogInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+                    }
+                }
+                catch
+                {
+
+                }
+                await Task.Delay(1000 * 60);    // 1분 마다 동작
+            }
+
+            _logger.DbLog($"[서버] 보관주기 쓰레드 종료");
+        }
+
         private async void TableCreateWorker()
         {
             Thread.Sleep(1000);
             _logger.DbLog($"[서버] 테이블 생성 쓰레드 시작");
 
-            DateTime yearInitialTime = DateTimeHelper.GetNextDateTime(DateTime.Now.AddYears(-1), TimeDivisionCode.Year, month:12, day:31, hour:1);
+            DateTime yearInitialTime = DateTimeHelper.GetNextDateTime(DateTime.Now.AddYears(-1), TimeDivisionCode.Year, month: 12, day: 31, hour: 1);
             _logger.DbLog($"[1일 통계(1분실시간전류)] 테이블 생성 시간: {yearInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
-            DateTime dayInitialTime = DateTimeHelper.GetNextDateTime(DateTime.Now, TimeDivisionCode.Day, hour: 23, min:55);
+            DateTime dayInitialTime = DateTimeHelper.GetNextDateTime(DateTime.Now, TimeDivisionCode.Day, hour: 23, min: 55);
             _logger.DbLog($"[1분 실시간] 테이블 생성 시간: {dayInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
 
             while (DBThreadFlag)
@@ -983,23 +1156,20 @@ namespace KDMSServer.Model
                 {
                     if (dayInitialTime <= DateTime.Now)
                     {
-                        var model = App.Current.Services.GetService<MainViewModel>()!;
-                        if (model != null)
+
+                        if (MainModel.IsDBConnetion)
                         {
-                            if(model.IsDBConnetion)
+                            bool retval = _commonData.MinDataTableCreate(dayInitialTime);
+                            if (retval)
                             {
-                                bool retval = _commonData.MinDataTableCreate(dayInitialTime);
-                                if (retval)
-                                {
-                                    _logger.DbLog($"{dayInitialTime.AddDays(1).ToString("yyyyMMdd")} [1분 실시간] 테이블 생성 성공");
-                                    _logger.DbLog($"{dayInitialTime.AddDays(2).ToString("yyyyMMdd")} [1분 실시간] 테이블 생성 성공");
-                                }
+                                _logger.DbLog($"{dayInitialTime.AddDays(1).ToString("yyyyMMdd")} [1분 실시간] 테이블 생성 성공");
+                                _logger.DbLog($"{dayInitialTime.AddDays(2).ToString("yyyyMMdd")} [1분 실시간] 테이블 생성 성공");
                             }
-                            else
-                            {
-                                _logger.DbLog($"{dayInitialTime.AddDays(1).ToString("yyyyMMdd")} [1분 실시간] 테이블 생성 실패 (DB 접속 실패) ");
-                                _logger.DbLog($"{dayInitialTime.AddDays(2).ToString("yyyyMMdd")} [1분 실시간] 테이블 생성 실패 (DB 접속 실패) ");
-                            }
+                        }
+                        else
+                        {
+                            _logger.DbLog($"{dayInitialTime.AddDays(1).ToString("yyyyMMdd")} [1분 실시간] 테이블 생성 실패 (DB 접속 실패) ");
+                            _logger.DbLog($"{dayInitialTime.AddDays(2).ToString("yyyyMMdd")} [1분 실시간] 테이블 생성 실패 (DB 접속 실패) ");
                         }
                         dayInitialTime = dayInitialTime.AddDays(1);
                         _logger.DbLog($"[1분 실시간] NEXT 테이블 생성 시간: {dayInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
@@ -1007,20 +1177,16 @@ namespace KDMSServer.Model
 
                     if (yearInitialTime <= DateTime.Now)
                     {
-                        var model = App.Current.Services.GetService<MainViewModel>()!;
-                        if (model != null)
+                        if (MainModel.IsDBConnetion)
                         {
-                            if (model.IsDBConnetion)
+                            bool retval = _commonData.DayStatTableCreate(yearInitialTime);
+                            if (retval)
                             {
-                                bool retval = _commonData.DayStatTableCreate(yearInitialTime);
-                                if (retval)
-                                {
-                                    _logger.DbLog($"{yearInitialTime.AddYears(1).ToString("yyyy")} [1일 통계(1분실시간전류)] 테이블 생성 성공");
-                                }
+                                _logger.DbLog($"{yearInitialTime.AddYears(1).ToString("yyyy")} [1일 통계(1분실시간전류)] 테이블 생성 성공");
                             }
-                            else
-                                _logger.DbLog($"{yearInitialTime.AddYears(1).ToString("yyyy")} [1일 통계(1분실시간전류)] 테이블 생성 실패 (DB 접속 실패) ");
                         }
+                        else
+                            _logger.DbLog($"{yearInitialTime.AddYears(1).ToString("yyyy")} [1일 통계(1분실시간전류)] 테이블 생성 실패 (DB 접속 실패) ");
                         yearInitialTime = yearInitialTime.AddYears(1);
                         _logger.DbLog($"[1일 통계(1분실시간전류)] NEXT 테이블 생성 시간: {yearInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
                     }
@@ -1045,53 +1211,49 @@ namespace KDMSServer.Model
             {
                 try
                 {
-                    var model = App.Current.Services.GetService<MainViewModel>()!;
-                    if (model != null)
+                    // 소켓 통신 상태
+                    try
                     {
-                        // 소켓 통신 상태
-                        try
+                        if (!string.IsNullOrEmpty(MainModel.IsSocketConnetionText))
+                            checkSocketText = MainModel.IsSocketConnetionText;
+
+                        if (checkSocketText == MainModel.IsSocketConnetionText)
+                            checkSocketCnt++;
+
+                        if (checkSocketCnt == 6)
                         {
-                            if (!string.IsNullOrEmpty(model.IsSocketConnetionText))
-                                checkSocketText = model.IsSocketConnetionText;
-
-                            if (checkSocketText == model.IsSocketConnetionText)
-                                checkSocketCnt++;
-
-                            if (checkSocketCnt == 6)
-                            {
-                                checkSocketCnt = 0;
-                                checkSocketText = string.Empty;
-                                model.IsSocketConnetionText = string.Empty;
-                            }
-
-                            if (rtaMaster == null || evtMaster == null)     // 소켓 상태가 한개라도 NULL 이면 전체 재연결 처리
-                            {
-                                model.ScanState = false;
-                                model.EventState = false;
-
-                                model.IsSocketConnetion = false;
-                                model.IsSocketConnetionState = "실패";
-
-                                SocketClose();      // 현재 소켓이 연결되어 있으면 연결 종료 처리
-                                KdmsServerInit();   // 소켓 연결 처리
-                            }
-                            else
-                            {
-                                model.IsSocketConnetion = true;
-                                model.IsSocketConnetionState = "성공";
-
-                                if (rtaMaster != null)
-                                    model.ScanState = true;
-
-                                if (evtMaster != null)
-                                    model.EventState = true;
-                            }
+                            checkSocketCnt = 0;
+                            checkSocketText = string.Empty;
+                            MainModel.IsSocketConnetionText = string.Empty;
                         }
-                        catch
+
+                        if (rtaMaster == null || evtMaster == null)     // 소켓 상태가 한개라도 NULL 이면 전체 재연결 처리
                         {
-                            model.IsSocketConnetion = false;
-                            model.IsSocketConnetionState = "실패";
+                            MainModel.ScanState = false;
+                            MainModel.EventState = false;
+
+                            MainModel.IsSocketConnetion = false;
+                            MainModel.IsSocketConnetionState = "실패";
+
+                            SocketClose();      // 현재 소켓이 연결되어 있으면 연결 종료 처리
+                            KdmsServerInit();   // 소켓 연결 처리
                         }
+                        else
+                        {
+                            MainModel.IsSocketConnetion = true;
+                            MainModel.IsSocketConnetionState = "성공";
+
+                            if (rtaMaster != null)
+                                MainModel.ScanState = true;
+
+                            if (evtMaster != null)
+                                MainModel.EventState = true;
+                        }
+                    }
+                    catch
+                    {
+                        MainModel.IsSocketConnetion = false;
+                        MainModel.IsSocketConnetionState = "실패";
                     }
                     await Task.Delay(1000);
                 }
@@ -1110,38 +1272,35 @@ namespace KDMSServer.Model
             {
                 try
                 {
-                    var model = App.Current.Services.GetService<MainViewModel>()!;
-                    if (model != null)
+
+                    // DB 상태
+                    try
                     {
-                        // DB 상태
-                        try
+                        if (!string.IsNullOrEmpty(MainModel.IsDBConnetionText))
+                            checkDBText = MainModel.IsDBConnetionText;
+
+                        if (checkDBText == MainModel.IsDBConnetionText)
+                            checkDBCnt++;
+
+                        if (checkDBCnt == 6)
                         {
-                            if (!string.IsNullOrEmpty(model.IsDBConnetionText))
-                                checkDBText = model.IsDBConnetionText;
-
-                            if (checkDBText == model.IsDBConnetionText)
-                                checkDBCnt++;
-
-                            if (checkDBCnt == 6)
-                            {
-                                checkDBCnt = 0;
-                                checkDBText = string.Empty;
-                                model.IsDBConnetionText = string.Empty;
-                            }
-
-                            bool retValue = new MySqlMapper(_configuration).IsConnection();
-                            if (retValue)
-                                model.IsDBConnetionState = "성공";
-                            else
-                                model.IsDBConnetionState = "실패";
-
-                            model.IsDBConnetion = retValue;
+                            checkDBCnt = 0;
+                            checkDBText = string.Empty;
+                            MainModel.IsDBConnetionText = string.Empty;
                         }
-                        catch
-                        {
-                            model.IsDBConnetion = false;
-                            model.IsDBConnetionState = "실패";
-                        }
+
+                        bool retValue = new MySqlMapper(_configuration).IsConnection();
+                        if (retValue)
+                            MainModel.IsDBConnetionState = "성공";
+                        else
+                            MainModel.IsDBConnetionState = "실패";
+
+                        MainModel.IsDBConnetion = retValue;
+                    }
+                    catch
+                    {
+                        MainModel.IsDBConnetion = false;
+                        MainModel.IsDBConnetionState = "실패";
                     }
                     await Task.Delay(1000);
                 }

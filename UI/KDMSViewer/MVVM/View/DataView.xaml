@@ -92,6 +92,7 @@
                                 </i:Interaction.Triggers>
                             </CheckBox>
                             <TextBlock Text="{Binding Name}"
+                                       ToolTip="{Binding Id}"
                                        Margin="5 0 5 0"/>
                         </StackPanel>
                     </HierarchicalDataTemplate>

@@ -1,8 +1,4 @@
-﻿using DevExpress.ClipboardSource.SpreadsheetML;
-using DevExpress.Mvvm.Native;
-using DevExpress.Pdf;
-using DevExpress.Utils;
-using DevExpress.Xpf.Bars;
+﻿using DevExpress.Mvvm.Native;
 using KDMS.EF.Core.Contexts;
 using KDMS.EF.Core.Extensions;
 using KDMS.EF.Core.Infrastructure.Reverse;
@@ -10,19 +6,9 @@ using KDMS.EF.Core.Infrastructure.Reverse.Models;
 using KdmsTcpSocket;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Linq;
 using Serilog;
 using System.Data;
-using System.IO;
-using System.Security.Claims;
 using System.Text;
-using System.Windows;
-using System.Windows.Markup;
-using System.Windows.Media;
-using static DevExpress.Utils.HashCodeHelper.Primitives;
-using static DevExpress.XtraPrinting.Native.ExportOptionsPropertiesNames;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace KDMSServer.Model
 {
@@ -109,11 +95,11 @@ namespace KDMSServer.Model
         private DateTime GetMinDataTime(List<pdb_Analog> analogList, int dataPointId, DateTime now)
         {
             var pid = analogList.FirstOrDefault(p => p.dp_fk == dataPointId).pid;
-            if(rtdbAnalogs.Count <= 0)
+            if (rtdbAnalogs.Count <= 0)
                 return now;
 
             var value = rtdbAnalogs.FirstOrDefault(p => p.pid == pid).last_update;
-            if(value == 0)
+            if (value == 0)
                 return now;
 
             return KdmsValueConverter.TimeTToDateTime(value);
@@ -126,9 +112,9 @@ namespace KDMSServer.Model
                 return 0;
 
             var find = rtdbAnalogs.FirstOrDefault(p => p.pid == pid);
-            if(find.pid > 0)
+            if (find.pid > 0)
                 return (int)analogList.FirstOrDefault(p => p.dp_fk == dataPointId).circuit_no;
-            
+
             return 0;
         }
 
@@ -153,10 +139,10 @@ namespace KDMSServer.Model
                     continue;
 
                 var findRemoteunit = pdbRemoteUnits.FirstOrDefault(p => p.eq_fk == equipment.ceqid);
-                if(findRemoteunit.pid > 0)
+                if (findRemoteunit.pid > 0)
                 {
-                    if(findRemoteunit.protocol_fk == 0 && findRemoteunit.comm_type == 0)
-                    continue;
+                    if (findRemoteunit.protocol_fk == 0 && findRemoteunit.comm_type == 0)
+                        continue;
                 }
 
                 var findDl = pdbDistributionLines.FirstOrDefault(p => p.dlid == equipment.dl_fk);
@@ -489,7 +475,7 @@ namespace KDMSServer.Model
         public void CommStateDataSave(DateTime date/*, List<rtdb_Dmc> rtList, List<pdb_ConductingEquipment> equipmentList*/)
         {
             List<HistoryCommState> dataList = new List<HistoryCommState>();
-            foreach(var remote in pdbRemoteUnits)
+            foreach (var remote in pdbRemoteUnits)
             {
                 if (remote.protocol_fk == 0 && remote.comm_type == 0)
                     continue;
@@ -602,8 +588,8 @@ namespace KDMSServer.Model
             //    data.CommSucessCount = (int)commValue + 3000;
             //    data.CommFailCount = (int)commValue + 6000;
             //    data.CommTotalCount = data.CommSucessCount + data.CommFailCount;
-                
-                
+
+
             //    data.CommSucessRate = GetCommDataValue(rtList, Convert.ToInt32(find.CommDmcFk ?? 0));
             //    data.CommTime = GetCommDataTime(rtList, Convert.ToInt32(find.CommDmcFk ?? 0), date);
 
@@ -769,7 +755,7 @@ namespace KDMSServer.Model
                     break;
             }
 
-            if(dataPointId > 0)
+            if (dataPointId > 0)
             {
                 var alarmFilter = AlarmInfos.FirstOrDefault(p => p.PointId == dataPointId);
                 if (alarmFilter != null)
@@ -793,7 +779,7 @@ namespace KDMSServer.Model
             try
             {
                 var date = DateTime.Now;
-                foreach (var alarm in  alarmList)
+                foreach (var alarm in alarmList)
                 {
                     bool retValue = AlarmFilterCheck((int)alarm.uiPtType, (int)alarm.uiPid);
                     if (!retValue)
@@ -839,7 +825,7 @@ namespace KDMSServer.Model
 
                     switch (alarm.uiPtType)
                     {
-                        case (int)PointTypeCode.BI: 
+                        case (int)PointTypeCode.BI:
                             {
                                 data.AlarmName = GetStringData(pdbDiscretes.FirstOrDefault(p => p.pid == alarm.uiPid).name);
                                 data.Circuitno = (int)pdbDiscretes.FirstOrDefault(p => p.pid == alarm.uiPid).circuit_no;
@@ -869,12 +855,12 @@ namespace KDMSServer.Model
                                 data.Circuitno = (int)pdbAccumulators.FirstOrDefault(p => p.pid == alarm.uiPid).circuit_no;
                             }
                             break;
-                        //case (int)PointTypeCode.DMC:
-                        //    {
-                        //        data.AlarmName = GetStringData(pdbDmcs.FirstOrDefault(p => p.pid == alarm.uiPid).name); 
-                        //        data.Circuitno = 0;
-                        //    }
-                        //    break;
+                            //case (int)PointTypeCode.DMC:
+                            //    {
+                            //        data.AlarmName = GetStringData(pdbDmcs.FirstOrDefault(p => p.pid == alarm.uiPid).name); 
+                            //        data.Circuitno = 0;
+                            //    }
+                            //    break;
                     }
 
                     var ceqAnalogList = pdbAnalogs.Where(p => p.ceq_fk == (int)alarm.uiEqid && p.pid == alarm.uiPid).ToList();
@@ -1005,7 +991,7 @@ namespace KDMSServer.Model
         {
             if (pdbConductingequipments.Where(p => p.ceqid != 0).Count() <= 0)
             {
-                _logger.ServerLog($"[PDB 파일] pdb_Conductingequipments 데이터가 없습니다.");
+                _logger.ServerLog($"[PDB 파일] pdb_Conductingequipment 데이터가 없습니다.");
                 return;
             }
 
@@ -1049,7 +1035,7 @@ namespace KDMSServer.Model
                 context.PdbConductingequipments.AddRange(saveDatas);
                 context.SaveChanges();
 
-                _logger.ServerLog($"[PDB 파일] pdb_Conductingequipments 데이터 데이터베이스 입력 성공 CNT: {saveDatas.Count}");
+                _logger.ServerLog($"[PDB 파일] pdb_Conductingequipment 데이터 데이터베이스 입력 성공 CNT: {saveDatas.Count}");
             }
         }
 
@@ -1422,7 +1408,7 @@ namespace KDMSServer.Model
             }
             catch (Exception ex)
             {
-                _logger.DbLog($"[1일 통계] history_daystat_data_{date.ToString("yyyy")} 테이블 생성 실패 ex:{ex.Message}");
+                _logger.DbLog($"[1일 통계(1분실시간전류)] history_daystat_data_{date.ToString("yyyy")} 테이블 생성 실패 ex:{ex.Message}");
             }
             return retval;
         }
@@ -1440,7 +1426,197 @@ namespace KDMSServer.Model
             }
             catch (Exception ex)
             {
-                _logger.DbLog($"[1일 통계] history_daystat_data_{date.AddYears(1).ToString("yyyy")} 테이블 생성 실패 ex:{ex.Message}");
+                _logger.DbLog($"[1일 통계(1분실시간전류)] history_daystat_data_{date.AddYears(1).ToString("yyyy")} 테이블 생성 실패 ex:{ex.Message}");
+            }
+            return retval;
+        }
+
+        public bool MinDataTableDrop(DateTime date, int day)
+        {
+            bool retval = false;
+            try
+            {
+                string query = $"drop Table IF exists history_min_data_{date.AddDays(-day).ToString("yyyyMMdd")}";
+                using (MySqlMapper mapper = new MySqlMapper(_configuration))
+                {
+                    retval = mapper.RunQuery(query);
+                    _logger.DbLog($"[1분 실시간] history_min_data_{date.AddDays(-day).ToString("yyyyMMdd")} 테이블 삭제");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.DbLog($"[1분 실시간] history_min_data_{date.AddDays(-day).ToString("yyyyMMdd")} 테이블 삭제 실패 ex:{ex.Message}");
+            }
+            return retval;
+        }
+
+        public bool DayStatTableDrop(DateTime date, int day)
+        {
+            bool retval = false;
+            try
+            {
+                string query = $"drop Table IF exists history_daystat_data_{date.AddDays(-day).ToString("yyyy")}";
+                using (MySqlMapper mapper = new MySqlMapper(_configuration))
+                {
+                    retval = mapper.RunQuery(query);
+                    _logger.DbLog($"[1일 통계(1분실시간전류)] history_daystat_data_{date.AddDays(-day).ToString("yyyy")} 테이블 삭제");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.DbLog($"[1일 통계(1분실시간전류)] history_daystat_data_{date.AddDays(-day).ToString("yyyy")} 테이블 삭제 실패 ex:{ex.Message}");
+            }
+            return retval;
+        }
+
+        public bool StatisticsMinTableDelete(DateTime date, int day)
+        {
+            bool retval = false;
+            try
+            {
+                string query = $"delete from statistics_15min where save_time < '{date.AddDays(-day).ToString("yyyy-MM-dd 00:00:00")}'";
+                using (MySqlMapper mapper = new MySqlMapper(_configuration))
+                {
+                    retval = mapper.RunQuery(query);
+                    _logger.DbLog($"[15분 실시간(평균부하전류)] statistics_15min 테이블 {date.AddDays(-day).ToString("yyyy-MM-dd 00:00:00")} 이전 데이터 삭제");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.DbLog($"[15분 실시간(평균부하전류)] statistics_15min 데이터 삭제 실패 ex:{ex.Message}");
+            }
+            return retval;
+        }
+
+        public bool StatisticsHourTableDelete(DateTime date, int day)
+        {
+            bool retval = false;
+            try
+            {
+                string query = $"delete from statistics_hour where save_time < '{date.AddDays(-day).ToString("yyyy-MM-dd 00:00:00")}'";
+                using (MySqlMapper mapper = new MySqlMapper(_configuration))
+                {
+                    retval = mapper.RunQuery(query);
+                    _logger.DbLog($"[시간 통계(평균부하전류)] statistics_hour 테이블 {date.AddDays(-day).ToString("yyyy-MM-dd 00:00:00")} 이전 데이터 삭제");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.DbLog($"[시간 통계(평균부하전류)] statistics_hour 테이블 데이터 삭제 실패 ex:{ex.Message}");
+            }
+            return retval;
+        }
+
+        public bool StatisticsDayTableDelete(DateTime date, int day)
+        {
+            bool retval = false;
+            try
+            {
+                string query = $"delete from statistics_day where save_time < '{date.AddDays(-day).ToString("yyyy-MM-dd 00:00:00")}'";
+                using (MySqlMapper mapper = new MySqlMapper(_configuration))
+                {
+                    retval = mapper.RunQuery(query);
+                    _logger.DbLog($"[일 통계(평균부하전류)] statistics_day 테이블 {date.AddDays(-day).ToString("yyyy-MM-dd 00:00:00")} 이전 데이터 삭제");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.DbLog($"[일 통계(평균부하전류)] statistics_day 테이블 데이터 삭제 실패 ex:{ex.Message}");
+            }
+            return retval;
+        }
+
+        public bool StatisticsMonthTableDelete(DateTime date, int day)
+        {
+            bool retval = false;
+            try
+            {
+                string query = $"delete from statistics_month where save_time < '{date.AddDays(-day).ToString("yyyy-MM-dd 00:00:00")}'";
+                using (MySqlMapper mapper = new MySqlMapper(_configuration))
+                {
+                    retval = mapper.RunQuery(query);
+                    _logger.DbLog($"[월 통계(평균부하전류)] statistics_month 테이블 {date.AddDays(-day).ToString("yyyy-MM-dd 00:00:00")} 이전 데이터 삭제");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.DbLog($"[월 통계(평균부하전류)] statistics_month 테이블 데이터 삭제 실패 ex:{ex.Message}");
+            }
+            return retval;
+        }
+
+        public bool StatisticsYearTableDelete(DateTime date, int day)
+        {
+            bool retval = false;
+            try
+            {
+                string query = $"delete from statistics_year where save_time < '{date.AddDays(-day).ToString("yyyy-MM-dd 00:00:00")}'";
+                using (MySqlMapper mapper = new MySqlMapper(_configuration))
+                {
+                    retval = mapper.RunQuery(query);
+                    _logger.DbLog($"[년 통계(평균부하전류)] statistics_year 테이블 {date.AddDays(-day).ToString("yyyy-MM-dd 00:00:00")} 이전 데이터 삭제");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.DbLog($"[년 통계(평균부하전류)] statistics_year 테이블 데이터 삭제 실패 ex:{ex.Message}");
+            }
+            return retval;
+        }
+
+        public bool FiAlarmTableDelete(DateTime date, int day)
+        {
+            bool retval = false;
+            try
+            {
+                string query = $"delete from history_fi_alarm where save_time < '{date.AddDays(-day).ToString("yyyy-MM-dd 00:00:00")}'";
+                using (MySqlMapper mapper = new MySqlMapper(_configuration))
+                {
+                    retval = mapper.RunQuery(query);
+                    _logger.DbLog($"[알람 실시간] history_fi_alarm 테이블 {date.AddDays(-day).ToString("yyyy-MM-dd 00:00:00")} 이전 데이터 삭제");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.DbLog($"[알람 실시간] history_fi_alarm 테이블 데이터 삭제 실패 ex:{ex.Message}");
+            }
+            return retval;
+        }
+
+        public bool CommStateTableDelete(DateTime date, int day)
+        {
+            bool retval = false;
+            try
+            {
+                string query = $"delete from history_comm_state where save_time < '{date.AddDays(-day).ToString("yyyy-MM-dd 00:00:00")}'";
+                using (MySqlMapper mapper = new MySqlMapper(_configuration))
+                {
+                    retval = mapper.RunQuery(query);
+                    _logger.DbLog($"[[통신 성공률] history_comm_state 테이블 {date.AddDays(-day).ToString("yyyy-MM-dd 00:00:00")} 이전 데이터 삭제");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.DbLog($"[[통신 성공률] history_comm_state 테이블 데이터 삭제 실패 ex:{ex.Message}");
+            }
+            return retval;
+        }
+
+        public bool CommStateLogTableDelete(DateTime date, int day)
+        {
+            bool retval = false;
+            try
+            {
+                string query = $"delete from history_comm_state_log where save_time < '{date.AddDays(-day).ToString("yyyy-MM-dd 00:00:00")}'";
+                using (MySqlMapper mapper = new MySqlMapper(_configuration))
+                {
+                    retval = mapper.RunQuery(query);
+                    _logger.DbLog($"[통신 상태 이력] history_comm_state_log 테이블 {date.AddDays(-day).ToString("yyyy-MM-dd 00:00:00")} 이전 데이터 삭제");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.DbLog($"[통신 상태 이력] history_comm_state_log 테이블 데이터 삭제 실패 ex:{ex.Message}");
             }
             return retval;
         }

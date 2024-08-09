@@ -227,7 +227,7 @@ namespace KDMSViewer.Model
             }
             else
             {
-                for (DateTime st = fromDate; st < toDate; st = st.AddYears(1))
+                for (DateTime st = fromDate; st < toDate; st = st.AddDays(1))
                 {
                     if (st.Day == fromDate.Day)
                         sb.AppendLine($"select * from history_min_data_{st.ToString("yyyyMMdd")} where ceqid in ({lst}) and save_time >= '{st.ToString($"yyyy-MM-dd HH:mm:ss")}'");

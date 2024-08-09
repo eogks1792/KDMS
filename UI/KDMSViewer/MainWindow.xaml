@@ -48,7 +48,9 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
-        <Grid Grid.ColumnSpan="2">
+        <Grid Grid.ColumnSpan="2"
+              Background="Transparent"
+              MouseLeftButtonDown="OnMouseLeftButtonDown">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
                 <ColumnDefinition />

@@ -20,8 +20,10 @@ namespace KDMSServer.MVVM.Model
     class DateTimeHelper
     {
         public static DateTime GetNextDateTime(DateTime now, TimeDivisionCode timeCode, int month = 1, int day = 1, int hour = 0, int min = 0, int sec = 0, int weekday = 0)
-
         {
+            if(now == DateTime.MaxValue)
+                return now;
+
             DateTime date = DateTime.Now;
             switch (timeCode)
             {

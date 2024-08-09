@@ -176,13 +176,15 @@ namespace KDMSServer.ViewModel
                 JsonHelpers.AddOrUpdateAppSetting(filePath, "LoginInfo:LoginPwd", LoginPwd);
 
                 JsonHelpers.AddOrUpdateAppSetting(filePath, "ChannelInfo:Scan", ScanPort);
-                JsonHelpers.AddOrUpdateAppSetting(filePath, "ChannelInfo:Control", ControlPort);
+                //JsonHelpers.AddOrUpdateAppSetting(filePath, "ChannelInfo:Control", ControlPort);
                 JsonHelpers.AddOrUpdateAppSetting(filePath, "ChannelInfo:Alarm", EventPort);
                 
                 var root = (IConfigurationRoot)_configuration;
                 root.Reload();
 
                 IsSocketConnetionText = $"KDMS 서버 연결 정보 저장 성공";
+
+                _worker.SocketClose();
             }
             catch (Exception ex)
             {

@@ -49,31 +49,17 @@ namespace KDMSViewer
             _worker.ThreadClose();
         }
 
-        //protected override void OnSourceInitialized(EventArgs e)
-        //{
-        //    base.OnSourceInitialized(e);
+        private void OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if(e.ClickCount == 2)
+            {
+                if(this.WindowState == WindowState.Maximized)
+                    this.WindowState = WindowState.Normal;
+                else
+                    this.WindowState = WindowState.Maximized;
+            }
+        }
 
-        //    Win32API.handle = new WindowInteropHelper(this).Handle;
-        //    Win32API.message = RegisterWindowMessage("User Message");
-        //    ComponentDispatcher.ThreadFilterMessage += new ThreadMessageEventHandler(_dataWorker.ThreadFilterMessage);
-        //}
-
-        //private void Button_Click(object sender, RoutedEventArgs e)
-        //{
-        //    _dataWorker.PostMessageSend(100);
-        //}
-
-        //private void ThreadFilterMessage(ref MSG msg, ref bool handled)
-        //{
-        //    if (msg.message == message && msg.wParam != handle)
-        //    {
-        //        MessageBox.Show("Message : " + msg.lParam.ToString());
-        //    }
-        //}
-
-        //private void Button_Click(object sender, RoutedEventArgs e)
-        //{
-        //    PostMessage((IntPtr)HWND_BROADCAST, message, (uint)handle, 100);
-        //}
+       
     }
 }

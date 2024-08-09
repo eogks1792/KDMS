@@ -199,13 +199,6 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="정보 수집시간" Width="{Binding ElementName=comm_time, Path=ActualWidth}">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding CommTime, StringFormat=yyyy-MM-dd HH:mm:ss}" TextAlignment="Center"/>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
                     <GridViewColumn Header="DB 기록시간" Width="{Binding ElementName=save_time, Path=ActualWidth}">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
@@ -240,7 +233,6 @@
                 <ColumnDefinition Width="130"/>
                 <ColumnDefinition Width="175"/>
                 <ColumnDefinition Width="175"/>
-                <ColumnDefinition Width="175"/>
                 <ColumnDefinition Width="30"/>
             </Grid.ColumnDefinitions>
             <Grid Grid.Column="0" x:Name="no"/>
@@ -262,8 +254,7 @@
             <Grid Grid.Column="16" x:Name="min_cur_c"/>
             <Grid Grid.Column="17" x:Name="min_cur_n"/>
             <Grid Grid.Column="18" x:Name="min_time"/>
-            <Grid Grid.Column="19" x:Name="comm_time"/>
-            <Grid Grid.Column="20" x:Name="save_time"/>
+            <Grid Grid.Column="19" x:Name="save_time"/>
         </Grid>
     </Grid>
 </UserControl>

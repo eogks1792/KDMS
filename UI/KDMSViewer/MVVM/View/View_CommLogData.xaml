@@ -169,8 +169,8 @@
                 <ColumnDefinition Width="130"/>
                 <ColumnDefinition Width="130"/>
 
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="175"/>
+                <ColumnDefinition Width="175"/>
                 <ColumnDefinition Width="30"/>
             </Grid.ColumnDefinitions>
             <Grid Grid.Column="0" x:Name="no"/>

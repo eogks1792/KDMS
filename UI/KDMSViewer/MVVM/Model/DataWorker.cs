@@ -859,6 +859,9 @@ namespace KDMSViewer.Model
                             if (model != null)
                             {
                                 model.PointItems = new ObservableCollection<HistoryMinDatum>();
+                                if (ceqList.Count <= 0)
+                                    return;
+
                                 var response = await _mediator.Send(request);
                                 if (response != null && response.Result)
                                 {
@@ -892,6 +895,9 @@ namespace KDMSViewer.Model
                             if (model != null)
                             {
                                 model.PointItems = new ObservableCollection<HistoryDaystatDatum>();
+                                if (ceqList.Count <= 0)
+                                    return;
+
                                 var response = await _mediator.Send(request);
                                 if (response != null && response.Result)
                                 {
@@ -925,6 +931,9 @@ namespace KDMSViewer.Model
                             if (model != null)
                             {
                                 model.PointItems = new ObservableCollection<Statistics15min>();
+                                if (ceqList.Count <= 0)
+                                    return;
+
                                 var response = await _mediator.Send(request);
                                 if (response != null && response.Result)
                                 {
@@ -958,6 +967,9 @@ namespace KDMSViewer.Model
                             if (model != null)
                             {
                                 model.PointItems = new ObservableCollection<StatisticsHour>();
+                                if (ceqList.Count <= 0)
+                                    return;
+
                                 var response = await _mediator.Send(request);
                                 if (response != null && response.Result)
                                 {
@@ -991,6 +1003,9 @@ namespace KDMSViewer.Model
                             if (model != null)
                             {
                                 model.PointItems = new ObservableCollection<StatisticsDay>();
+                                if (ceqList.Count <= 0)
+                                    return;
+
                                 var response = await _mediator.Send(request);
                                 if (response != null && response.Result)
                                 {
@@ -1024,6 +1039,9 @@ namespace KDMSViewer.Model
                             if (model != null)
                             {
                                 model.PointItems = new ObservableCollection<StatisticsMonth>();
+                                if (ceqList.Count <= 0)
+                                    return;
+
                                 var response = await _mediator.Send(request);
                                 if (response != null && response.Result)
                                 {
@@ -1057,6 +1075,9 @@ namespace KDMSViewer.Model
                             if (model != null)
                             {
                                 model.PointItems = new ObservableCollection<StatisticsYear>();
+                                if (ceqList.Count <= 0)
+                                    return;
+
                                 var response = await _mediator.Send(request);
                                 if (response != null && response.Result)
                                 {
@@ -1090,6 +1111,9 @@ namespace KDMSViewer.Model
                             if (model != null)
                             {
                                 model.PointItems = new ObservableCollection<HistoryFiAlarm>();
+                                if (ceqList.Count <= 0)
+                                    return;
+
                                 var response = await _mediator.Send(request);
                                 if (response != null && response.Result)
                                 {
@@ -1123,6 +1147,9 @@ namespace KDMSViewer.Model
                             if (model != null)
                             {
                                 model.PointItems = new ObservableCollection<HistoryCommState>();
+                                if (ceqList.Count <= 0)
+                                    return;
+
                                 var response = await _mediator.Send(request);
                                 if (response != null && response.Result)
                                 {
@@ -1156,6 +1183,9 @@ namespace KDMSViewer.Model
                             if (model != null)
                             {
                                 model.PointItems = new ObservableCollection<HistoryCommStateLog>();
+                                if (ceqList.Count <= 0)
+                                    return;
+
                                 var response = await _mediator.Send(request);
                                 if (response != null && response.Result)
                                 {

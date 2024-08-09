@@ -145,7 +145,8 @@
                                 <Button x:Name="PART_Button"  Focusable="False" Foreground="{TemplateBinding Foreground}"  Template="{StaticResource DropDownButtonTemplate}" />
                             </Viewbox>
 
-                            <DatePickerTextBox x:Name="PART_TextBox" Grid.Column="0" Focusable="{TemplateBinding Focusable}" HorizontalContentAlignment="Stretch" 
+                            <DatePickerTextBox x:Name="PART_TextBox" Grid.Column="0" Focusable="{TemplateBinding Focusable}" 
+                                               HorizontalContentAlignment="Stretch" 
                                                Grid.Row="0" VerticalContentAlignment="Stretch"
                                                Background="Transparent"/>
                             <Grid x:Name="PART_DisabledVisual" Grid.ColumnSpan="2" Grid.Column="0" IsHitTestVisible="False" Opacity="0" Grid.Row="0">

@@ -440,7 +440,7 @@
 
             <GroupBox>
                 <GroupBox.Header>
-                    <TextBlock Text="DBMS DABABASE 설정 정보"
+                    <TextBlock Text="DBMS DATABASE 설정 정보"
                                FontSize="{StaticResource FontSizeMiddle}"/>
                 </GroupBox.Header>
                 <Grid>

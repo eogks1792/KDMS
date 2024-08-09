@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace KDMSServer.Model
+﻿namespace KDMSServer.Model
 {
     public enum ProcTypeCode
     {
@@ -52,5 +46,5 @@ namespace KDMSServer.Model
         BACKUP
     }
 
-    
+
 }

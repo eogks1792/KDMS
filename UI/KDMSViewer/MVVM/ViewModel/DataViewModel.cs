@@ -170,10 +170,10 @@ namespace KDMSViewer.ViewModel
             GetTreeItemCheckData(TreeItems);
             if (CheckItems.Count <= 0)
             {
-                IsInquiry = true;
-                Application.Current.Dispatcher.Invoke(() => { Mouse.OverrideCursor = Cursors.Arrow; });
-                MessageBox.Show("선택된 데이터가 없습니다.", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
-                return;
+                //IsInquiry = true;
+                //Application.Current.Dispatcher.Invoke(() => { Mouse.OverrideCursor = Cursors.Arrow; });
+                MessageBox.Show("트리목록에서 선택된 항목이 없습니다.", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
+                //return;
             }
 
             // 데이터 취득 처리
@@ -371,240 +371,228 @@ namespace KDMSViewer.ViewModel
                     string writeData = string.Empty;
                     using (StreamWriter outputFile = new StreamWriter(new FileStream(saveDialog.FileName, FileMode.Create, FileAccess.ReadWrite), Encoding.UTF8))
                     {
-                        if (RealDataCheck)
+                        // 실시간 데이터
+                        if (SwitchCheck)
                         {
-                            // 실시간 데이터
-                            if (SwitchCheck)
+                            var dataList = (ObservableCollection<HistoryMinDatum>)_worker.GetPointItems((int)SearchTypeCode.MINDATA);
+                            if (dataList == null || dataList?.Count <= 0)
                             {
-                                var dataList = (ObservableCollection<HistoryMinDatum>)_worker.GetPointItems((int)SearchTypeCode.MINDATA);
-                                if (dataList == null || dataList?.Count <= 0)
-                                {
-                                    outputFile.Close();
-                                    File.Delete(saveDialog.FileName);
-                                    MessageBox.Show($"데이터가 없습니다.", "파일 저장", MessageBoxButton.OK, MessageBoxImage.Information);
-                                    return;
-                                }
-
-                                header = "D/L 이름, 단말장치명, CEQ ID, 단자번호, 단말장치 상태, 전압 불평형률, 전류 불평형률, 주파수"
-                                    + ", 전류A, 전류B, 전류C, 전류N, 전압A, 전압B, 전압C, 피상전력A, 피상전력B, 피상전력C, 역률3상, 역률A, 역률B, 역률C"
-                                    + ", 고장전류A, 고장전류B, 고장전류C, 고장전류N, 전류위상A, 전류위상B, 전류위상C, 전류위상N, 전압위상A, 전압위상B, 전압위상C, 정보수집시간, DB기록시간";
-                                outputFile.WriteLine(header);
-                                foreach (var data in dataList)
-                                {
-                                    writeData = $"{data.Dl}, {data.Name}, {data.Ceqid}, {data.Circuitno}, {data.Diagnostics}, {data.VoltageUnbalance}, {data.CurrentUnbalance}, {data.Frequency}"
-                                        + $", {data.CurrentA}, {data.CurrentB}, {data.CurrentC}, {data.CurrentN}, {data.VoltageA}, {data.VoltageB}, {data.VoltageC}, {data.ApparentPowerA}, {data.ApparentPowerB}, {data.ApparentPowerC}, {data.PowerFactor3p}, {data.PowerFactorA}, {data.PowerFactorB}, {data.PowerFactorC}"
-                                        + $", {data.FaultCurrentA}, {data.FaultCurrentB}, {data.FaultCurrentC}, {data.FaultCurrentN}, {data.CurrentPhaseA}, {data.CurrentPhaseB}, {data.CurrentPhaseC}, {data.CurrentPhaseN}, {data.VoltagePhaseA}, {data.VoltagePhaseB}, {data.VoltagePhaseC}, {data.CommTime?.ToString("yyyy-MM-dd HH:mm:ss")}, {data.SaveTime.ToString("yyyy-MM-dd HH:mm:ss")}";
-                                    outputFile.WriteLine(writeData);
-                                }
+                                outputFile.Close();
+                                File.Delete(saveDialog.FileName);
+                                MessageBox.Show($"데이터가 없습니다.", "파일 저장", MessageBoxButton.OK, MessageBoxImage.Information);
+                                return;
                             }
-                            else if (FiCheck)
-                            {
-                                var dataList = (ObservableCollection<HistoryFiAlarm>)_worker.GetPointItems((int)SearchTypeCode.FIALARM);
-                                if (dataList == null || dataList?.Count <= 0)
-                                {
-                                    outputFile.Close();
-                                    File.Delete(saveDialog.FileName);
-                                    MessageBox.Show($"데이터가 없습니다.", "파일 저장", MessageBoxButton.OK, MessageBoxImage.Information);
-                                    return;
-                                }
 
-                                header = "D/L 이름, 단말장치명, CEQ ID, 단자번호, 알람 이름, 알람 값, 알람 내용, 고장전류A, 고장전류B, 고장전류C, 고장전류N, 서버기록시간, 단말발생시간, DB기록시간";
-                                outputFile.WriteLine(header);
-                                foreach (var data in dataList)
-                                {
-                                    writeData = $"{data.Dl}, {data.Name}, {data.Ceqid}, {data.Circuitno}, {data.AlarmName}, {data.Value}, {data.LogDesc}, {data.FaultCurrentA}, {data.FaultCurrentB}, {data.FaultCurrentC}, {data.FaultCurrentN}, {data.LogTime?.ToString("yyyy-MM-dd HH:mm:ss")}, {data.FrtuTime?.ToString("yyyy-MM-dd HH:mm:ss")}, {data.SaveTime.ToString("yyyy-MM-dd HH:mm:ss")}";
-                                    outputFile.WriteLine(writeData);
-                                }
+                            header = "D/L 이름, 단말장치명, CEQ ID, 단자번호, 단말장치 상태, 전압 불평형률, 전류 불평형률, 주파수"
+                                + ", 전류A, 전류B, 전류C, 전류N, 전압A, 전압B, 전압C, 피상전력A, 피상전력B, 피상전력C, 역률3상, 역률A, 역률B, 역률C"
+                                + ", 고장전류A, 고장전류B, 고장전류C, 고장전류N, 전류위상A, 전류위상B, 전류위상C, 전류위상N, 전압위상A, 전압위상B, 전압위상C, 정보수집시간, DB기록시간";
+                            outputFile.WriteLine(header);
+                            foreach (var data in dataList)
+                            {
+                                writeData = $"{data.Dl}, {data.Name}, {data.Ceqid}, {data.Circuitno}, {data.Diagnostics}, {data.VoltageUnbalance}, {data.CurrentUnbalance}, {data.Frequency}"
+                                    + $", {data.CurrentA}, {data.CurrentB}, {data.CurrentC}, {data.CurrentN}, {data.VoltageA}, {data.VoltageB}, {data.VoltageC}, {data.ApparentPowerA}, {data.ApparentPowerB}, {data.ApparentPowerC}, {data.PowerFactor3p}, {data.PowerFactorA}, {data.PowerFactorB}, {data.PowerFactorC}"
+                                    + $", {data.FaultCurrentA}, {data.FaultCurrentB}, {data.FaultCurrentC}, {data.FaultCurrentN}, {data.CurrentPhaseA}, {data.CurrentPhaseB}, {data.CurrentPhaseC}, {data.CurrentPhaseN}, {data.VoltagePhaseA}, {data.VoltagePhaseB}, {data.VoltagePhaseC}, {data.CommTime?.ToString("yyyy-MM-dd HH:mm:ss")}, {data.SaveTime.ToString("yyyy-MM-dd HH:mm:ss")}";
+                                outputFile.WriteLine(writeData);
                             }
                         }
-                        else if (StatisticalCheck)
+                        else if (FiCheck)
                         {
-                            if (DayCheck)
+                            var dataList = (ObservableCollection<HistoryFiAlarm>)_worker.GetPointItems((int)SearchTypeCode.FIALARM);
+                            if (dataList == null || dataList?.Count <= 0)
                             {
-                                var dataList = (ObservableCollection<HistoryDaystatDatum>)_worker.GetPointItems((int)SearchTypeCode.DAYSTATDATA);
-                                if (dataList == null || dataList?.Count <= 0)
-                                {
-                                    outputFile.Close();
-                                    File.Delete(saveDialog.FileName);
-                                    MessageBox.Show($"데이터가 없습니다.", "파일 저장", MessageBoxButton.OK, MessageBoxImage.Information);
-                                    return;
-                                }
-
-                                header = "D/L 이름, 단말장치명, CEQ ID, 단자번호, 단말장치 상태, 전압 불평형률, 전류 불평형률, 주파수"
-                                    + ", 전류A(평균), 전류B(평균), 전류C(평균), 전류N(평균), 전류A(최대), 전류B(최대), 전류C(최대), 전류N(최대), 최대 수집시간"
-                                    + ", 전류A(최소), 전류B(최소), 전류C(최소), 전류N(최소), 최소 수집시간, 정보수집시간, DB기록시간";
-                                outputFile.WriteLine(header);
-                                foreach (var data in dataList)
-                                {
-                                    writeData = $"{data.Dl}, {data.Name}, {data.Ceqid}, {data.Circuitno}, {data.Diagnostics}, {data.VoltageUnbalance}, {data.CurrentUnbalance}, {data.Frequency}"
-                                         + $", {data.AverageCurrentA}, {data.AverageCurrentB}, {data.AverageCurrentC}, {data.AverageCurrentN}, {data.MaxCurrentA}, {data.MaxCurrentB}, {data.MaxCurrentC}, {data.MaxCurrentN}, {data.MaxCommTime?.ToString("yyyy-MM-dd HH:mm:ss")}"
-                                         + $", {data.MinCurrentA}, {data.MinCurrentB}, {data.MinCurrentC}, {data.MinCurrentN}, {data.MinCommTime?.ToString("yyyy-MM-dd HH:mm:ss")}"
-                                         + $", {data.CommTime?.ToString("yyyy-MM-dd HH:mm:ss")}, {data.SaveTime.ToString("yyyy-MM-dd HH:mm:ss")}";
-                                    outputFile.WriteLine(writeData);
-                                }
+                                outputFile.Close();
+                                File.Delete(saveDialog.FileName);
+                                MessageBox.Show($"데이터가 없습니다.", "파일 저장", MessageBoxButton.OK, MessageBoxImage.Information);
+                                return;
                             }
-                            else
+
+                            header = "D/L 이름, 단말장치명, CEQ ID, 단자번호, 알람 이름, 알람 값, 알람 내용, 고장전류A, 고장전류B, 고장전류C, 고장전류N, 서버기록시간, 단말발생시간, DB기록시간";
+                            outputFile.WriteLine(header);
+                            foreach (var data in dataList)
                             {
-                                // 통계 데이터
-                                if (StatisticMinCheck)
-                                {
-                                    var dataList = (ObservableCollection<Statistics15min>)_worker.GetPointItems((int)SearchTypeCode.STATISTICSMIN);
-                                    if (dataList == null || dataList?.Count <= 0)
-                                    {
-                                        outputFile.Close();
-                                        File.Delete(saveDialog.FileName);
-                                        MessageBox.Show($"데이터가 없습니다.", "파일 저장", MessageBoxButton.OK, MessageBoxImage.Information);
-                                        return;
-                                    }
-
-                                    header = "D/L 이름, 단말장치명, CEQ ID, 단자번호, 단말장치명,  전류A(평균), 전류B(평균), 전류C(평균), 전류N(평균), 정보수집시간, DB기록시간";
-                                    outputFile.WriteLine(header);
-                                    foreach (var data in dataList)
-                                    {
-                                        writeData = $"{data.Dl}, {data.Name}, {data.Ceqid}, {data.AverageCurrentA}, {data.AverageCurrentB}, {data.AverageCurrentC}, {data.AverageCurrentN}"
-                                            + $", {data.SaveTime.ToString("yyyy-MM-dd HH:mm:ss")}, {data.SaveTime.ToString("yyyy-MM-dd HH:mm:ss")}";
-                                        outputFile.WriteLine(writeData);
-                                    }
-                                }
-                                else if (StatisticHourCheck)
-                                {
-                                    var dataList = (ObservableCollection<StatisticsHour>)_worker.GetPointItems((int)SearchTypeCode.STATISTICSHOUR);
-                                    if (dataList == null || dataList?.Count <= 0)
-                                    {
-                                        outputFile.Close();
-                                        File.Delete(saveDialog.FileName);
-                                        MessageBox.Show($"데이터가 없습니다.", "파일 저장", MessageBoxButton.OK, MessageBoxImage.Information);
-                                        return;
-                                    }
-
-                                    header = "D/L 이름, 단말장치명, CEQ ID, 단자번호, "
-                                        + ", 전류A(평균), 전류B(평균), 전류C(평균), 전류N(평균), 전류A(최대), 전류B(최대), 전류C(최대), 전류N(최대), 최대 수집시간"
-                                        + ", 전류A(최소), 전류B(최소), 전류C(최소), 전류N(최소), 최소 수집시간, DB 기록시간";
-                                    outputFile.WriteLine(header);
-                                    foreach (var data in dataList)
-                                    {
-                                        writeData = $"{data.Dl}, {data.Name}, {data.Ceqid}, {data.AverageCurrentA}, {data.AverageCurrentB}, {data.AverageCurrentC}, {data.AverageCurrentN}"
-                                            + $", {data.MaxCurrentA}, {data.MaxCurrentB}, {data.MaxCurrentC}, {data.MaxCurrentN}, {data.MaxCommTime?.ToString("yyyy-MM-dd HH:mm:ss")}"
-                                            + $", {data.MinCurrentA}, {data.MinCurrentB}, {data.MinCurrentC}, {data.MinCurrentN}, {data.MinCommTime?.ToString("yyyy-MM-dd HH:mm:ss")}"
-                                            + $", {data.SaveTime.ToString("yyyy-MM-dd HH:mm:ss")}";
-                                        outputFile.WriteLine(writeData);
-                                    }
-                                }
-                                else if (StatisticDayCheck)
-                                {
-                                    var dataList = (ObservableCollection<StatisticsDay>)_worker.GetPointItems((int)SearchTypeCode.STATISTICSDAY);
-                                    if (dataList == null || dataList?.Count <= 0)
-                                    {
-                                        outputFile.Close();
-                                        File.Delete(saveDialog.FileName);
-                                        MessageBox.Show($"데이터가 없습니다.", "파일 저장", MessageBoxButton.OK, MessageBoxImage.Information);
-                                        return;
-                                    }
-
-                                    header = "D/L 이름, 단말장치명, CEQ ID, 단자번호, "
-                                        + ", 전류A(평균), 전류B(평균), 전류C(평균), 전류N(평균), 전류A(최대), 전류B(최대), 전류C(최대), 전류N(최대), 최대 수집시간"
-                                        + ", 전류A(최소), 전류B(최소), 전류C(최소), 전류N(최소), 최소 수집시간, DB 기록시간";
-                                    outputFile.WriteLine(header);
-                                    foreach (var data in dataList)
-                                    {
-                                        writeData = $"{data.Dl}, {data.Name}, {data.Ceqid}, {data.AverageCurrentA}, {data.AverageCurrentB}, {data.AverageCurrentC}, {data.AverageCurrentN}"
-                                            + $", {data.MaxCurrentA}, {data.MaxCurrentB}, {data.MaxCurrentC}, {data.MaxCurrentN}, {data.MaxCommTime?.ToString("yyyy-MM-dd HH:mm:ss")}"
-                                            + $", {data.MinCurrentA}, {data.MinCurrentB}, {data.MinCurrentC}, {data.MinCurrentN}, {data.MinCommTime?.ToString("yyyy-MM-dd HH:mm:ss")}"
-                                            + $", {data.SaveTime.ToString("yyyy-MM-dd HH:mm:ss")}";
-                                        outputFile.WriteLine(writeData);
-                                    }
-                                }
-                                else if (StatisticMonthCheck)
-                                {
-                                    var dataList = (ObservableCollection<StatisticsMonth>)_worker.GetPointItems((int)SearchTypeCode.STATISTICSMONTH);
-                                    if (dataList == null || dataList?.Count <= 0)
-                                    {
-                                        outputFile.Close();
-                                        File.Delete(saveDialog.FileName);
-                                        MessageBox.Show($"데이터가 없습니다.", "파일 저장", MessageBoxButton.OK, MessageBoxImage.Information);
-                                        return;
-                                    }
-
-                                    header = "D/L 이름, 단말장치명, CEQ ID, 단자번호, "
-                                        + ", 전류A(평균), 전류B(평균), 전류C(평균), 전류N(평균), 전류A(최대), 전류B(최대), 전류C(최대), 전류N(최대), 최대 수집시간"
-                                        + ", 전류A(최소), 전류B(최소), 전류C(최소), 전류N(최소), 최소 수집시간, DB 기록시간";
-                                    outputFile.WriteLine(header);
-                                    foreach (var data in dataList)
-                                    {
-                                        writeData = $"{data.Dl}, {data.Name}, {data.Ceqid}, {data.AverageCurrentA}, {data.AverageCurrentB}, {data.AverageCurrentC}, {data.AverageCurrentN}"
-                                            + $", {data.MaxCurrentA}, {data.MaxCurrentB}, {data.MaxCurrentC}, {data.MaxCurrentN}, {data.MaxCommTime?.ToString("yyyy-MM-dd HH:mm:ss")}"
-                                            + $", {data.MinCurrentA}, {data.MinCurrentB}, {data.MinCurrentC}, {data.MinCurrentN}, {data.MinCommTime?.ToString("yyyy-MM-dd HH:mm:ss")}"
-                                            + $", {data.SaveTime.ToString("yyyy-MM-dd HH:mm:ss")}";
-                                        outputFile.WriteLine(writeData);
-                                    }
-                                }
-                                else if (StatisticYearCheck)
-                                {
-                                    var dataList = (ObservableCollection<StatisticsYear>)_worker.GetPointItems((int)SearchTypeCode.STATISTICSYEAR);
-                                    if (dataList == null || dataList?.Count <= 0)
-                                    {
-                                        outputFile.Close();
-                                        File.Delete(saveDialog.FileName);
-                                        MessageBox.Show($"데이터가 없습니다.", "파일 저장", MessageBoxButton.OK, MessageBoxImage.Information);
-                                        return;
-                                    }
-
-                                    header = "D/L 이름, 단말장치명, CEQ ID, 단자번호, "
-                                        + ", 전류A(평균), 전류B(평균), 전류C(평균), 전류N(평균), 전류A(최대), 전류B(최대), 전류C(최대), 전류N(최대), 최대 수집시간"
-                                        + ", 전류A(최소), 전류B(최소), 전류C(최소), 전류N(최소), 최소 수집시간, DB 기록시간";
-                                    outputFile.WriteLine(header);
-                                    foreach (var data in dataList)
-                                    {
-                                        writeData = $"{data.Dl}, {data.Name}, {data.Ceqid}, {data.AverageCurrentA}, {data.AverageCurrentB}, {data.AverageCurrentC}, {data.AverageCurrentN}"
-                                            + $", {data.MaxCurrentA}, {data.MaxCurrentB}, {data.MaxCurrentC}, {data.MaxCurrentN}, {data.MaxCommTime?.ToString("yyyy-MM-dd HH:mm:ss")}"
-                                            + $", {data.MinCurrentA}, {data.MinCurrentB}, {data.MinCurrentC}, {data.MinCurrentN}, {data.MinCommTime?.ToString("yyyy-MM-dd HH:mm:ss")}"
-                                            + $", {data.SaveTime.ToString("yyyy-MM-dd HH:mm:ss")}";
-                                        outputFile.WriteLine(writeData);
-                                    }
-                                }
+                                writeData = $"{data.Dl}, {data.Name}, {data.Ceqid}, {data.Circuitno}, {data.AlarmName}, {data.Value}, {data.LogDesc}, {data.FaultCurrentA}, {data.FaultCurrentB}, {data.FaultCurrentC}, {data.FaultCurrentN}, {data.LogTime?.ToString("yyyy-MM-dd HH:mm:ss")}, {data.FrtuTime?.ToString("yyyy-MM-dd HH:mm:ss")}, {data.SaveTime.ToString("yyyy-MM-dd HH:mm:ss")}";
+                                outputFile.WriteLine(writeData);
                             }
                         }
-                        else if (CommCheck)
+                        else if (DayCheck)
                         {
-                            if (CommDayCheck)
+                            var dataList = (ObservableCollection<HistoryDaystatDatum>)_worker.GetPointItems((int)SearchTypeCode.DAYSTATDATA);
+                            if (dataList == null || dataList?.Count <= 0)
                             {
-                                var dataList = (ObservableCollection<HistoryCommState>)_worker.GetPointItems((int)SearchTypeCode.COMMSTATE);
-                                if (dataList == null || dataList?.Count <= 0)
-                                {
-                                    outputFile.Close();
-                                    File.Delete(saveDialog.FileName);
-                                    MessageBox.Show($"데이터가 없습니다.", "파일 저장", MessageBoxButton.OK, MessageBoxImage.Information);
-                                    return;
-                                }
-
-                                header = "D/L 이름, 단말장치명, CEQ ID, 장치 타입, 전체횟수, 성공횟수, 실패횟수, 통신 성공률, 정보수집시간, DB기록시간";
-                                outputFile.WriteLine(header);
-                                foreach (var data in dataList)
-                                {
-                                    writeData = $"{data.Dl}, {data.Name}, {data.Ceqid}, {data.EqType}, {data.CommTotalCount}, {data.CommSucessCount}, {data.CommFailCount}, {data.CommSucessRate}"
-                                            + $", {data.CommTime?.ToString("yyyy-MM-dd HH:mm:ss")}, {data.SaveTime.ToString("yyyy-MM-dd HH:mm:ss")}";
-                                    outputFile.WriteLine(writeData);
-                                }
+                                outputFile.Close();
+                                File.Delete(saveDialog.FileName);
+                                MessageBox.Show($"데이터가 없습니다.", "파일 저장", MessageBoxButton.OK, MessageBoxImage.Information);
+                                return;
                             }
-                            else if (CommLogCheck)
-                            {
-                                var dataList = (ObservableCollection<HistoryCommStateLog>)_worker.GetPointItems((int)SearchTypeCode.COMMSTATELOG);
-                                if (dataList == null || dataList?.Count <= 0)
-                                {
-                                    outputFile.Close();
-                                    File.Delete(saveDialog.FileName);
-                                    MessageBox.Show($"데이터가 없습니다.", "파일 저장", MessageBoxButton.OK, MessageBoxImage.Information);
-                                    return;
-                                }
 
-                                header = "D/L 이름, 단말장치명, CEQ ID, 장치 타입, 성공여부, 전체횟수, 성공횟수, 실패횟수, 통신 성공률, 정보수집시간, DB기록시간";
-                                outputFile.WriteLine(header);
-                                foreach (var data in dataList)
-                                {
-                                    writeData = $"{data.Dl}, {data.Name}, {data.Ceqid}, {data.EqType}, {data.CommState} {data.CommTotalCount}, {data.CommSucessCount}, {data.CommFailCount}, {data.CommSucessRate}"
-                                            + $", {data.CommTime?.ToString("yyyy-MM-dd HH:mm:ss")}, {data.SaveTime.ToString("yyyy-MM-dd HH:mm:ss")}";
-                                    outputFile.WriteLine(writeData);
-                                }
+                            header = "D/L 이름, 단말장치명, CEQ ID, 단자번호, 단말장치 상태, 전압 불평형률, 전류 불평형률, 주파수"
+                                + ", 전류A(평균), 전류B(평균), 전류C(평균), 전류N(평균), 전류A(최대), 전류B(최대), 전류C(최대), 전류N(최대), 최대 수집시간"
+                                + ", 전류A(최소), 전류B(최소), 전류C(최소), 전류N(최소), 최소 수집시간, 정보수집시간, DB기록시간";
+                            outputFile.WriteLine(header);
+                            foreach (var data in dataList)
+                            {
+                                writeData = $"{data.Dl}, {data.Name}, {data.Ceqid}, {data.Circuitno}, {data.Diagnostics}, {data.VoltageUnbalance}, {data.CurrentUnbalance}, {data.Frequency}"
+                                     + $", {data.AverageCurrentA}, {data.AverageCurrentB}, {data.AverageCurrentC}, {data.AverageCurrentN}, {data.MaxCurrentA}, {data.MaxCurrentB}, {data.MaxCurrentC}, {data.MaxCurrentN}, {data.MaxCommTime?.ToString("yyyy-MM-dd HH:mm:ss")}"
+                                     + $", {data.MinCurrentA}, {data.MinCurrentB}, {data.MinCurrentC}, {data.MinCurrentN}, {data.MinCommTime?.ToString("yyyy-MM-dd HH:mm:ss")}"
+                                     + $", {data.CommTime?.ToString("yyyy-MM-dd HH:mm:ss")}, {data.SaveTime.ToString("yyyy-MM-dd HH:mm:ss")}";
+                                outputFile.WriteLine(writeData);
+                            }
+                        }
+                        // 통계 데이터
+                        else if (StatisticMinCheck)
+                        {
+                            var dataList = (ObservableCollection<Statistics15min>)_worker.GetPointItems((int)SearchTypeCode.STATISTICSMIN);
+                            if (dataList == null || dataList?.Count <= 0)
+                            {
+                                outputFile.Close();
+                                File.Delete(saveDialog.FileName);
+                                MessageBox.Show($"데이터가 없습니다.", "파일 저장", MessageBoxButton.OK, MessageBoxImage.Information);
+                                return;
+                            }
+
+                            header = "D/L 이름, 단말장치명, CEQ ID, 단자번호, 단말장치명,  전류A(평균), 전류B(평균), 전류C(평균), 전류N(평균), 정보수집시간, DB기록시간";
+                            outputFile.WriteLine(header);
+                            foreach (var data in dataList)
+                            {
+                                writeData = $"{data.Dl}, {data.Name}, {data.Ceqid}, {data.AverageCurrentA}, {data.AverageCurrentB}, {data.AverageCurrentC}, {data.AverageCurrentN}"
+                                    + $", {data.SaveTime.ToString("yyyy-MM-dd HH:mm:ss")}, {data.SaveTime.ToString("yyyy-MM-dd HH:mm:ss")}";
+                                outputFile.WriteLine(writeData);
+                            }
+                        }
+                        else if (StatisticHourCheck)
+                        {
+                            var dataList = (ObservableCollection<StatisticsHour>)_worker.GetPointItems((int)SearchTypeCode.STATISTICSHOUR);
+                            if (dataList == null || dataList?.Count <= 0)
+                            {
+                                outputFile.Close();
+                                File.Delete(saveDialog.FileName);
+                                MessageBox.Show($"데이터가 없습니다.", "파일 저장", MessageBoxButton.OK, MessageBoxImage.Information);
+                                return;
+                            }
+
+                            header = "D/L 이름, 단말장치명, CEQ ID, 단자번호, "
+                                + ", 전류A(평균), 전류B(평균), 전류C(평균), 전류N(평균), 전류A(최대), 전류B(최대), 전류C(최대), 전류N(최대), 최대 수집시간"
+                                + ", 전류A(최소), 전류B(최소), 전류C(최소), 전류N(최소), 최소 수집시간, DB 기록시간";
+                            outputFile.WriteLine(header);
+                            foreach (var data in dataList)
+                            {
+                                writeData = $"{data.Dl}, {data.Name}, {data.Ceqid}, {data.AverageCurrentA}, {data.AverageCurrentB}, {data.AverageCurrentC}, {data.AverageCurrentN}"
+                                    + $", {data.MaxCurrentA}, {data.MaxCurrentB}, {data.MaxCurrentC}, {data.MaxCurrentN}, {data.MaxCommTime?.ToString("yyyy-MM-dd HH:mm:ss")}"
+                                    + $", {data.MinCurrentA}, {data.MinCurrentB}, {data.MinCurrentC}, {data.MinCurrentN}, {data.MinCommTime?.ToString("yyyy-MM-dd HH:mm:ss")}"
+                                    + $", {data.SaveTime.ToString("yyyy-MM-dd HH:mm:ss")}";
+                                outputFile.WriteLine(writeData);
+                            }
+                        }
+                        else if (StatisticDayCheck)
+                        {
+                            var dataList = (ObservableCollection<StatisticsDay>)_worker.GetPointItems((int)SearchTypeCode.STATISTICSDAY);
+                            if (dataList == null || dataList?.Count <= 0)
+                            {
+                                outputFile.Close();
+                                File.Delete(saveDialog.FileName);
+                                MessageBox.Show($"데이터가 없습니다.", "파일 저장", MessageBoxButton.OK, MessageBoxImage.Information);
+                                return;
+                            }
+
+                            header = "D/L 이름, 단말장치명, CEQ ID, 단자번호, "
+                                + ", 전류A(평균), 전류B(평균), 전류C(평균), 전류N(평균), 전류A(최대), 전류B(최대), 전류C(최대), 전류N(최대), 최대 수집시간"
+                                + ", 전류A(최소), 전류B(최소), 전류C(최소), 전류N(최소), 최소 수집시간, DB 기록시간";
+                            outputFile.WriteLine(header);
+                            foreach (var data in dataList)
+                            {
+                                writeData = $"{data.Dl}, {data.Name}, {data.Ceqid}, {data.AverageCurrentA}, {data.AverageCurrentB}, {data.AverageCurrentC}, {data.AverageCurrentN}"
+                                    + $", {data.MaxCurrentA}, {data.MaxCurrentB}, {data.MaxCurrentC}, {data.MaxCurrentN}, {data.MaxCommTime?.ToString("yyyy-MM-dd HH:mm:ss")}"
+                                    + $", {data.MinCurrentA}, {data.MinCurrentB}, {data.MinCurrentC}, {data.MinCurrentN}, {data.MinCommTime?.ToString("yyyy-MM-dd HH:mm:ss")}"
+                                    + $", {data.SaveTime.ToString("yyyy-MM-dd HH:mm:ss")}";
+                                outputFile.WriteLine(writeData);
+                            }
+                        }
+                        else if (StatisticMonthCheck)
+                        {
+                            var dataList = (ObservableCollection<StatisticsMonth>)_worker.GetPointItems((int)SearchTypeCode.STATISTICSMONTH);
+                            if (dataList == null || dataList?.Count <= 0)
+                            {
+                                outputFile.Close();
+                                File.Delete(saveDialog.FileName);
+                                MessageBox.Show($"데이터가 없습니다.", "파일 저장", MessageBoxButton.OK, MessageBoxImage.Information);
+                                return;
+                            }
+
+                            header = "D/L 이름, 단말장치명, CEQ ID, 단자번호, "
+                                + ", 전류A(평균), 전류B(평균), 전류C(평균), 전류N(평균), 전류A(최대), 전류B(최대), 전류C(최대), 전류N(최대), 최대 수집시간"
+                                + ", 전류A(최소), 전류B(최소), 전류C(최소), 전류N(최소), 최소 수집시간, DB 기록시간";
+                            outputFile.WriteLine(header);
+                            foreach (var data in dataList)
+                            {
+                                writeData = $"{data.Dl}, {data.Name}, {data.Ceqid}, {data.AverageCurrentA}, {data.AverageCurrentB}, {data.AverageCurrentC}, {data.AverageCurrentN}"
+                                    + $", {data.MaxCurrentA}, {data.MaxCurrentB}, {data.MaxCurrentC}, {data.MaxCurrentN}, {data.MaxCommTime?.ToString("yyyy-MM-dd HH:mm:ss")}"
+                                    + $", {data.MinCurrentA}, {data.MinCurrentB}, {data.MinCurrentC}, {data.MinCurrentN}, {data.MinCommTime?.ToString("yyyy-MM-dd HH:mm:ss")}"
+                                    + $", {data.SaveTime.ToString("yyyy-MM-dd HH:mm:ss")}";
+                                outputFile.WriteLine(writeData);
+                            }
+                        }
+                        else if (StatisticYearCheck)
+                        {
+                            var dataList = (ObservableCollection<StatisticsYear>)_worker.GetPointItems((int)SearchTypeCode.STATISTICSYEAR);
+                            if (dataList == null || dataList?.Count <= 0)
+                            {
+                                outputFile.Close();
+                                File.Delete(saveDialog.FileName);
+                                MessageBox.Show($"데이터가 없습니다.", "파일 저장", MessageBoxButton.OK, MessageBoxImage.Information);
+                                return;
+                            }
+
+                            header = "D/L 이름, 단말장치명, CEQ ID, 단자번호, "
+                                + ", 전류A(평균), 전류B(평균), 전류C(평균), 전류N(평균), 전류A(최대), 전류B(최대), 전류C(최대), 전류N(최대), 최대 수집시간"
+                                + ", 전류A(최소), 전류B(최소), 전류C(최소), 전류N(최소), 최소 수집시간, DB 기록시간";
+                            outputFile.WriteLine(header);
+                            foreach (var data in dataList)
+                            {
+                                writeData = $"{data.Dl}, {data.Name}, {data.Ceqid}, {data.AverageCurrentA}, {data.AverageCurrentB}, {data.AverageCurrentC}, {data.AverageCurrentN}"
+                                    + $", {data.MaxCurrentA}, {data.MaxCurrentB}, {data.MaxCurrentC}, {data.MaxCurrentN}, {data.MaxCommTime?.ToString("yyyy-MM-dd HH:mm:ss")}"
+                                    + $", {data.MinCurrentA}, {data.MinCurrentB}, {data.MinCurrentC}, {data.MinCurrentN}, {data.MinCommTime?.ToString("yyyy-MM-dd HH:mm:ss")}"
+                                    + $", {data.SaveTime.ToString("yyyy-MM-dd HH:mm:ss")}";
+                                outputFile.WriteLine(writeData);
+                            }
+                        }
+                        else if (CommDayCheck)
+                        {
+                            var dataList = (ObservableCollection<HistoryCommState>)_worker.GetPointItems((int)SearchTypeCode.COMMSTATE);
+                            if (dataList == null || dataList?.Count <= 0)
+                            {
+                                outputFile.Close();
+                                File.Delete(saveDialog.FileName);
+                                MessageBox.Show($"데이터가 없습니다.", "파일 저장", MessageBoxButton.OK, MessageBoxImage.Information);
+                                return;
+                            }
+
+                            header = "D/L 이름, 단말장치명, CEQ ID, 장치 타입, 전체횟수, 성공횟수, 실패횟수, 통신 성공률, 정보수집시간, DB기록시간";
+                            outputFile.WriteLine(header);
+                            foreach (var data in dataList)
+                            {
+                                writeData = $"{data.Dl}, {data.Name}, {data.Ceqid}, {data.EqType}, {data.CommTotalCount}, {data.CommSucessCount}, {data.CommFailCount}, {data.CommSucessRate}"
+                                        + $", {data.CommTime?.ToString("yyyy-MM-dd HH:mm:ss")}, {data.SaveTime.ToString("yyyy-MM-dd HH:mm:ss")}";
+                                outputFile.WriteLine(writeData);
+                            }
+                        }
+                        else if (CommLogCheck)
+                        {
+                            var dataList = (ObservableCollection<HistoryCommStateLog>)_worker.GetPointItems((int)SearchTypeCode.COMMSTATELOG);
+                            if (dataList == null || dataList?.Count <= 0)
+                            {
+                                outputFile.Close();
+                                File.Delete(saveDialog.FileName);
+                                MessageBox.Show($"데이터가 없습니다.", "파일 저장", MessageBoxButton.OK, MessageBoxImage.Information);
+                                return;
+                            }
+
+                            header = "D/L 이름, 단말장치명, CEQ ID, 장치 타입, 성공여부, 전체횟수, 성공횟수, 실패횟수, 통신 성공률, 정보수집시간, DB기록시간";
+                            outputFile.WriteLine(header);
+                            foreach (var data in dataList)
+                            {
+                                writeData = $"{data.Dl}, {data.Name}, {data.Ceqid}, {data.EqType}, {data.CommState} {data.CommTotalCount}, {data.CommSucessCount}, {data.CommFailCount}, {data.CommSucessRate}"
+                                        + $", {data.CommTime?.ToString("yyyy-MM-dd HH:mm:ss")}, {data.SaveTime.ToString("yyyy-MM-dd HH:mm:ss")}";
+                                outputFile.WriteLine(writeData);
                             }
                         }
                     }
