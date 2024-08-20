@@ -1,12 +1,18 @@
-﻿<UserControl x:Class="KDMSViewer.View.View_DayStatData"
+﻿<UserControl x:Class="KDMSViewer.View.View_SwitchData2"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:KDMSViewer.View"
+             xmlns:model="clr-namespace:KDMSViewer.Model"
+             xmlns:converter="clr-namespace:KDMSViewer.Converters"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="1920">
+             d:DesignHeight="450" d:DesignWidth="1450">
+
     <UserControl.Resources>
+        <converter:IndexConverter x:Key="indexConvert"/>
+
         <Style TargetType="{x:Type GridViewColumnHeader}">
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="Height" Value="40" />
@@ -22,8 +28,7 @@
             </Style.Triggers>
         </Style>
     </UserControl.Resources>
-
-
+    
     <Grid>
         <ListView Margin="0 0 0 0"
                   FontFamily="{StaticResource LatoBold}" 
@@ -38,8 +43,13 @@
                   ScrollViewer.VerticalScrollBarVisibility="Auto" 
                   IsSynchronizedWithCurrentItem="True"
                   VirtualizingStackPanel.IsVirtualizing="True" 
-                  VirtualizingStackPanel.VirtualizationMode="Recycling"
-                  ScrollViewer.IsDeferredScrollingEnabled="True">
+                  VirtualizingStackPanel.VirtualizationMode="Recycling">
+
+            <!--model:ListViewBehavior.AutoScroll="True"-->
+            <!--<i:Interaction.Behaviors>
+                <model:ScrollIntoViewForListView />
+            </i:Interaction.Behaviors>-->
+            <!--ScrollViewer.IsDeferredScrollingEnabled="True"-->
 
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
@@ -66,10 +76,12 @@
                     <GridViewColumn Header="번호" Width="{Binding ElementName=no, Path=ActualWidth}">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding No}" TextAlignment="Center" />
+                                <TextBlock Text="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListViewItem}}, Mode=OneWay, Converter={StaticResource indexConvert}}" 
+                                               TextAlignment="Center" />
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
+     
                     <GridViewColumn Header="DL 이름" Width="{Binding ElementName=dl, Path=ActualWidth}">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
@@ -91,6 +103,7 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
+
                     <GridViewColumn Header="단자번호" Width="{Binding ElementName=circuit, Path=ActualWidth}">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
@@ -128,106 +141,182 @@
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
 
+                    <GridViewColumn Header="전류 A" Width="{Binding ElementName=cur_a, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding CurrentA}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="전류 B" Width="{Binding ElementName=cur_b, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding CurrentB}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="전류 C" Width="{Binding ElementName=cur_c, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding CurrentC}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="전류 N" Width="{Binding ElementName=cur_n, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding CurrentN}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="전압 A" Width="{Binding ElementName=vol_a, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding VoltageA}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="전압 B" Width="{Binding ElementName=vol_b, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding VoltageB}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="전압 C" Width="{Binding ElementName=vol_c, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding VoltageC}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="피상전력A" Width="{Binding ElementName=app_power_a, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding ApparentPowerA}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="피상전력B" Width="{Binding ElementName=app_power_b, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding ApparentPowerB}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="피상전력C" Width="{Binding ElementName=app_power_c, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding ApparentPowerC}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="역률 3상" Width="{Binding ElementName=powerfac_3p, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding PowerFactor3p}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="역률 A" Width="{Binding ElementName=powerfac_a, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding PowerFactorA}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="역률 B" Width="{Binding ElementName=powerfac_b, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding PowerFactorB}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="역률 C" Width="{Binding ElementName=powerfac_c, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding PowerFactorC}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="고장전류A" Width="{Binding ElementName=fi_cur_a, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding FaultCurrentA}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="고장전류B" Width="{Binding ElementName=fi_cur_b, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding FaultCurrentB}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="고장전류C" Width="{Binding ElementName=fi_cur_c, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding FaultCurrentC}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="고장전류N" Width="{Binding ElementName=fi_cur_n, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding FaultCurrentN}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="전류위상A" Width="{Binding ElementName=cur_ph_a, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding CurrentPhaseA}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="전류위상B" Width="{Binding ElementName=cur_ph_b, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding CurrentPhaseB}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="전류위상C" Width="{Binding ElementName=cur_ph_c, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding CurrentPhaseC}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="전류위상N" Width="{Binding ElementName=cur_ph_n, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding CurrentPhaseN}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="전압위상A" Width="{Binding ElementName=vol_ph_a, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding VoltagePhaseA}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="전압위상B" Width="{Binding ElementName=vol_ph_b, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding VoltagePhaseB}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="전압위상C" Width="{Binding ElementName=vol_ph_c, Path=ActualWidth}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding VoltagePhaseC}" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
 
-                    <GridViewColumn Header="전류A(평균)" Width="{Binding ElementName=avg_cur_a, Path=ActualWidth}">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding AverageCurrentA}" TextAlignment="Center"/>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                    <GridViewColumn Header="전류B(평균)" Width="{Binding ElementName=avg_cur_b, Path=ActualWidth}">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding AverageCurrentB}" TextAlignment="Center"/>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                    <GridViewColumn Header="전류C(평균)" Width="{Binding ElementName=avg_cur_c, Path=ActualWidth}">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding AverageCurrentC}" TextAlignment="Center"/>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                    <GridViewColumn Header="전류N(평균)" Width="{Binding ElementName=avg_cur_n, Path=ActualWidth}">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding AverageCurrentN}" TextAlignment="Center"/>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-
-                    <GridViewColumn Header="전류A(최대)" Width="{Binding ElementName=max_cur_a, Path=ActualWidth}">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding MaxCurrentA}" TextAlignment="Center"/>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                    <GridViewColumn Header="전류B(최대)" Width="{Binding ElementName=max_cur_b, Path=ActualWidth}">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding MaxCurrentB}" TextAlignment="Center"/>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                    <GridViewColumn Header="전류C(최대)" Width="{Binding ElementName=max_cur_c, Path=ActualWidth}">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding MaxCurrentC}" TextAlignment="Center"/>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                    <GridViewColumn Header="전류N(최대)" Width="{Binding ElementName=max_cur_n, Path=ActualWidth}">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding MaxCurrentN}" TextAlignment="Center"/>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                    <GridViewColumn Header="최대 수집시간" Width="{Binding ElementName=max_time, Path=ActualWidth}">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding MaxCommTime, StringFormat=yyyy-MM-dd HH:mm:ss}" TextAlignment="Center"/>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                    <GridViewColumn Header="전류A(최소)" Width="{Binding ElementName=min_cur_a, Path=ActualWidth}">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding MinCurrentA}" TextAlignment="Center"/>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                    <GridViewColumn Header="전류B(최소)" Width="{Binding ElementName=min_cur_b, Path=ActualWidth}">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding MinCurrentB}" TextAlignment="Center"/>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                    <GridViewColumn Header="전류C(최소)" Width="{Binding ElementName=min_cur_c, Path=ActualWidth}">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding MinCurrentC}" TextAlignment="Center"/>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                    <GridViewColumn Header="전류N(최소)" Width="{Binding ElementName=min_cur_n, Path=ActualWidth}">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding MinCurrentN}" TextAlignment="Center"/>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                    <GridViewColumn Header="최소 수집시간" Width="{Binding ElementName=min_time, Path=ActualWidth}">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding MinCommTime, StringFormat=yyyy-MM-dd HH:mm:ss}" TextAlignment="Center"/>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
                     <GridViewColumn Header="정보 수집시간" Width="{Binding ElementName=comm_time, Path=ActualWidth}">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
@@ -258,6 +347,7 @@
                 <ColumnDefinition Width="150"/>
                 <ColumnDefinition Width="150"/>
                 <ColumnDefinition Width="130"/>
+
                 <ColumnDefinition Width="130"/>
                 <ColumnDefinition Width="130"/>
                 <ColumnDefinition Width="130"/>
@@ -266,12 +356,24 @@
                 <ColumnDefinition Width="130"/>
                 <ColumnDefinition Width="130"/>
                 <ColumnDefinition Width="130"/>
-                <ColumnDefinition Width="175"/>
                 <ColumnDefinition Width="130"/>
                 <ColumnDefinition Width="130"/>
                 <ColumnDefinition Width="130"/>
                 <ColumnDefinition Width="130"/>
-                <ColumnDefinition Width="175"/>
+                <ColumnDefinition Width="130"/>
+                <ColumnDefinition Width="130"/>
+                <ColumnDefinition Width="130"/>
+                <ColumnDefinition Width="130"/>
+                <ColumnDefinition Width="130"/>
+                <ColumnDefinition Width="130"/>
+                <ColumnDefinition Width="130"/>
+                <ColumnDefinition Width="130"/>
+                <ColumnDefinition Width="130"/>
+                <ColumnDefinition Width="130"/>
+                <ColumnDefinition Width="130"/>
+                <ColumnDefinition Width="130"/>
+                <ColumnDefinition Width="130"/>
+
                 <ColumnDefinition Width="175"/>
                 <ColumnDefinition Width="175"/>
                 <ColumnDefinition Width="30"/>
@@ -282,28 +384,39 @@
             <Grid Grid.Column="3" x:Name="ceq"/>
 
             <Grid Grid.Column="4" x:Name="circuit"/>
-
             <Grid Grid.Column="5" x:Name="diagnostics"/>
             <Grid Grid.Column="6" x:Name="vol_unbalance"/>
             <Grid Grid.Column="7" x:Name="cur_unbalance"/>
             <Grid Grid.Column="8" x:Name="frequency"/>
 
-            <Grid Grid.Column="9" x:Name="avg_cur_a"/>
-            <Grid Grid.Column="10" x:Name="avg_cur_b"/>
-            <Grid Grid.Column="11" x:Name="avg_cur_c"/>
-            <Grid Grid.Column="12" x:Name="avg_cur_n"/>
-            <Grid Grid.Column="13" x:Name="max_cur_a"/>
-            <Grid Grid.Column="14" x:Name="max_cur_b"/>
-            <Grid Grid.Column="15" x:Name="max_cur_c"/>
-            <Grid Grid.Column="16" x:Name="max_cur_n"/>
-            <Grid Grid.Column="17" x:Name="max_time"/>
-            <Grid Grid.Column="18" x:Name="min_cur_a"/>
-            <Grid Grid.Column="19" x:Name="min_cur_b"/>
-            <Grid Grid.Column="20" x:Name="min_cur_c"/>
-            <Grid Grid.Column="21" x:Name="min_cur_n"/>
-            <Grid Grid.Column="22" x:Name="min_time"/>
-            <Grid Grid.Column="23" x:Name="comm_time"/>
-            <Grid Grid.Column="24" x:Name="save_time"/>
+            <Grid Grid.Column="9" x:Name="cur_a"/>
+            <Grid Grid.Column="10" x:Name="cur_b"/>
+            <Grid Grid.Column="11" x:Name="cur_c"/>
+            <Grid Grid.Column="12" x:Name="cur_n"/>
+            <Grid Grid.Column="13" x:Name="vol_a"/>
+            <Grid Grid.Column="14" x:Name="vol_b"/>
+            <Grid Grid.Column="15" x:Name="vol_c"/>
+            <Grid Grid.Column="16" x:Name="app_power_a"/>
+            <Grid Grid.Column="17" x:Name="app_power_b"/>
+            <Grid Grid.Column="18" x:Name="app_power_c"/>
+            <Grid Grid.Column="19" x:Name="powerfac_3p"/>
+            <Grid Grid.Column="20" x:Name="powerfac_a"/>
+            <Grid Grid.Column="21" x:Name="powerfac_b"/>
+            <Grid Grid.Column="22" x:Name="powerfac_c"/>
+            <Grid Grid.Column="23" x:Name="fi_cur_a"/>
+            <Grid Grid.Column="24" x:Name="fi_cur_b"/>
+            <Grid Grid.Column="25" x:Name="fi_cur_c"/>
+            <Grid Grid.Column="26" x:Name="fi_cur_n"/>
+            <Grid Grid.Column="27" x:Name="cur_ph_a"/>
+            <Grid Grid.Column="28" x:Name="cur_ph_b"/>
+            <Grid Grid.Column="29" x:Name="cur_ph_c"/>
+            <Grid Grid.Column="30" x:Name="cur_ph_n"/>
+            <Grid Grid.Column="31" x:Name="vol_ph_a"/>
+            <Grid Grid.Column="32" x:Name="vol_ph_b"/>
+            <Grid Grid.Column="33" x:Name="vol_ph_c"/>
+
+            <Grid Grid.Column="34" x:Name="comm_time"/>
+            <Grid Grid.Column="35" x:Name="save_time"/>
         </Grid>
     </Grid>
 </UserControl>

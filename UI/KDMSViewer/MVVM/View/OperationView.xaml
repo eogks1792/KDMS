@@ -51,8 +51,15 @@
         </StackPanel>
 
         <ContentControl Grid.Column="1"
+                        Visibility="{Binding AiInfoVisible}"
                         HorizontalContentAlignment="Stretch"
                         VerticalContentAlignment="Stretch"
-                        Content="{Binding CurrentViewModel}"/>
+                        Content="{Binding AiInfoViewModel}"/>
+
+        <ContentControl Grid.Column="1"
+                        Visibility="{Binding EtcVisible}"
+                        HorizontalContentAlignment="Stretch"
+                        VerticalContentAlignment="Stretch"
+                        Content="{Binding EtcViewModel}"/>
     </Grid>
 </UserControl>

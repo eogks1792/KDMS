@@ -9,7 +9,7 @@
                   xmlns:local="clr-namespace:KDMSServer"
                   xmlns:model="clr-namespace:KDMSServer.Model"
                   mc:Ignorable="d"
-                  Title="KDMS_MNS_Server" 
+                  Title="데이터 관리 서버" 
                   Height="1024" Width="1920"
                   MinHeight="1024" MinWidth="1920"
                   Background="Transparent"

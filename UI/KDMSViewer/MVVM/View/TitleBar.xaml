@@ -44,10 +44,12 @@
     <Border Background="Transparent"
             CornerRadius="20, 20, 0, 0">
         <DockPanel x:Name="pnlTitle" LastChildFill="False">
-            <Button x:Name="btnExit" Click="OnExitClick">
+            <Button x:Name="btnExit" Click="OnExitClick"
+                    Margin="5 0 0 0">
                 <fa6:SvgAwesome Icon="Solid_Xmark"/>
             </Button>
-            <Button x:Name="btnMaximize" Click="OnMaximizeClick">
+            <Button x:Name="btnMaximize" Click="OnMaximizeClick"
+                    Margin="5 0 0 0">
                 <fa6:SvgAwesome Icon="Regular_Square"/>
             </Button>
             <Button x:Name="btnMinimize" Click="OnMinimizeClick">

@@ -1,7 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using DevExpress.ClipboardSource.SpreadsheetML;
-using DevExpress.Mvvm.Native;
 using KDMS.EF.Core.Infrastructure.Reverse.Models;
 using KDMSViewer.Model;
 using System.Collections.ObjectModel;
@@ -14,7 +12,7 @@ namespace KDMSViewer.ViewModel
         private readonly CommonDataModel _commonData;
 
         [ObservableProperty]
-        private ObservableCollection<AiInfo> _aiItems;
+        private ObservableCollection<AiItem> _aiItems;
 
         public int DataCount { get; set; } = 0;
 
@@ -31,7 +29,7 @@ namespace KDMSViewer.ViewModel
             //    new PointUseynModel { IsUseyn = false, Name = "미사용" },
             //};
 
-            AiItems = new ObservableCollection<AiInfo>(_commonData.GetAiInfo());
+            AiItems = new ObservableCollection<AiItem>(_commonData.GetAiInfo());
             //var aiDatas = _commonData.GetAiInfo();
             //if (aiDatas.Count > 0)
             //{

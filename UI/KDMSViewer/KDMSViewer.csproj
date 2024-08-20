@@ -68,6 +68,9 @@
     <Compile Update="MVVM\View\View_CommDayData.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="MVVM\View\View_SwitchData.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>

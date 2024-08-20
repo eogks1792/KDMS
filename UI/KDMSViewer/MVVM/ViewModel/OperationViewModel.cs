@@ -7,16 +7,17 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace KDMSViewer.ViewModel
 {
     public partial class OperationViewModel : ObservableObject
     {
-        [ObservableProperty]
-        private bool _bICheck = true;
+        //[ObservableProperty]
+        //private bool _bICheck = true;
 
         [ObservableProperty]
-        private bool _aICheck;
+        private bool _aICheck = true;
 
         [ObservableProperty]
         private bool _alarmCheck;
@@ -30,85 +31,103 @@ namespace KDMSViewer.ViewModel
         [ObservableProperty]
         private bool _dataBaseCheck;
 
+        [ObservableProperty]
+        private Visibility _aiInfoVisible;
 
         [ObservableProperty]
-        private INotifyPropertyChanged _currentViewModel;
+        private Visibility _etcVisible;
+
+        [ObservableProperty]
+        private INotifyPropertyChanged _aiInfoViewModel;
+
+        [ObservableProperty]
+        private INotifyPropertyChanged _etcViewModel;
 
         public OperationViewModel()
         {
-            CurrentViewModel = (INotifyPropertyChanged)App.Current.Services.GetService<OperationAiViewModel>()!;
+            AiInfoViewModel = (INotifyPropertyChanged)App.Current.Services.GetService<OperationAiViewModel>()!;
         }
 
-        [RelayCommand]
-        private void BiInfo()
-        {
-            AICheck = false;
-            AlarmCheck = false;
-            SchduleCheck = false;
-            StoragePeriodCheck = false;
-            DataBaseCheck = false;
+        //[RelayCommand]
+        //private void BiInfo()
+        //{
+        //    AICheck = false;
+        //    AlarmCheck = false;
+        //    SchduleCheck = false;
+        //    StoragePeriodCheck = false;
+        //    DataBaseCheck = false;
 
-            CurrentViewModel = (INotifyPropertyChanged)App.Current.Services.GetService<OperationBiViewModel>()!;
-        }
+        //    CurrentViewModel = (INotifyPropertyChanged)App.Current.Services.GetService<OperationBiViewModel>()!;
+        //}
 
         [RelayCommand]
         private void AiInfo()
         {
-            BICheck = false;
+            //BICheck = false;
             AlarmCheck = false;
             SchduleCheck = false;
             StoragePeriodCheck = false;
             DataBaseCheck = false;
 
-            CurrentViewModel = (INotifyPropertyChanged)App.Current.Services.GetService<OperationAiViewModel>()!;
+            AiInfoVisible = Visibility.Visible;
+            EtcVisible = Visibility.Hidden;
+            AiInfoViewModel = (INotifyPropertyChanged)App.Current.Services.GetService<OperationAiViewModel>()!;
         }
 
         [RelayCommand]
         private void AlarmInfo()
         {
-            BICheck = false;
+            //BICheck = false;
             AICheck = false;
             SchduleCheck = false;
             StoragePeriodCheck = false;
             DataBaseCheck = false;
 
-            CurrentViewModel = (INotifyPropertyChanged)App.Current.Services.GetService<OperationAlarmViewModel>()!;
+            AiInfoVisible = Visibility.Hidden;
+            EtcVisible = Visibility.Visible;
+            EtcViewModel = (INotifyPropertyChanged)App.Current.Services.GetService<OperationAlarmViewModel>()!;
         }
 
         [RelayCommand]
         private void SchduleInfo()
         {
-            BICheck = false;
+            //BICheck = false;
             AICheck = false;
             AlarmCheck = false;
             StoragePeriodCheck = false;
             DataBaseCheck = false;
 
-            CurrentViewModel = (INotifyPropertyChanged)App.Current.Services.GetService<OperationSchduleViewModel>()!;
+            AiInfoVisible = Visibility.Hidden;
+            EtcVisible = Visibility.Visible;
+            EtcViewModel = (INotifyPropertyChanged)App.Current.Services.GetService<OperationSchduleViewModel>()!;
         }
 
         [RelayCommand]
         private void StoragePeriodInfo()
         {
-            BICheck = false;
+            //BICheck = false;
             AICheck = false;
             AlarmCheck = false;
             SchduleCheck = false;
             DataBaseCheck = false;
 
-            CurrentViewModel = (INotifyPropertyChanged)App.Current.Services.GetService<OperationStorageViewModel>()!;
+            AiInfoVisible = Visibility.Hidden;
+            EtcVisible = Visibility.Visible;
+            EtcViewModel = (INotifyPropertyChanged)App.Current.Services.GetService<OperationStorageViewModel>()!;
         }
 
         [RelayCommand]
         private void DataBaseInfo()
         {
-            BICheck = false;
+            //BICheck = false;
             AICheck = false;
             AlarmCheck = false;
             SchduleCheck = false;
             StoragePeriodCheck = false;
 
-            CurrentViewModel = (INotifyPropertyChanged)App.Current.Services.GetService<ConfigViewModel>()!;
+            AiInfoVisible = Visibility.Hidden;
+            EtcVisible = Visibility.Visible;
+            EtcViewModel = (INotifyPropertyChanged)App.Current.Services.GetService<ConfigViewModel>()!;
         }
     }
 }

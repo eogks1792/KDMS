@@ -59,6 +59,10 @@
             </i:Interaction.Triggers>-->
 
                 <TreeView.Resources>
+                    <Style TargetType="{x:Type TreeViewItem}">
+                        <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                    </Style>
+                    
                     <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}"
                          Color="Black" />
                     <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}"
@@ -83,17 +87,23 @@
 
                                 <i:Interaction.Triggers>
                                     <i:EventTrigger EventName="Checked">
-                                        <i:CallMethodAction TargetObject="{Binding}" MethodName="OnChecked" />
+                                        <i:CallMethodAction TargetObject="{Binding}" MethodName="OnCheckBoxChecked" />
                                     </i:EventTrigger>
 
                                     <i:EventTrigger EventName="Unchecked">
-                                        <i:CallMethodAction TargetObject="{Binding}" MethodName="OnUnchecked" />
+                                        <i:CallMethodAction TargetObject="{Binding}" MethodName="OnCheckBoxUnChecked" />
                                     </i:EventTrigger>
                                 </i:Interaction.Triggers>
                             </CheckBox>
                             <TextBlock Text="{Binding Name}"
-                                       ToolTip="{Binding Id}"
-                                       Margin="5 0 5 0"/>
+                                       ToolTip="{Binding Tooltip}"
+                                       Margin="5 0 5 0" >
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="MouseLeftButtonDown">
+                                        <i:CallMethodAction TargetObject="{Binding}" MethodName="OnChecked" />
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </TextBlock>
                         </StackPanel>
                     </HierarchicalDataTemplate>
                     <!--<DataTemplate DataType="{x:Type model:TreeItemModel}">
@@ -511,11 +521,11 @@
                                               EditValue="{Binding FromDate}"
                                               ShowClearButton="False"
                                               MaxValue="{Binding ToDate}">
-                                    <!--<i:Interaction.Triggers>
+                                    <i:Interaction.Triggers>
                                         <i:EventTrigger EventName="EditValueChanged">
-                                            <i:CallMethodAction TargetObject="{Binding}" MethodName="OnEditValueChanged" />
+                                            <i:CallMethodAction TargetObject="{Binding}" MethodName="OnFromEditValueChanged" />
                                         </i:EventTrigger>
-                                    </i:Interaction.Triggers>-->
+                                    </i:Interaction.Triggers>
                                 </dxe:DateEdit>
 
                                 <dxe:ButtonEdit Grid.Row="0"
@@ -558,11 +568,11 @@
                                               EditValue="{Binding ToDate}"
                                               ShowClearButton="False"
                                               MinValue="{Binding FromDate}">
-                                    <!--<i:Interaction.Triggers>
+                                    <i:Interaction.Triggers>
                                         <i:EventTrigger EventName="EditValueChanged">
-                                            <i:CallMethodAction TargetObject="{Binding}" MethodName="OnEditValueChanged" />
+                                            <i:CallMethodAction TargetObject="{Binding}" MethodName="OnToEditValueChanged" />
                                         </i:EventTrigger>
-                                    </i:Interaction.Triggers>-->
+                                    </i:Interaction.Triggers>
                                 </dxe:DateEdit>
 
                                 <dxe:ButtonEdit Grid.Row="0"
@@ -621,8 +631,8 @@
                     CornerRadius="0 0 5 0"
                     Margin="0 0 5 5">
 
-                    <ScrollViewer HorizontalScrollBarVisibility="Auto"
-                                  VerticalScrollBarVisibility="Auto">
+                    <!--<ScrollViewer HorizontalScrollBarVisibility="Auto"
+                                  VerticalScrollBarVisibility="Auto">-->
                         <Grid>
                             <ContentControl Content="{Binding RealViewModel}"
                                             HorizontalAlignment="Stretch"
@@ -634,7 +644,6 @@
                                         <Setter Property="HorizontalAlignment" Value="Center" />
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding SwitchCheck}" Value="True">
-                                                <Setter Property="Content" Value="RealViewModel"/>
                                                 <Setter Property="Visibility" Value="Visible"/>
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding SwitchCheck}" Value="False">
@@ -825,7 +834,7 @@
                                 </ContentControl.Style>
                             </ContentControl>
                         </Grid>
-                    </ScrollViewer>
+                    <!--</ScrollViewer>-->
 
                     <!--<ListView Margin="0 0 0 0"
                               FontFamily="{StaticResource LatoBold}" 

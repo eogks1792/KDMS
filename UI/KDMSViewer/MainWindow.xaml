@@ -11,11 +11,11 @@
                  xmlns:viewmodel="clr-namespace:KDMSViewer.ViewModel" 
                  d:DataContext="{d:DesignInstance Type=viewmodel:MainViewModel}"
                  mc:Ignorable="d"
-                 Title="KDMS_MNS_Viewer" 
+                 Title="데이터 관리 뷰어" 
                  Height="1080" Width="1920"
                  MinHeight="1080" MinWidth="1920"
-                 WindowStyle="None"
                  Background="Transparent"
+                 WindowStyle="None"
                  AllowsTransparency="True"
                  WindowStartupLocation="CenterScreen"
                  WindowState="Maximized"
@@ -64,7 +64,7 @@
                        Margin="0,5,10,5"/>
 
             <TextBlock Grid.Column="0" 
-                       Text="KDMS 계측데이터 뷰어"
+                       Text="데이터 관리 뷰어"
                        VerticalAlignment="Center"
                        HorizontalAlignment="Left"
                        Style="{StaticResource baseTextBlock}"
@@ -408,8 +408,27 @@
                     BorderBrush="White"
                     CornerRadius="10"
                     Margin="5 7 10 10">
-            <ContentControl Margin="5"
-                                Content="{Binding CurrentViewModel}"/>
+
+            <Grid>
+                <ContentControl Margin="5"
+                                Visibility="{Binding DataViewVisible}"
+                                Content="{Binding DataCurrentViewModel}"
+                                VirtualizingStackPanel.IsVirtualizing="True" 
+                                VirtualizingStackPanel.VirtualizationMode="Recycling"/>
+
+                <ContentControl Margin="5"
+                                Visibility="{Binding TrandViewVisible}"
+                                Content="{Binding TrandCurrentViewModel}"
+                                VirtualizingStackPanel.IsVirtualizing="True" 
+                                VirtualizingStackPanel.VirtualizationMode="Recycling"/>
+
+                <ContentControl Margin="5"
+                                Visibility="{Binding OperationViewVisible}"
+                                Content="{Binding OperationCurrentViewModel}"
+                                VirtualizingStackPanel.IsVirtualizing="True" 
+                                VirtualizingStackPanel.VirtualizationMode="Recycling"/>
+            </Grid>
+            
         </Border>
     </Grid>
     <!--</Border>-->

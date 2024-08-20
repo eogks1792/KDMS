@@ -1,8 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevExpress.Mvvm.POCO;
+using DevExpress.Xpf.Editors;
 using KDMS.EF.Core.Infrastructure.Reverse.Models;
 using KDMSViewer.Model;
+using KDMSViewer.View;
 using Microsoft.Extensions.DependencyInjection;
 //using LiveCharts;
 //using LiveCharts.Defaults;
@@ -16,6 +18,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace KDMSViewer.ViewModel
 {
@@ -119,6 +122,7 @@ namespace KDMSViewer.ViewModel
         private List<long> CheckItems { get; set; }
 
         //public LoadingView view { get; set; }
+        private MessageView view { get; set; }
 
         [ObservableProperty]
         private bool _isInquiry = true;
@@ -136,7 +140,21 @@ namespace KDMSViewer.ViewModel
             FromDate = Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd HH:00:00"));
             ToDate = Convert.ToDateTime(DateTime.Now.AddHours(1).ToString("yyyy-MM-dd HH:00:00"));
 
-            TreeItems = new ObservableCollection<TreeDataModel>(_worker.TreeDatas);
+            var treeDatas = _worker.TreeDatas;
+            TreeInit(treeDatas);
+            TreeItems = new ObservableCollection<TreeDataModel>(treeDatas);
+        }
+
+        private void TreeInit(List<TreeDataModel> treeList)
+        {
+            foreach(var tree in treeList)
+            {
+                tree.ViewType = ViewTypeCode.DataView;
+                if(tree.DataModels.Count > 0)
+                {
+                    TreeInit(tree.DataModels.ToList());
+                }
+            }
         }
 
         private void GetTreeItemCheckData(ObservableCollection<TreeDataModel> TreeItems)
@@ -146,9 +164,10 @@ namespace KDMSViewer.ViewModel
                 if (item.IsChecked)
                 {
                     if (item.Type == TreeTypeCode.EQUIPMENT)
-                    {
                         CheckItems.Add(item.Id);
-                    }
+
+                    if (item.DataModels.Count > 0)
+                        GetTreeItemCheckData(item.DataModels);
                 }
                 else
                 {
@@ -236,13 +255,20 @@ namespace KDMSViewer.ViewModel
             //    ChartDataInit();
             //}
 
-            Application.Current.Dispatcher.Invoke(() => { Mouse.OverrideCursor = Cursors.Arrow; });
+            Application.Current.Dispatcher.Invoke(() => 
+            {
+                view.Close();
+                Mouse.OverrideCursor = Cursors.Arrow;
+            });
             IsInquiry = true;
         }
 
         [RelayCommand]
         private async void Inquiry()
         {
+            view = new MessageView();
+            view.Show();
+
             Mouse.OverrideCursor = Cursors.Wait;
             await Task.Run(() =>
             {
@@ -397,7 +423,7 @@ namespace KDMSViewer.ViewModel
                         }
                         else if (FiCheck)
                         {
-                            var dataList = (ObservableCollection<HistoryFiAlarm>)_worker.GetPointItems((int)SearchTypeCode.FIALARM);
+                            var dataList = (ObservableCollection<HistoryFiAlarmData>)_worker.GetPointItems((int)SearchTypeCode.FIALARM);
                             if (dataList == null || dataList?.Count <= 0)
                             {
                                 outputFile.Close();
@@ -416,7 +442,7 @@ namespace KDMSViewer.ViewModel
                         }
                         else if (DayCheck)
                         {
-                            var dataList = (ObservableCollection<HistoryDaystatDatum>)_worker.GetPointItems((int)SearchTypeCode.DAYSTATDATA);
+                            var dataList = (ObservableCollection<HistoryDaystatData>)_worker.GetPointItems((int)SearchTypeCode.DAYSTATDATA);
                             if (dataList == null || dataList?.Count <= 0)
                             {
                                 outputFile.Close();
@@ -441,7 +467,7 @@ namespace KDMSViewer.ViewModel
                         // 통계 데이터
                         else if (StatisticMinCheck)
                         {
-                            var dataList = (ObservableCollection<Statistics15min>)_worker.GetPointItems((int)SearchTypeCode.STATISTICSMIN);
+                            var dataList = (ObservableCollection<Statistics15minData>)_worker.GetPointItems((int)SearchTypeCode.STATISTICSMIN);
                             if (dataList == null || dataList?.Count <= 0)
                             {
                                 outputFile.Close();
@@ -461,7 +487,7 @@ namespace KDMSViewer.ViewModel
                         }
                         else if (StatisticHourCheck)
                         {
-                            var dataList = (ObservableCollection<StatisticsHour>)_worker.GetPointItems((int)SearchTypeCode.STATISTICSHOUR);
+                            var dataList = (ObservableCollection<StatisticsHourData>)_worker.GetPointItems((int)SearchTypeCode.STATISTICSHOUR);
                             if (dataList == null || dataList?.Count <= 0)
                             {
                                 outputFile.Close();
@@ -485,7 +511,7 @@ namespace KDMSViewer.ViewModel
                         }
                         else if (StatisticDayCheck)
                         {
-                            var dataList = (ObservableCollection<StatisticsDay>)_worker.GetPointItems((int)SearchTypeCode.STATISTICSDAY);
+                            var dataList = (ObservableCollection<StatisticsDayData>)_worker.GetPointItems((int)SearchTypeCode.STATISTICSDAY);
                             if (dataList == null || dataList?.Count <= 0)
                             {
                                 outputFile.Close();
@@ -509,7 +535,7 @@ namespace KDMSViewer.ViewModel
                         }
                         else if (StatisticMonthCheck)
                         {
-                            var dataList = (ObservableCollection<StatisticsMonth>)_worker.GetPointItems((int)SearchTypeCode.STATISTICSMONTH);
+                            var dataList = (ObservableCollection<StatisticsMonthData>)_worker.GetPointItems((int)SearchTypeCode.STATISTICSMONTH);
                             if (dataList == null || dataList?.Count <= 0)
                             {
                                 outputFile.Close();
@@ -533,7 +559,7 @@ namespace KDMSViewer.ViewModel
                         }
                         else if (StatisticYearCheck)
                         {
-                            var dataList = (ObservableCollection<StatisticsYear>)_worker.GetPointItems((int)SearchTypeCode.STATISTICSYEAR);
+                            var dataList = (ObservableCollection<StatisticsYearData>)_worker.GetPointItems((int)SearchTypeCode.STATISTICSYEAR);
                             if (dataList == null || dataList?.Count <= 0)
                             {
                                 outputFile.Close();
@@ -557,7 +583,7 @@ namespace KDMSViewer.ViewModel
                         }
                         else if (CommDayCheck)
                         {
-                            var dataList = (ObservableCollection<HistoryCommState>)_worker.GetPointItems((int)SearchTypeCode.COMMSTATE);
+                            var dataList = (ObservableCollection<HistoryCommStateData>)_worker.GetPointItems((int)SearchTypeCode.COMMSTATE);
                             if (dataList == null || dataList?.Count <= 0)
                             {
                                 outputFile.Close();
@@ -577,7 +603,7 @@ namespace KDMSViewer.ViewModel
                         }
                         else if (CommLogCheck)
                         {
-                            var dataList = (ObservableCollection<HistoryCommStateLog>)_worker.GetPointItems((int)SearchTypeCode.COMMSTATELOG);
+                            var dataList = (ObservableCollection<HistoryCommStateLogData>)_worker.GetPointItems((int)SearchTypeCode.COMMSTATELOG);
                             if (dataList == null || dataList?.Count <= 0)
                             {
                                 outputFile.Close();
@@ -675,6 +701,8 @@ namespace KDMSViewer.ViewModel
 
         public void OnSwitchChecked(object sender, RoutedEventArgs e)
         {
+            ToDate = FromDate.AddHours(1);
+
             SwitchCheck = true;
             FiCheck = false;
             DayCheck = false;
@@ -865,6 +893,38 @@ namespace KDMSViewer.ViewModel
         //            check.IsChecked = true;
         //    }
         //}
+
+        public void OnFromEditValueChanged(object sender, DevExpress.Xpf.Editors.EditValueChangedEventArgs e)
+        {
+            if (!SwitchCheck)
+                return;
+
+            DateEdit? edit = sender as DateEdit;
+            if (edit != null)
+            {
+                var fromDate = Convert.ToDateTime(edit.EditValue);
+                if(fromDate.Day != ToDate.Day)
+                {
+                    ToDate = fromDate.AddHours(1);
+                }
+            }
+        }
+
+        public void OnToEditValueChanged(object sender, DevExpress.Xpf.Editors.EditValueChangedEventArgs e)
+        {
+            if (!SwitchCheck)
+                return;
+
+            DateEdit? edit = sender as DateEdit;
+            if (edit != null)
+            {
+                var toDate = Convert.ToDateTime(edit.EditValue);
+                if (toDate.Day != FromDate.Day)
+                {
+                    FromDate = toDate.AddHours(-1);
+                }
+            }
+        }
 
         //public void OnEditValueChanged(object sender, DevExpress.Xpf.Editors.EditValueChangedEventArgs e)
         //{

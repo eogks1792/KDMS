@@ -16,7 +16,7 @@ public partial class StorageInfo
     /// <summary>
     /// 보관주기 설정 타입
     /// </summary>
-    public int SchduleType { get; set; }
+    public int StorageType { get; set; }
 
     /// <summary>
     /// 보관주기 설정 주기

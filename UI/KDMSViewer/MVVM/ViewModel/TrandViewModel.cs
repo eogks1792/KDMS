@@ -13,6 +13,8 @@ using Microsoft.Win32;
 using DevExpress.XtraPrinting;
 using System.Drawing.Imaging;
 using System.Windows.Media;
+using DevExpress.XtraExport.Xls;
+using System.ComponentModel;
 
 namespace KDMSViewer.ViewModel
 {
@@ -96,17 +98,44 @@ namespace KDMSViewer.ViewModel
         [ObservableProperty]
         private bool _isInquiry = true;
 
+        [ObservableProperty]
+        private int _minValue = 0;
+
+        [ObservableProperty]
+        private int _maxValue = 100;
+
+        [ObservableProperty]
+        private int _userMinValue = 0;
+
+        [ObservableProperty]
+        private int _userMaxValue = 100;
+
         public TrandViewModel(DataWorker worker)
         {
             _worker = worker;
             DataInit();
         }
+
         private void DataInit()
         {
             FromDate = Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd HH:00:00"));
             ToDate = Convert.ToDateTime(DateTime.Now.AddHours(1).ToString("yyyy-MM-dd HH:00:00"));
 
-            TreeItems = new ObservableCollection<TreeDataModel>(_worker.TreeDatas);
+            var treeDatas = _worker.TreeDatas;
+            TreeInit(treeDatas);
+            TreeItems = new ObservableCollection<TreeDataModel>(treeDatas);
+        }
+
+        private void TreeInit(List<TreeDataModel> treeList)
+        {
+            foreach (var tree in treeList)
+            {
+                tree.ViewType = ViewTypeCode.TrandView;
+                if (tree.DataModels.Count > 0)
+                {
+                    TreeInit(tree.DataModels.ToList());
+                }
+            }
         }
 
         private List<ChartPointDataModel> CheckItemList()
@@ -408,6 +437,11 @@ namespace KDMSViewer.ViewModel
             var chartDatas = CheckItemList();
             if (chartDatas.Count > 0)
             {
+                MinValue = Convert.ToInt32(chartDatas.MinBy(p => p.PointValue)!.PointValue);
+                MaxValue = Convert.ToInt32(chartDatas.MaxBy(p => p.PointValue)!.PointValue);
+                UserMinValue = MinValue;
+                UserMaxValue = MaxValue;
+
                 var distintPoints = chartDatas.Select(p => new { Name = $"{p.CeqId}({p.PointName})", DisPlayName = $"{p.Name} ({p.PointName})" }).Distinct().ToList();
                 foreach (var data in distintPoints)
                 {
@@ -480,14 +514,15 @@ namespace KDMSViewer.ViewModel
             }
 
             ItemCount = PointItems.Count;
-            TypeCheck = true;
-            TypeCheck = false;
-            CurrentCheck = true;
-            CurrentCheck = false;
-            VoltageCheck = true;
-            VoltageCheck = false;
+            //TypeCheck = true;
+            //TypeCheck = false;
+            //CurrentCheck = true;
+            //CurrentCheck = false;
+            //VoltageCheck = true;
+            //VoltageCheck = false;
             Application.Current.Dispatcher.Invoke(() => { Mouse.OverrideCursor = Cursors.Arrow; });
             IsInquiry = true;
+            ChartInit();
 
             //// 날짜 데이터 범위 
             //// 체크된 변전소, DL, 스위치 
@@ -516,6 +551,17 @@ namespace KDMSViewer.ViewModel
             //        }
             //    }
             //}
+        }
+
+        public void ChartClear()
+        {
+            ItemCount = 0;
+            SeriesItems = new ObservableCollection<ChartModel>();
+            SeriesItems.Add(new ChartModel()
+            {
+                Name = null,
+                Datas = null
+            });
         }
 
         [RelayCommand]
@@ -659,5 +705,11 @@ namespace KDMSViewer.ViewModel
             RealVisibility = Visibility.Collapsed;
         }
 
+        [RelayCommand]
+        private void RangeInput()
+        {
+            MinValue = UserMinValue;
+            MaxValue = UserMaxValue;
+        }
     }
 }

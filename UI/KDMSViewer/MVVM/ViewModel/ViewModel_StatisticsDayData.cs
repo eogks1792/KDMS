@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using KDMS.EF.Core.Infrastructure.Reverse.Models;
+using KDMSViewer.Model;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -12,6 +13,6 @@ namespace KDMSViewer.ViewModel
     public partial class ViewModel_StatisticsDayData : ObservableObject
     {
         [ObservableProperty]
-        private ObservableCollection<StatisticsDay> _pointItems = new ObservableCollection<StatisticsDay>();
+        private ObservableCollection<StatisticsDayData> _pointItems = new ObservableCollection<StatisticsDayData>();
     }
 }

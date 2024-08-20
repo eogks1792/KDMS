@@ -18,6 +18,9 @@
     <Compile Update="MVVM\View\LoadingView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="MVVM\View\MessageView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="MVVM\View\OperationAiView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -36,7 +39,7 @@
     <Compile Update="MVVM\View\View_StatisticsHourData.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="MVVM\View\View_SwitchData.xaml.cs">
+    <Compile Update="MVVM\View\View_SwitchData2.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
@@ -51,6 +54,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="MVVM\View\LoadingView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="MVVM\View\MessageView.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="MVVM\View\OperationBiView.xaml">
@@ -105,6 +111,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="MVVM\View\View_SwitchData.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="MVVM\View\View_SwitchData2.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Theme\Colors.xaml">

@@ -42,6 +42,18 @@
                </i:Interaction.Behaviors>
 
                     <TreeView.Resources>
+                        <Style TargetType="{x:Type TreeViewItem}">
+                            <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                            <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+
+                            <Style.Triggers>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="Foreground" Value="Black" />
+                                    <Setter Property="Background" Value="White" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                        
                         <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}"
                         Color="Black" />
                         <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}"
@@ -55,8 +67,14 @@
                             <StackPanel Orientation="Horizontal"
                                    Margin="0 -3 0 -3">
                                 <TextBlock Text="{Binding Name}"
-                                           ToolTip="{Binding Id}"
-                                           Margin="5 0 5 0"/>
+                                           ToolTip="{Binding Tooltip}"
+                                           Margin="5 0 5 0">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="MouseLeftButtonDown">
+                                            <i:CallMethodAction TargetObject="{Binding}" MethodName="OnChecked" />
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </TextBlock>
                             </StackPanel>
                         </HierarchicalDataTemplate>
                     </TreeView.Resources>
@@ -504,36 +522,108 @@
                     Background="#292929"
                     CornerRadius="0 0 10 0">
 
-                <dxc:ChartControl x:Name="chart"
-                                  BorderThickness="0"
-                                  Margin="5"
-                                  CrosshairEnabled="True" 
-                                  ToolTipEnabled="False">
-                    <dxc:ChartControl.Diagram>
-                        <dxc:XYDiagram2D SeriesItemsSource="{Binding SeriesItems}">
-                            <dxc:XYDiagram2D.AxisX>
-                                <dxc:AxisX2D>
-                                    <dxc:AxisX2D.Label>
-                                        <dxc:AxisLabel TextPattern="{}{A:yy-MM-dd HH:mm}"/>
-                                    </dxc:AxisX2D.Label>
-                                    <dxc:AxisX2D.DateTimeScaleOptions> <!--GridSpacing="23"-->
-                                        <dxc:ManualDateTimeScaleOptions AggregateFunction="Maximum"  
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0"
+                          VerticalAlignment="Bottom"
+                          Margin="5">
+                        
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Row="0"
+                                   Grid.Column="1"
+                                   Text="Y축 최소 범위 "
+                                   FontSize="{StaticResource FontSizeRegular}"
+                                   VerticalAlignment="Center"/>
+                        <TextBox Grid.Row="0"
+                                 Grid.Column="2"
+                                 Margin="5"
+                                 Width="80"
+                                 TextAlignment="Right"
+                                 FontSize="{StaticResource FontSizeSmall}"
+                                 Text="{Binding UserMinValue}"/>
+
+                        <TextBlock Grid.Row="0"
+                                   Grid.Column="3"
+                                   Text=" ~  "
+                                   FontSize="{StaticResource FontSizeRegular}"
+                                   VerticalAlignment="Center"/>
+
+                        <TextBlock Grid.Row="0"
+                                   Grid.Column="4"
+                                   Text="Y축 최대 범위 "
+                                   FontSize="{StaticResource FontSizeRegular}"
+                                   VerticalAlignment="Center"/>
+                        <TextBox Grid.Row="1"
+                                 Grid.Column="5"
+                                 Margin="5"
+                                 Width="80"
+                                 TextAlignment="Right"
+                                 FontSize="{StaticResource FontSizeSmall}"
+                                 Text="{Binding UserMaxValue}"/>
+
+                        <Button Grid.Row="2"
+                                Grid.Column="6"
+                                Width="60"
+                                Height="30"
+                                Margin="10 0 0 0"
+                                Content="적용"
+                                Style="{StaticResource btnMainType}"
+                                Command="{Binding RangeInputCommand}"
+                                FontSize="{StaticResource FontSizeSmall}"
+                                Tag="1"/>
+                    </Grid>
+
+                    <dxc:ChartControl x:Name="chart"
+                                      Grid.Row="1"
+                                      BorderThickness="0"
+                                      Margin="5"
+                                      CrosshairEnabled="True" 
+                                      ToolTipEnabled="False">
+                        <dxc:ChartControl.Diagram>
+                            <dxc:XYDiagram2D SeriesItemsSource="{Binding SeriesItems}">
+                                <dxc:XYDiagram2D.AxisX>
+                                    <dxc:AxisX2D>
+                                        <dxc:AxisX2D.Label>
+                                            <dxc:AxisLabel TextPattern="{}{A:yy-MM-dd HH:mm}"/>
+                                        </dxc:AxisX2D.Label>
+                                        <dxc:AxisX2D.DateTimeScaleOptions>
+                                            <!--GridSpacing="23"-->
+                                            <dxc:ManualDateTimeScaleOptions AggregateFunction="Maximum"  
                                                                         AutoGrid="True" 
                                                                         GridAlignment="Hour"
                                                                         MeasureUnit="Minute" />
-                                    </dxc:AxisX2D.DateTimeScaleOptions>
-                                </dxc:AxisX2D>
-                            </dxc:XYDiagram2D.AxisX>
-                            <dxc:XYDiagram2D.AxisY>
-                                <dxc:AxisY2D>
-                                    <dxc:AxisY2D.WholeRange>
-                                        <dxc:Range dxc:AxisY2D.AlwaysShowZeroLevel="False"/>
-                                    </dxc:AxisY2D.WholeRange>
-                                </dxc:AxisY2D>
-                            </dxc:XYDiagram2D.AxisY>
-                            <dxc:XYDiagram2D.SeriesItemTemplate>
-                                <DataTemplate>
-                                    <dxc:LineSeries2D DisplayName="{Binding Name}"
+                                        </dxc:AxisX2D.DateTimeScaleOptions>
+                                    </dxc:AxisX2D>
+                                </dxc:XYDiagram2D.AxisX>
+                                <dxc:XYDiagram2D.AxisY>
+                                    <dxc:AxisY2D>
+                                        <!--<dxc:AxisY2D.NumericScaleOptions>
+                                        <dxc:ContinuousNumericScaleOptions AutoGrid="False" 
+                                                                           GridSpacing="50"/>
+                                    </dxc:AxisY2D.NumericScaleOptions>-->
+                                        <dxc:AxisY2D.WholeRange>
+                                            <dxc:Range dxc:AxisY2D.AlwaysShowZeroLevel="False"
+                                                       MinValue="{Binding MinValue}"
+                                                       MaxValue="{Binding MaxValue}"/>
+                                        </dxc:AxisY2D.WholeRange>
+                                    </dxc:AxisY2D>
+                                </dxc:XYDiagram2D.AxisY>
+                                <dxc:XYDiagram2D.SeriesItemTemplate>
+                                    <DataTemplate>
+                                        <dxc:LineSeries2D DisplayName="{Binding Name}"
                                                       DataSource="{Binding Datas}"
                                                       ArgumentScaleType="DateTime"
                                                       ArgumentDataMember="Date"
@@ -542,10 +632,10 @@
                                                       MarkerSize="7" 
                                                       MarkerVisible="True"
                                                       FontSize="{StaticResource FontSizeLittle}">
-                                        <dxc:LineSeries2D.CrosshairLabelTemplate>
-                                            <DataTemplate>
-                                                <StackPanel Orientation="Vertical">
-                                                    <TextBlock Text="{Binding HeaderText}" 
+                                            <dxc:LineSeries2D.CrosshairLabelTemplate>
+                                                <DataTemplate>
+                                                    <StackPanel Orientation="Vertical">
+                                                        <TextBlock Text="{Binding HeaderText}" 
                                                                HorizontalAlignment="Left" 
                                                                VerticalAlignment="Center" 
                                                                Margin="0 2"
@@ -556,16 +646,16 @@
                                                                FontStretch="{Binding FontStretch}"
                                                                FontFamily="{Binding FontFamily}"
                                                                Visibility="{Binding HeaderTextVisibility}"/>
-                                                    <StackPanel Orientation="Horizontal" 
+                                                        <StackPanel Orientation="Horizontal" 
                                                                 Margin="0 2">
-                                                        <Grid Width="15" Height="15"
+                                                            <Grid Width="15" Height="15"
                                                               VerticalAlignment="Center" Margin="0 0 3 0"
                                                               Visibility="{Binding MarkerVisibility}">
-                                                            <Rectangle Stretch="Uniform" Fill="Transparent"/>
-                                                            <ContentPresenter Content="{Binding MarkerItem}" 
+                                                                <Rectangle Stretch="Uniform" Fill="Transparent"/>
+                                                                <ContentPresenter Content="{Binding MarkerItem}" 
                                                                               ContentTemplate="{Binding RelativeSource={RelativeSource Self}, Path= Content.MarkerTemplate}"/>
-                                                        </Grid>
-                                                        <TextBlock Grid.Column="1" 
+                                                            </Grid>
+                                                            <TextBlock Grid.Column="1" 
                                                                    Text="{Binding Text}" VerticalAlignment="Center" Margin="1"
                                                                    Foreground="{Binding Foreground}" 
                                                                    FontWeight="{Binding FontWeight}"
@@ -574,8 +664,8 @@
                                                                    FontStretch="{Binding FontStretch}"
                                                                    FontFamily="{Binding FontFamily}"
                                                                    Visibility="{Binding TextVisibility}"/>
-                                                    </StackPanel>
-                                                    <TextBlock Text="{Binding FooterText}" 
+                                                        </StackPanel>
+                                                        <TextBlock Text="{Binding FooterText}" 
                                                                HorizontalAlignment="Left" 
                                                                VerticalAlignment="Center" 
                                                                Margin="0 2"
@@ -586,39 +676,39 @@
                                                                FontStretch="{Binding FontStretch}"
                                                                FontFamily="{Binding FontFamily}"
                                                                Visibility="{Binding FooterTextVisibility}"/>
-                                                </StackPanel>
-                                            </DataTemplate>
-                                        </dxc:LineSeries2D.CrosshairLabelTemplate>
-                                    </dxc:LineSeries2D>
-                                    <!--CrosshairLabelPattern="{}{S}&#x0a;Value: {V:f3}"-->
-                                    <!--ToolTipPointPattern="{}{A:yy-MM-dd HH:mm}&#x0a;{S}&#x0a;Value: {V:f3}"/>-->
-                                </DataTemplate>
-                            </dxc:XYDiagram2D.SeriesItemTemplate>
-                        </dxc:XYDiagram2D>
-                    </dxc:ChartControl.Diagram>
-                    <dxc:ChartControl.Legend>
-                        <dxc:Legend VerticalPosition="Top"
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </dxc:LineSeries2D.CrosshairLabelTemplate>
+                                        </dxc:LineSeries2D>
+                                        <!--CrosshairLabelPattern="{}{S}&#x0a;Value: {V:f3}"-->
+                                        <!--ToolTipPointPattern="{}{A:yy-MM-dd HH:mm}&#x0a;{S}&#x0a;Value: {V:f3}"/>-->
+                                    </DataTemplate>
+                                </dxc:XYDiagram2D.SeriesItemTemplate>
+                            </dxc:XYDiagram2D>
+                        </dxc:ChartControl.Diagram>
+                        <dxc:ChartControl.Legend>
+                            <dxc:Legend VerticalPosition="Top"
                                     HorizontalPosition="RightOutside"
                                     Padding="0"
                                     IndentFromDiagram="0"
                                     BorderThickness="0"
                                     FontSize="{StaticResource FontSizeSmall}"
                                     Orientation="Vertical"/>
-                    </dxc:ChartControl.Legend>
+                        </dxc:ChartControl.Legend>
 
-                    <!--<dxc:ChartControl.ToolTipController>
+                        <!--<dxc:ChartControl.ToolTipController>
                                     <dxc:ChartToolTipController OpenMode="OnHover" 
                                                                 ShowShadow="False" 
                                                                 InitialDelay="0:0:0.1" 
                                                                 ContentMargin="3"/>
                                 </dxc:ChartControl.ToolTipController>-->
-                    <dxc:ChartControl.CrosshairOptions>
-                        <dxc:CrosshairOptions  GroupHeaderPattern="{}{A:yy-MM-dd HH:mm}" 
+                        <dxc:ChartControl.CrosshairOptions>
+                            <dxc:CrosshairOptions  GroupHeaderPattern="{}{A:yy-MM-dd HH:mm}" 
                                                ShowArgumentLabels="True" ShowArgumentLine="True" 
                                                ShowValueLabels="False" ShowValueLine="False">
-                        </dxc:CrosshairOptions>
-                    </dxc:ChartControl.CrosshairOptions>
-                    <!--<dxc:ChartControl.ToolTipOptions >
+                            </dxc:CrosshairOptions>
+                        </dxc:ChartControl.CrosshairOptions>
+                        <!--<dxc:ChartControl.ToolTipOptions >
                                     <dxc:ToolTipOptions ShowForSeries="True" 
                                                         ShowForPoints="True" >
                                         <dxc:ToolTipOptions.ToolTipPosition>
@@ -626,8 +716,11 @@
                                         </dxc:ToolTipOptions.ToolTipPosition>
                                     </dxc:ToolTipOptions>
                                 </dxc:ChartControl.ToolTipOptions>-->
-                </dxc:ChartControl>
+                    </dxc:ChartControl>
 
+
+                    
+                </Grid>
             </Border>
         </Grid>
 

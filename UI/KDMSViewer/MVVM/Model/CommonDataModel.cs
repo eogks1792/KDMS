@@ -25,6 +25,7 @@ namespace KDMSViewer.Model
         private List<Compositeswitch> Compositeswitchs;
         private List<PdbConductingequipment> ConductingEquipments;
         private List<PdbRemoteunit> Remoteunits;
+        private List<Datapointinfo> Datapointinfos;
 
         public CommonDataModel(KdmsContext kdmsContext, IConfiguration configuration)
         {
@@ -43,17 +44,27 @@ namespace KDMSViewer.Model
                 Distributionlines = _kdmsContext.Distributionlines.ToList();
                 Compositeswitchs = _kdmsContext.Compositeswitches.ToList();
                 Remoteunits = _kdmsContext.PdbRemoteunits.ToList();
-                ConductingEquipments = new List<PdbConductingequipment>();
+                Datapointinfos = _kdmsContext.Datapointinfos.Where(p => p.Pointtype == 3).ToList();
 
-                var conductingEquipmentList = _kdmsContext.PdbConductingequipments.Where(p => (p.Psrtype >= 58 && p.Psrtype <= 88) || p.Psrtype == 105).ToList();
+                ConductingEquipments = new List<PdbConductingequipment>();
+                //var conductingEquipmentList = _kdmsContext.PdbConductingequipments.Where(p => (p.Psrtype >= 58 && p.Psrtype <= 88) || p.Psrtype == 105).ToList();
+                var conductingEquipmentList = _kdmsContext.PdbConductingequipments.Where(p => p.RtuType != 1).ToList();
                 foreach (var equipment in conductingEquipmentList)
                 {
-                    //var findRemoteunit = Remoteunits.FirstOrDefault(p => p.EqFk == equipment.Ceqid);
-                    //if (findRemoteunit != null)
-                    //{
-                    //    if (findRemoteunit.ProtocolFk == 0 && findRemoteunit.CommType == 0)
-                    //        continue;
-                    //}
+                    var findRemoteunit = Remoteunits.FirstOrDefault(p => p.EqType == 1 && p.EqFk == equipment.Ceqid);
+                    if (findRemoteunit != null)
+                    {
+                        if (findRemoteunit.ProtocolFk == 0 && findRemoteunit.CommType == 0)
+                            continue;
+                    }
+
+                    findRemoteunit = Remoteunits.FirstOrDefault(p => p.EqType == 2 && p.EqFk == equipment.EcFk);
+                    if (findRemoteunit != null)
+                    {
+                        if (findRemoteunit.ProtocolFk == 0 && findRemoteunit.CommType == 0)
+                            continue;
+                    }
+
                     ConductingEquipments.Add(equipment);
                 }
                 TreeListInit();
@@ -75,17 +86,16 @@ namespace KDMSViewer.Model
                 subs.Type = TreeTypeCode.SUBS;
                 subs.Id = substation.Stid;
                 subs.Name = substation.Name!.Trim() ?? string.Empty;
-                subs.IsVisible = Visibility.Collapsed;
+                subs.Tooltip = $"SUBS ID: {subs.Id}";
+                subs.IsExpanded = true;
 
                 foreach (var distributionline in Distributionlines.Where(p => p.StFk == substation.Stid))
                 {
                     TreeDataModel dl = new TreeDataModel();
                     dl.Type = TreeTypeCode.DL;
                     dl.Id = distributionline.Dlid;
-                    //dl.SubsId = subs.Id;
-                    //dl.SubsName = subs.Name;
                     dl.Name = distributionline.Name!.Trim() ?? string.Empty;
-                    dl.IsVisible = Visibility.Collapsed;
+                    dl.Tooltip = $"D/L ID: {dl.Id}";
                     subs.DataModels.Add(dl);
 
                     var multiSwList = ConductingEquipments.Where(p => p.DlFk == distributionline.Dlid && p.EcFk != 0);
@@ -107,6 +117,7 @@ namespace KDMSViewer.Model
                                 equipment.Type = TreeTypeCode.EQUIPMENT;
                                 equipment.Id = conductingEquipment.Ceqid;
                                 equipment.Name = conductingEquipment.Name!.Trim() ?? string.Empty;
+                                equipment.Tooltip = $"CEQ ID: {equipment.Id}";
                                 //composit.DataModels.Add(equipment);
                                 dl.DataModels.Add(equipment);
                             }
@@ -345,9 +356,24 @@ namespace KDMSViewer.Model
             }
         }
 
-        public List<AiInfo> GetAiInfo()
+        //public List<Datapointinfo> GetDatapointinfo()
+        //{
+        //    // AI 항목만 표시 하도록
+        //    return _kdmsContext.Datapointinfos.Where(p => p.Pointtype == 3).ToList();
+        //}
+
+        public List<AiItem> GetAiInfo()
         {
-            return _kdmsContext.AiInfos.ToList();
+            var data = _kdmsContext.AiInfos.Select(p => new AiItem
+            {
+                No = p.No,
+                Columnname = p.Columnname,
+                Datapointid = p.Datapointid,
+                Datapointname = p.Datapointname,
+                Datapointinfos = Datapointinfos
+            }).ToList();
+
+            return data; // _kdmsContext.AiInfos.ToList();
 
             //var datas = _kdmsContext.Datapointinfos.Where(p => p.Pointtype == (int)PointTypeCode.AI).Select(p => new AiInfo
             //{
@@ -376,7 +402,7 @@ namespace KDMSViewer.Model
             //return retvalList;
         }
 
-        public async void SetAiInfo(List<AiInfo> aiDatas)
+        public async void SetAiInfo(List<AiItem> aiDatas)
         {
             foreach (var ai in aiDatas)
             {
@@ -389,7 +415,8 @@ namespace KDMSViewer.Model
                 }
                 else
                 {
-                    _kdmsContext.AiInfos.Add(ai);
+                    var data = new AiInfo { No = ai.No, Columnname = ai.Columnname, Datapointid = ai.Datapointid, Datapointname = ai.Datapointname };
+                    _kdmsContext.AiInfos.Add(data);
                 }
             }
             await _kdmsContext.SaveChangesAsync();

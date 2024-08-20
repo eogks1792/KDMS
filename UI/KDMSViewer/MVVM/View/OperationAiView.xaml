@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:KDMSViewer.View"
+             xmlns:model="clr-namespace:KDMSViewer.ViewModel"
              xmlns:converters="clr-namespace:KDMSViewer.Converters"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              mc:Ignorable="d" 
@@ -84,16 +85,58 @@
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
-                <DataGridTextColumn Header="DATAPOINT 아이디" Width="1*" Binding="{Binding Path=Datapointid}" IsReadOnly="False">
+
+                <DataGridTemplateColumn Header="DATAPOINT 아이디" Width="1*" >
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <ComboBox ItemsSource="{Binding Datapointinfos}" 
+                                      DisplayMemberPath="Datapointid"
+                                      SelectedValuePath="Datapointid" 
+                                      SelectedValue="{Binding Path=Datapointid, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                      Style="{StaticResource ComboBoxStyle}">
+
+                                <ComboBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel VirtualizingStackPanel.IsVirtualizing="True" 
+                                                                VirtualizingStackPanel.VirtualizationMode="Recycling" />
+                                    </ItemsPanelTemplate>
+                                </ComboBox.ItemsPanel>
+
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="SelectionChanged">
+                                        <i:CallMethodAction TargetObject="{Binding}" MethodName="OnSelectionChanged" />
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </ComboBox>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <!--<DataGridComboBoxColumn Header="DATAPOINT 아이디" Width="1*" 
+                                        ItemsSource="{Binding Datapointinfos}"
+                                        SelectedValueBinding="{Binding Datapointid}"
+                                        SelectedValuePath="Datapointid"
+                                        DisplayMemberPath="Datapointid"
+                                        IsReadOnly="False">
+
+                    <DataGridComboBoxColumn.ElementStyle>
+                        <Style TargetType="{x:Type ComboBox}">
+                            <Setter Property="TextBlock.TextAlignment" Value="Center"/>
+                            <Setter Property="TextBlock.Margin" Value="0,0,0,0"/>
+                        </Style>
+                    </DataGridComboBoxColumn.ElementStyle>
+                </DataGridComboBoxColumn>-->
+                
+                <!--<DataGridTextColumn Header="DATAPOINT 아이디" Width="1*" Binding="{Binding Path=Datapointid}" IsReadOnly="False">
                     <DataGridTextColumn.ElementStyle>
                         <Style>
                             <Setter Property="TextBlock.TextAlignment" Value="Center"/>
                             <Setter Property="TextBlock.Margin" Value="0,0,0,0"/>
                         </Style>
                     </DataGridTextColumn.ElementStyle>
-                </DataGridTextColumn>
+                </DataGridTextColumn>-->
 
-                <DataGridTextColumn Header="DATAPOINT 이름" Width="1*" Binding="{Binding Path=Datapointname}" IsReadOnly="False">
+                <DataGridTextColumn Header="DATAPOINT 이름" Width="1*" Binding="{Binding Path=Datapointname}" IsReadOnly="True">
                     <DataGridTextColumn.ElementStyle>
                         <Style>
                             <Setter Property="TextBlock.TextAlignment" Value="Left"/>

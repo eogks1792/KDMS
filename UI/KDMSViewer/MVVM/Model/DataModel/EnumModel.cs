@@ -6,6 +6,13 @@ using System.Threading.Tasks;
 
 namespace KDMSViewer.Model
 {
+    public enum ViewTypeCode
+    {
+        None = 0,
+        DataView,
+        TrandView
+    }
+
     public enum SearchTypeCode
     {
         MINDATA = 1,

@@ -92,6 +92,10 @@ namespace KDMSViewer
             services.AddSingleton<View_CommDayData>();
             services.AddSingleton<View_CommLogData>();
 
+            //ETC
+            //services.AddSingleton<View_TestData>();
+            //services.AddSingleton<ViewModel_SwitchData>();
+
             //DB
             string provider = configurationBuilder.GetSection("DbProvider")?.Value ?? "MySql";
             string connStr = configurationBuilder.GetConnectionString("Server")!;

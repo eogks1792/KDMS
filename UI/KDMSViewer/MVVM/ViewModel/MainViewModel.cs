@@ -1,5 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DevExpress.ClipboardSource.SpreadsheetML;
+using KDMSViewer.Extensions;
 using KDMSViewer.Model;
 using KDMSViewer.View;
 using Microsoft.Extensions.DependencyInjection;
@@ -92,7 +94,22 @@ namespace KDMSViewer.ViewModel
         private string _trandEnabled = "0";
 
         [ObservableProperty]
-        private INotifyPropertyChanged _currentViewModel;
+        private Visibility _dataViewVisible;
+
+        [ObservableProperty]
+        private Visibility _trandViewVisible;
+
+        [ObservableProperty]
+        private Visibility _operationViewVisible;
+
+        [ObservableProperty]
+        private INotifyPropertyChanged _dataCurrentViewModel;
+
+        [ObservableProperty]
+        private INotifyPropertyChanged _trandCurrentViewModel;
+
+        [ObservableProperty]
+        private INotifyPropertyChanged _operationCurrentViewModel;
 
 
         public MainViewModel(ILogger logger, DataWorker worker) 
@@ -100,7 +117,7 @@ namespace KDMSViewer.ViewModel
             _logger = logger;
             _worker = worker;
             _worker.Init();
-            CurrentViewModel = (INotifyPropertyChanged)App.Current.Services.GetService<DataViewModel>()!;
+            DataCurrentViewModel = (INotifyPropertyChanged)App.Current.Services.GetService<DataViewModel>()!;
         }
 
         [RelayCommand]
@@ -111,7 +128,11 @@ namespace KDMSViewer.ViewModel
             DbEnabled = "0";
             TrandEnabled = "0";
 
-            CurrentViewModel = (INotifyPropertyChanged)App.Current.Services.GetService<DataViewModel>()!;
+            DataViewVisible = Visibility.Visible;
+            TrandViewVisible = Visibility.Hidden;
+            OperationViewVisible = Visibility.Hidden;
+
+            DataCurrentViewModel = (INotifyPropertyChanged)App.Current.Services.GetService<DataViewModel>()!;
         }
 
         [RelayCommand]
@@ -122,7 +143,11 @@ namespace KDMSViewer.ViewModel
             DbEnabled = "0";
             TrandEnabled = "0";
 
-            CurrentViewModel = (INotifyPropertyChanged)App.Current.Services.GetService<OperationViewModel>()!;
+            DataViewVisible = Visibility.Hidden;
+            TrandViewVisible = Visibility.Hidden;
+            OperationViewVisible = Visibility.Visible;
+
+            OperationCurrentViewModel = (INotifyPropertyChanged)App.Current.Services.GetService<OperationViewModel>()!;
         }
 
         //[RelayCommand]
@@ -144,7 +169,11 @@ namespace KDMSViewer.ViewModel
             DbEnabled = "0";
             TrandEnabled = "1";
 
-            CurrentViewModel = (INotifyPropertyChanged)App.Current.Services.GetService<TrandViewModel>()!;
+            DataViewVisible = Visibility.Hidden;
+            TrandViewVisible = Visibility.Visible;
+            OperationViewVisible = Visibility.Hidden;
+
+            TrandCurrentViewModel = (INotifyPropertyChanged)App.Current.Services.GetService<TrandViewModel>()!;
         }
 
         //[RelayCommand]

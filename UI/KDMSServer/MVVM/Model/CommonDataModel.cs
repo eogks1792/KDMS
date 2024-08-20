@@ -138,7 +138,14 @@ namespace KDMSServer.Model
                 if (equipment.rtu_type == 1)    // RTU 타입이 1이면 수동
                     continue;
 
-                var findRemoteunit = pdbRemoteUnits.FirstOrDefault(p => p.eq_fk == equipment.ceqid);
+                var findRemoteunit = pdbRemoteUnits.FirstOrDefault(p => p.eq_type == 1 && p.eq_fk == equipment.ceqid);
+                if (findRemoteunit.pid > 0)
+                {
+                    if (findRemoteunit.protocol_fk == 0 && findRemoteunit.comm_type == 0)
+                        continue;
+                }
+
+                findRemoteunit = pdbRemoteUnits.FirstOrDefault(p => p.eq_type == 2 && p.eq_fk == equipment.ec_fk);
                 if (findRemoteunit.pid > 0)
                 {
                     if (findRemoteunit.protocol_fk == 0 && findRemoteunit.comm_type == 0)
@@ -340,7 +347,14 @@ namespace KDMSServer.Model
                 if (equipment.rtu_type == 1)    // RTU 타입이 1이면 수동
                     continue;
 
-                var findRemoteunit = pdbRemoteUnits.FirstOrDefault(p => p.eq_fk == equipment.ceqid);
+                var findRemoteunit = pdbRemoteUnits.FirstOrDefault(p => p.eq_type == 1 && p.eq_fk == equipment.ceqid);
+                if (findRemoteunit.pid > 0)
+                {
+                    if (findRemoteunit.protocol_fk == 0 && findRemoteunit.comm_type == 0)
+                        continue;
+                }
+
+                findRemoteunit = pdbRemoteUnits.FirstOrDefault(p => p.eq_type == 2 && p.eq_fk == equipment.ec_fk);
                 if (findRemoteunit.pid > 0)
                 {
                     if (findRemoteunit.protocol_fk == 0 && findRemoteunit.comm_type == 0)

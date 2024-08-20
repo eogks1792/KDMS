@@ -18,16 +18,11 @@ namespace KDMSViewer.View
     /// <summary>
     /// View_SwitchData.xaml에 대한 상호 작용 논리
     /// </summary>
-    public partial class View_SwitchData : UserControl
+    public partial class View_SwitchData2 : UserControl
     {
-        public View_SwitchData()
+        public View_SwitchData2()
         {
             InitializeComponent();
-        }
-
-        private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
         }
     }
 }

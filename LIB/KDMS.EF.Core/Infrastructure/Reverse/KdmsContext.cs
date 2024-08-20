@@ -8,7 +8,6 @@ namespace KDMS.EF.Core.Infrastructure.Reverse;
 
 public partial class KdmsContext : DbContext
 {
-
     protected readonly IConfiguration _configuration;
 
     public KdmsContext(IConfiguration configuration)
@@ -34,6 +33,8 @@ public partial class KdmsContext : DbContext
     public virtual DbSet<HistoryCommState> HistoryCommStates { get; set; }
 
     public virtual DbSet<HistoryCommStateLog> HistoryCommStateLogs { get; set; }
+
+    public virtual DbSet<HistoryDaystatData2024> HistoryDaystatData2024s { get; set; }
 
     public virtual DbSet<HistoryDaystatDatum> HistoryDaystatData { get; set; }
 
@@ -289,7 +290,9 @@ public partial class KdmsContext : DbContext
 
         modelBuilder.Entity<HistoryCommState>(entity =>
         {
-            entity.HasKey(e => e.SaveTime).HasName("PRIMARY");
+            entity.HasKey(e => new { e.SaveTime, e.Ceqid })
+                .HasName("PRIMARY")
+                .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
 
             entity.ToTable("history_comm_state", tb => tb.HasComment("설비별 일일 통신 성공 테이블"));
 
@@ -340,7 +343,9 @@ public partial class KdmsContext : DbContext
 
         modelBuilder.Entity<HistoryCommStateLog>(entity =>
         {
-            entity.HasKey(e => e.SaveTime).HasName("PRIMARY");
+            entity.HasKey(e => new { e.SaveTime, e.Ceqid })
+                .HasName("PRIMARY")
+                .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
 
             entity.ToTable("history_comm_state_log", tb => tb.HasComment("설비별 일일 통신 성공 로그 테이블"));
 
@@ -390,6 +395,103 @@ public partial class KdmsContext : DbContext
                 .HasMaxLength(128)
                 .HasComment("단말장치 명")
                 .HasColumnName("NAME");
+        });
+
+        modelBuilder.Entity<HistoryDaystatData2024>(entity =>
+        {
+            entity.HasKey(e => new { e.SaveTime, e.Ceqid })
+                .HasName("PRIMARY")
+                .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
+
+            entity.ToTable("history_daystat_data_2024", tb => tb.HasComment("시간단위 통계 테이블"));
+
+            entity.Property(e => e.SaveTime)
+                .HasComment("DB 기록시간")
+                .HasColumnType("datetime")
+                .HasColumnName("SAVE_TIME");
+            entity.Property(e => e.Ceqid)
+                .HasComment("단말장치 ID")
+                .HasColumnType("int(11)")
+                .HasColumnName("CEQID");
+            entity.Property(e => e.AverageCurrentA)
+                .HasComment("전류A-평균")
+                .HasColumnName("AVERAGE_CURRENT_A");
+            entity.Property(e => e.AverageCurrentB)
+                .HasComment("전류B-평균")
+                .HasColumnName("AVERAGE_CURRENT_B");
+            entity.Property(e => e.AverageCurrentC)
+                .HasComment("전류C-평균")
+                .HasColumnName("AVERAGE_CURRENT_C");
+            entity.Property(e => e.AverageCurrentN)
+                .HasComment("전류N-평균")
+                .HasColumnName("AVERAGE_CURRENT_N");
+            entity.Property(e => e.Circuitno)
+                .HasComment("회로번호")
+                .HasColumnType("int(11)")
+                .HasColumnName("CIRCUITNO");
+            entity.Property(e => e.CommTime)
+                .HasComment("정보 수집시간")
+                .HasColumnType("datetime")
+                .HasColumnName("COMM_TIME");
+            entity.Property(e => e.Cpsid)
+                .HasComment("Composite ID")
+                .HasColumnType("int(11)")
+                .HasColumnName("CPSID");
+            entity.Property(e => e.CurrentUnbalance)
+                .HasComment("전류 불평형률")
+                .HasColumnType("int(11)")
+                .HasColumnName("CURRENT_UNBALANCE");
+            entity.Property(e => e.Diagnostics)
+                .HasComment("단말장치 상태")
+                .HasColumnType("int(11)")
+                .HasColumnName("DIAGNOSTICS");
+            entity.Property(e => e.Dl)
+                .HasMaxLength(64)
+                .HasComment("소속DL")
+                .HasColumnName("DL");
+            entity.Property(e => e.Frequency)
+                .HasComment("주파수")
+                .HasColumnName("FREQUENCY");
+            entity.Property(e => e.MaxCommTime)
+                .HasComment("최대 수집시간")
+                .HasColumnType("datetime")
+                .HasColumnName("MAX_COMM_TIME");
+            entity.Property(e => e.MaxCurrentA)
+                .HasComment("전류A-최대")
+                .HasColumnName("MAX_CURRENT_A");
+            entity.Property(e => e.MaxCurrentB)
+                .HasComment("전류B-최대")
+                .HasColumnName("MAX_CURRENT_B");
+            entity.Property(e => e.MaxCurrentC)
+                .HasComment("전류C-최대")
+                .HasColumnName("MAX_CURRENT_C");
+            entity.Property(e => e.MaxCurrentN)
+                .HasComment("전류N-최대")
+                .HasColumnName("MAX_CURRENT_N");
+            entity.Property(e => e.MinCommTime)
+                .HasComment("최소 수집시간")
+                .HasColumnType("datetime")
+                .HasColumnName("MIN_COMM_TIME");
+            entity.Property(e => e.MinCurrentA)
+                .HasComment("전류A - 최소")
+                .HasColumnName("MIN_CURRENT_A");
+            entity.Property(e => e.MinCurrentB)
+                .HasComment("전류B - 최소")
+                .HasColumnName("MIN_CURRENT_B");
+            entity.Property(e => e.MinCurrentC)
+                .HasComment("전류C - 최소")
+                .HasColumnName("MIN_CURRENT_C");
+            entity.Property(e => e.MinCurrentN)
+                .HasComment("전류N - 최소")
+                .HasColumnName("MIN_CURRENT_N");
+            entity.Property(e => e.Name)
+                .HasMaxLength(128)
+                .HasComment("단말장치 명")
+                .HasColumnName("NAME");
+            entity.Property(e => e.VoltageUnbalance)
+                .HasComment("전압 불평형률")
+                .HasColumnType("int(11)")
+                .HasColumnName("VOLTAGE_UNBALANCE");
         });
 
         modelBuilder.Entity<HistoryDaystatDatum>(entity =>
@@ -1575,10 +1677,10 @@ public partial class KdmsContext : DbContext
                 .HasMaxLength(64)
                 .HasComment("보관주기 설명")
                 .HasColumnName("DESC");
-            entity.Property(e => e.SchduleType)
+            entity.Property(e => e.StorageType)
                 .HasComment("보관주기 설정 타입")
                 .HasColumnType("int(11)")
-                .HasColumnName("SCHDULE_TYPE");
+                .HasColumnName("STORAGE_TYPE");
             entity.Property(e => e.StorageValue)
                 .HasMaxLength(10)
                 .HasComment("보관주기 설정 주기")
