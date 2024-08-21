@@ -25,7 +25,7 @@ namespace KDMSViewer.View
             InitializeComponent();
         }
 
-        private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void TabControl_GotFocus(object sender, RoutedEventArgs e)
         {
 
         }

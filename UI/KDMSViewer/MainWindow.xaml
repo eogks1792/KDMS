@@ -9,19 +9,21 @@
                  xmlns:view="clr-namespace:KDMSViewer.View"
                  xmlns:fa6="http://schemas.fontawesome.com/icons/svg"
                  xmlns:viewmodel="clr-namespace:KDMSViewer.ViewModel" 
-                 d:DataContext="{d:DesignInstance Type=viewmodel:MainViewModel}"
                  mc:Ignorable="d"
                  Title="데이터 관리 뷰어" 
-                 Height="1080" Width="1920"
-                 MinHeight="1080" MinWidth="1920"
+                 Height="1024" Width="1920"
+                 MinHeight="1024" MinWidth="1920"
                  Background="Transparent"
-                 WindowStyle="None"
-                 AllowsTransparency="True"
                  WindowStartupLocation="CenterScreen"
                  WindowState="Maximized"
                  Closing="Window_Closing"
-                 ResizeMode="CanResizeWithGrip"
                  dx:ThemeManager.ThemeName="Win11Dark">
+
+    <!--WindowStyle="None"
+    AllowsTransparency="True"
+    ResizeMode="CanResizeWithGrip"-->
+
+    <!--d:DataContext="{d:DesignInstance Type=viewmodel:MainViewModel}"-->
 
     <dx:ThemedWindow.Resources>
         <Style TargetType="{x:Type fa6:SvgAwesome}">
@@ -59,7 +61,7 @@
                 <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
 
-            <view:TitleBar Grid.Column="5"
+            <!--<view:TitleBar Grid.Column="5"
                        HorizontalAlignment="Stretch"
                        Margin="0,5,10,5"/>
 
@@ -70,11 +72,11 @@
                        Style="{StaticResource baseTextBlock}"
                        FontWeight="Bold"
                        FontSize="{StaticResource FontSizeXXLarge}"
-                       Margin="10,0,0,0"/>
+                       Margin="10,0,0,0"/>-->
 
             <GroupBox Grid.Column="3"
                       Header="운영정보"
-                      Margin="0 5 30 0">
+                      Margin="0 5 10 0">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="{Binding ServerState}"
                                Style="{StaticResource baseTextBlock}"
@@ -87,9 +89,6 @@
                                Margin="20,0,0,0"/>
                 </StackPanel>
             </GroupBox>
-            
-            
-            
         </Grid>
 
         <!--<Button Grid.ColumnSpan="2"

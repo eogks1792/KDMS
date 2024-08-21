@@ -8,11 +8,16 @@
     <UseWPF>True</UseWPF>
     <UseWindowsForms>False</UseWindowsForms>
     <AssemblyName>KDMS_MNS_Viewer</AssemblyName>
+    <ApplicationIcon>Images\Viewer.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="Images\checkbox.png" />
     <None Remove="Images\checked.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Images\Viewer.ico" />
   </ItemGroup>
 
   <ItemGroup>

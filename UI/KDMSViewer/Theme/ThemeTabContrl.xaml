@@ -104,12 +104,12 @@
                                               Content="{StaticResource arrowRight}" 
                                               CommandTarget="{Binding ElementName=scrollViewer}"
                                               Command="ScrollBar.LineRightCommand" />-->
-                                <Button Background="Transparent" 
-                                        Margin="0"
-                                        CommandTarget="{Binding ElementName=scrollViewer}"
-                                        Command="ScrollBar.LineRightCommand">
+                                <RepeatButton Background="White" 
+                                              Margin="0"
+                                              CommandTarget="{Binding ElementName=scrollViewer}"
+                                              Command="ScrollBar.LineRightCommand">
                                     <fa6:SvgAwesome Icon="Solid_SquareCaretRight" />
-                                </Button>
+                                </RepeatButton>
                             </Border>
 
                             <Border x:Name="border_left" Visibility="Hidden"
@@ -121,12 +121,12 @@
                                     VerticalAlignment="Bottom"
                                     Width="auto" Height="auto" 
                                     DockPanel.Dock="Right">
-                                <Button Background="Transparent" 
-                                        Margin="0"
-                                        CommandTarget="{Binding ElementName=scrollViewer}"
-                                        Command="ScrollBar.LineLeftCommand" >
+                                <RepeatButton Background="White" 
+                                              Margin="0"
+                                              CommandTarget="{Binding ElementName=scrollViewer}"
+                                              Command="ScrollBar.LineLeftCommand" >
                                     <fa6:SvgAwesome Icon="Solid_SquareCaretLeft"/>
-                                </Button>
+                                </RepeatButton>
                                 <!--<RepeatButton Background="Transparent"
                                               BorderThickness="0"
                                               Content="{StaticResource arrowLeft}"

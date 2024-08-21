@@ -9,10 +9,9 @@ namespace KDMSViewer.Model
 {
     ///////////////////////// 실시간
 
-    public class HistoryMinData 
+    public class HistoryMinData : HistoryMinDatum
     {
         public int No { get; set; }
-        public HistoryMinDatum Value { get; set; }
     }
 
     public class Statistics15minData : Statistics15min

@@ -409,13 +409,13 @@ namespace KDMSViewer.ViewModel
                                 return;
                             }
 
-                            header = "D/L 이름, 단말장치명, CEQ ID, 단자번호, 단말장치 상태, 전압 불평형률, 전류 불평형률, 주파수"
+                            header = "D/L 이름, 단말장치명, CEQ ID, CPS ID, 단자번호, 단말장치 상태, 전압 불평형률, 전류 불평형률, 주파수"
                                 + ", 전류A, 전류B, 전류C, 전류N, 전압A, 전압B, 전압C, 피상전력A, 피상전력B, 피상전력C, 역률3상, 역률A, 역률B, 역률C"
                                 + ", 고장전류A, 고장전류B, 고장전류C, 고장전류N, 전류위상A, 전류위상B, 전류위상C, 전류위상N, 전압위상A, 전압위상B, 전압위상C, 정보수집시간, DB기록시간";
                             outputFile.WriteLine(header);
                             foreach (var data in dataList)
                             {
-                                writeData = $"{data.Dl}, {data.Name}, {data.Ceqid}, {data.Circuitno}, {data.Diagnostics}, {data.VoltageUnbalance}, {data.CurrentUnbalance}, {data.Frequency}"
+                                writeData = $"{data.Dl}, {data.Name}, {data.Ceqid}, {data.Cpsid}, {data.Circuitno}, {data.Diagnostics}, {data.VoltageUnbalance}, {data.CurrentUnbalance}, {data.Frequency}"
                                     + $", {data.CurrentA}, {data.CurrentB}, {data.CurrentC}, {data.CurrentN}, {data.VoltageA}, {data.VoltageB}, {data.VoltageC}, {data.ApparentPowerA}, {data.ApparentPowerB}, {data.ApparentPowerC}, {data.PowerFactor3p}, {data.PowerFactorA}, {data.PowerFactorB}, {data.PowerFactorC}"
                                     + $", {data.FaultCurrentA}, {data.FaultCurrentB}, {data.FaultCurrentC}, {data.FaultCurrentN}, {data.CurrentPhaseA}, {data.CurrentPhaseB}, {data.CurrentPhaseC}, {data.CurrentPhaseN}, {data.VoltagePhaseA}, {data.VoltagePhaseB}, {data.VoltagePhaseC}, {data.CommTime?.ToString("yyyy-MM-dd HH:mm:ss")}, {data.SaveTime.ToString("yyyy-MM-dd HH:mm:ss")}";
                                 outputFile.WriteLine(writeData);
@@ -423,7 +423,7 @@ namespace KDMSViewer.ViewModel
                         }
                         else if (FiCheck)
                         {
-                            var dataList = (ObservableCollection<HistoryFiAlarmData>)_worker.GetPointItems((int)SearchTypeCode.FIALARM);
+                            var dataList = (ObservableCollection<HistoryFiAlarm>)_worker.GetPointItems((int)SearchTypeCode.FIALARM);
                             if (dataList == null || dataList?.Count <= 0)
                             {
                                 outputFile.Close();
@@ -432,17 +432,17 @@ namespace KDMSViewer.ViewModel
                                 return;
                             }
 
-                            header = "D/L 이름, 단말장치명, CEQ ID, 단자번호, 알람 이름, 알람 값, 알람 내용, 고장전류A, 고장전류B, 고장전류C, 고장전류N, 서버기록시간, 단말발생시간, DB기록시간";
+                            header = "D/L 이름, 단말장치명, CEQ ID, CPS ID, 단자번호, 알람 이름, 알람 값, 알람 내용, 고장전류A, 고장전류B, 고장전류C, 고장전류N, 서버기록시간, 단말발생시간, DB기록시간";
                             outputFile.WriteLine(header);
                             foreach (var data in dataList)
                             {
-                                writeData = $"{data.Dl}, {data.Name}, {data.Ceqid}, {data.Circuitno}, {data.AlarmName}, {data.Value}, {data.LogDesc}, {data.FaultCurrentA}, {data.FaultCurrentB}, {data.FaultCurrentC}, {data.FaultCurrentN}, {data.LogTime?.ToString("yyyy-MM-dd HH:mm:ss")}, {data.FrtuTime?.ToString("yyyy-MM-dd HH:mm:ss")}, {data.SaveTime.ToString("yyyy-MM-dd HH:mm:ss")}";
+                                writeData = $"{data.Dl}, {data.Name}, {data.Ceqid}, {data.Cpsid}, {data.Circuitno}, {data.AlarmName}, {data.Value}, {data.LogDesc}, {data.FaultCurrentA}, {data.FaultCurrentB}, {data.FaultCurrentC}, {data.FaultCurrentN}, {data.LogTime?.ToString("yyyy-MM-dd HH:mm:ss")}, {data.FrtuTime?.ToString("yyyy-MM-dd HH:mm:ss")}, {data.SaveTime.ToString("yyyy-MM-dd HH:mm:ss")}";
                                 outputFile.WriteLine(writeData);
                             }
                         }
                         else if (DayCheck)
                         {
-                            var dataList = (ObservableCollection<HistoryDaystatData>)_worker.GetPointItems((int)SearchTypeCode.DAYSTATDATA);
+                            var dataList = (ObservableCollection<HistoryDaystatDatum>)_worker.GetPointItems((int)SearchTypeCode.DAYSTATDATA);
                             if (dataList == null || dataList?.Count <= 0)
                             {
                                 outputFile.Close();
@@ -451,13 +451,13 @@ namespace KDMSViewer.ViewModel
                                 return;
                             }
 
-                            header = "D/L 이름, 단말장치명, CEQ ID, 단자번호, 단말장치 상태, 전압 불평형률, 전류 불평형률, 주파수"
+                            header = "D/L 이름, 단말장치명, CEQ ID, CPS ID, 단자번호, 단말장치 상태, 전압 불평형률, 전류 불평형률, 주파수"
                                 + ", 전류A(평균), 전류B(평균), 전류C(평균), 전류N(평균), 전류A(최대), 전류B(최대), 전류C(최대), 전류N(최대), 최대 수집시간"
                                 + ", 전류A(최소), 전류B(최소), 전류C(최소), 전류N(최소), 최소 수집시간, 정보수집시간, DB기록시간";
                             outputFile.WriteLine(header);
                             foreach (var data in dataList)
                             {
-                                writeData = $"{data.Dl}, {data.Name}, {data.Ceqid}, {data.Circuitno}, {data.Diagnostics}, {data.VoltageUnbalance}, {data.CurrentUnbalance}, {data.Frequency}"
+                                writeData = $"{data.Dl}, {data.Name}, {data.Ceqid}, {data.Cpsid}, {data.Circuitno}, {data.Diagnostics}, {data.VoltageUnbalance}, {data.CurrentUnbalance}, {data.Frequency}"
                                      + $", {data.AverageCurrentA}, {data.AverageCurrentB}, {data.AverageCurrentC}, {data.AverageCurrentN}, {data.MaxCurrentA}, {data.MaxCurrentB}, {data.MaxCurrentC}, {data.MaxCurrentN}, {data.MaxCommTime?.ToString("yyyy-MM-dd HH:mm:ss")}"
                                      + $", {data.MinCurrentA}, {data.MinCurrentB}, {data.MinCurrentC}, {data.MinCurrentN}, {data.MinCommTime?.ToString("yyyy-MM-dd HH:mm:ss")}"
                                      + $", {data.CommTime?.ToString("yyyy-MM-dd HH:mm:ss")}, {data.SaveTime.ToString("yyyy-MM-dd HH:mm:ss")}";
@@ -467,7 +467,7 @@ namespace KDMSViewer.ViewModel
                         // 통계 데이터
                         else if (StatisticMinCheck)
                         {
-                            var dataList = (ObservableCollection<Statistics15minData>)_worker.GetPointItems((int)SearchTypeCode.STATISTICSMIN);
+                            var dataList = (ObservableCollection<Statistics15min>)_worker.GetPointItems((int)SearchTypeCode.STATISTICSMIN);
                             if (dataList == null || dataList?.Count <= 0)
                             {
                                 outputFile.Close();
@@ -476,18 +476,18 @@ namespace KDMSViewer.ViewModel
                                 return;
                             }
 
-                            header = "D/L 이름, 단말장치명, CEQ ID, 단자번호, 단말장치명,  전류A(평균), 전류B(평균), 전류C(평균), 전류N(평균), 정보수집시간, DB기록시간";
+                            header = "D/L 이름, 단말장치명, CEQ ID, CPS ID, 단자번호, 전류A(평균), 전류B(평균), 전류C(평균), 전류N(평균), 정보수집시간, DB기록시간";
                             outputFile.WriteLine(header);
                             foreach (var data in dataList)
                             {
-                                writeData = $"{data.Dl}, {data.Name}, {data.Ceqid}, {data.AverageCurrentA}, {data.AverageCurrentB}, {data.AverageCurrentC}, {data.AverageCurrentN}"
+                                writeData = $"{data.Dl}, {data.Name}, {data.Ceqid}, {data.Cpsid}, {data.Circuitno}, {data.AverageCurrentA}, {data.AverageCurrentB}, {data.AverageCurrentC}, {data.AverageCurrentN}"
                                     + $", {data.SaveTime.ToString("yyyy-MM-dd HH:mm:ss")}, {data.SaveTime.ToString("yyyy-MM-dd HH:mm:ss")}";
                                 outputFile.WriteLine(writeData);
                             }
                         }
                         else if (StatisticHourCheck)
                         {
-                            var dataList = (ObservableCollection<StatisticsHourData>)_worker.GetPointItems((int)SearchTypeCode.STATISTICSHOUR);
+                            var dataList = (ObservableCollection<StatisticsHour>)_worker.GetPointItems((int)SearchTypeCode.STATISTICSHOUR);
                             if (dataList == null || dataList?.Count <= 0)
                             {
                                 outputFile.Close();
@@ -496,13 +496,13 @@ namespace KDMSViewer.ViewModel
                                 return;
                             }
 
-                            header = "D/L 이름, 단말장치명, CEQ ID, 단자번호, "
+                            header = "D/L 이름, 단말장치명, CEQ ID, CPS ID, 단자번호"
                                 + ", 전류A(평균), 전류B(평균), 전류C(평균), 전류N(평균), 전류A(최대), 전류B(최대), 전류C(최대), 전류N(최대), 최대 수집시간"
                                 + ", 전류A(최소), 전류B(최소), 전류C(최소), 전류N(최소), 최소 수집시간, DB 기록시간";
                             outputFile.WriteLine(header);
                             foreach (var data in dataList)
                             {
-                                writeData = $"{data.Dl}, {data.Name}, {data.Ceqid}, {data.AverageCurrentA}, {data.AverageCurrentB}, {data.AverageCurrentC}, {data.AverageCurrentN}"
+                                writeData = $"{data.Dl}, {data.Name}, {data.Ceqid}, {data.Cpsid}, {data.Circuitno}, {data.AverageCurrentA}, {data.AverageCurrentB}, {data.AverageCurrentC}, {data.AverageCurrentN}"
                                     + $", {data.MaxCurrentA}, {data.MaxCurrentB}, {data.MaxCurrentC}, {data.MaxCurrentN}, {data.MaxCommTime?.ToString("yyyy-MM-dd HH:mm:ss")}"
                                     + $", {data.MinCurrentA}, {data.MinCurrentB}, {data.MinCurrentC}, {data.MinCurrentN}, {data.MinCommTime?.ToString("yyyy-MM-dd HH:mm:ss")}"
                                     + $", {data.SaveTime.ToString("yyyy-MM-dd HH:mm:ss")}";
@@ -511,7 +511,7 @@ namespace KDMSViewer.ViewModel
                         }
                         else if (StatisticDayCheck)
                         {
-                            var dataList = (ObservableCollection<StatisticsDayData>)_worker.GetPointItems((int)SearchTypeCode.STATISTICSDAY);
+                            var dataList = (ObservableCollection<StatisticsDay>)_worker.GetPointItems((int)SearchTypeCode.STATISTICSDAY);
                             if (dataList == null || dataList?.Count <= 0)
                             {
                                 outputFile.Close();
@@ -520,13 +520,13 @@ namespace KDMSViewer.ViewModel
                                 return;
                             }
 
-                            header = "D/L 이름, 단말장치명, CEQ ID, 단자번호, "
+                            header = "D/L 이름, 단말장치명, CEQ ID, CPS ID, 단자번호"
                                 + ", 전류A(평균), 전류B(평균), 전류C(평균), 전류N(평균), 전류A(최대), 전류B(최대), 전류C(최대), 전류N(최대), 최대 수집시간"
                                 + ", 전류A(최소), 전류B(최소), 전류C(최소), 전류N(최소), 최소 수집시간, DB 기록시간";
                             outputFile.WriteLine(header);
                             foreach (var data in dataList)
                             {
-                                writeData = $"{data.Dl}, {data.Name}, {data.Ceqid}, {data.AverageCurrentA}, {data.AverageCurrentB}, {data.AverageCurrentC}, {data.AverageCurrentN}"
+                                writeData = $"{data.Dl}, {data.Name}, {data.Ceqid}, {data.Cpsid}, {data.Circuitno}, {data.AverageCurrentA}, {data.AverageCurrentB}, {data.AverageCurrentC}, {data.AverageCurrentN}"
                                     + $", {data.MaxCurrentA}, {data.MaxCurrentB}, {data.MaxCurrentC}, {data.MaxCurrentN}, {data.MaxCommTime?.ToString("yyyy-MM-dd HH:mm:ss")}"
                                     + $", {data.MinCurrentA}, {data.MinCurrentB}, {data.MinCurrentC}, {data.MinCurrentN}, {data.MinCommTime?.ToString("yyyy-MM-dd HH:mm:ss")}"
                                     + $", {data.SaveTime.ToString("yyyy-MM-dd HH:mm:ss")}";
@@ -535,7 +535,7 @@ namespace KDMSViewer.ViewModel
                         }
                         else if (StatisticMonthCheck)
                         {
-                            var dataList = (ObservableCollection<StatisticsMonthData>)_worker.GetPointItems((int)SearchTypeCode.STATISTICSMONTH);
+                            var dataList = (ObservableCollection<StatisticsMonth>)_worker.GetPointItems((int)SearchTypeCode.STATISTICSMONTH);
                             if (dataList == null || dataList?.Count <= 0)
                             {
                                 outputFile.Close();
@@ -544,13 +544,13 @@ namespace KDMSViewer.ViewModel
                                 return;
                             }
 
-                            header = "D/L 이름, 단말장치명, CEQ ID, 단자번호, "
+                            header = "D/L 이름, 단말장치명, CEQ ID, CPS ID, 단자번호"
                                 + ", 전류A(평균), 전류B(평균), 전류C(평균), 전류N(평균), 전류A(최대), 전류B(최대), 전류C(최대), 전류N(최대), 최대 수집시간"
                                 + ", 전류A(최소), 전류B(최소), 전류C(최소), 전류N(최소), 최소 수집시간, DB 기록시간";
                             outputFile.WriteLine(header);
                             foreach (var data in dataList)
                             {
-                                writeData = $"{data.Dl}, {data.Name}, {data.Ceqid}, {data.AverageCurrentA}, {data.AverageCurrentB}, {data.AverageCurrentC}, {data.AverageCurrentN}"
+                                writeData = $"{data.Dl}, {data.Name}, {data.Ceqid}, {data.Cpsid}, {data.Circuitno}, {data.AverageCurrentA}, {data.AverageCurrentB}, {data.AverageCurrentC}, {data.AverageCurrentN}"
                                     + $", {data.MaxCurrentA}, {data.MaxCurrentB}, {data.MaxCurrentC}, {data.MaxCurrentN}, {data.MaxCommTime?.ToString("yyyy-MM-dd HH:mm:ss")}"
                                     + $", {data.MinCurrentA}, {data.MinCurrentB}, {data.MinCurrentC}, {data.MinCurrentN}, {data.MinCommTime?.ToString("yyyy-MM-dd HH:mm:ss")}"
                                     + $", {data.SaveTime.ToString("yyyy-MM-dd HH:mm:ss")}";
@@ -559,7 +559,7 @@ namespace KDMSViewer.ViewModel
                         }
                         else if (StatisticYearCheck)
                         {
-                            var dataList = (ObservableCollection<StatisticsYearData>)_worker.GetPointItems((int)SearchTypeCode.STATISTICSYEAR);
+                            var dataList = (ObservableCollection<StatisticsYear>)_worker.GetPointItems((int)SearchTypeCode.STATISTICSYEAR);
                             if (dataList == null || dataList?.Count <= 0)
                             {
                                 outputFile.Close();
@@ -568,13 +568,13 @@ namespace KDMSViewer.ViewModel
                                 return;
                             }
 
-                            header = "D/L 이름, 단말장치명, CEQ ID, 단자번호, "
+                            header = "D/L 이름, 단말장치명, CEQ ID, CPS ID, 단자번호"
                                 + ", 전류A(평균), 전류B(평균), 전류C(평균), 전류N(평균), 전류A(최대), 전류B(최대), 전류C(최대), 전류N(최대), 최대 수집시간"
                                 + ", 전류A(최소), 전류B(최소), 전류C(최소), 전류N(최소), 최소 수집시간, DB 기록시간";
                             outputFile.WriteLine(header);
                             foreach (var data in dataList)
                             {
-                                writeData = $"{data.Dl}, {data.Name}, {data.Ceqid}, {data.AverageCurrentA}, {data.AverageCurrentB}, {data.AverageCurrentC}, {data.AverageCurrentN}"
+                                writeData = $"{data.Dl}, {data.Name}, {data.Ceqid}, {data.Cpsid}, {data.Circuitno}, {data.AverageCurrentA}, {data.AverageCurrentB}, {data.AverageCurrentC}, {data.AverageCurrentN}"
                                     + $", {data.MaxCurrentA}, {data.MaxCurrentB}, {data.MaxCurrentC}, {data.MaxCurrentN}, {data.MaxCommTime?.ToString("yyyy-MM-dd HH:mm:ss")}"
                                     + $", {data.MinCurrentA}, {data.MinCurrentB}, {data.MinCurrentC}, {data.MinCurrentN}, {data.MinCommTime?.ToString("yyyy-MM-dd HH:mm:ss")}"
                                     + $", {data.SaveTime.ToString("yyyy-MM-dd HH:mm:ss")}";
@@ -583,7 +583,7 @@ namespace KDMSViewer.ViewModel
                         }
                         else if (CommDayCheck)
                         {
-                            var dataList = (ObservableCollection<HistoryCommStateData>)_worker.GetPointItems((int)SearchTypeCode.COMMSTATE);
+                            var dataList = (ObservableCollection<HistoryCommState>)_worker.GetPointItems((int)SearchTypeCode.COMMSTATE);
                             if (dataList == null || dataList?.Count <= 0)
                             {
                                 outputFile.Close();
@@ -592,18 +592,18 @@ namespace KDMSViewer.ViewModel
                                 return;
                             }
 
-                            header = "D/L 이름, 단말장치명, CEQ ID, 장치 타입, 전체횟수, 성공횟수, 실패횟수, 통신 성공률, 정보수집시간, DB기록시간";
+                            header = "D/L 이름, 단말장치명, CEQ ID, CPS ID, 장치 타입, 전체횟수, 성공횟수, 실패횟수, 통신 성공률, 정보수집시간, DB기록시간";
                             outputFile.WriteLine(header);
                             foreach (var data in dataList)
                             {
-                                writeData = $"{data.Dl}, {data.Name}, {data.Ceqid}, {data.EqType}, {data.CommTotalCount}, {data.CommSucessCount}, {data.CommFailCount}, {data.CommSucessRate}"
+                                writeData = $"{data.Dl}, {data.Name}, {data.Ceqid}, {data.Cpsid}, {data.EqType}, {data.CommTotalCount}, {data.CommSucessCount}, {data.CommFailCount}, {data.CommSucessRate}"
                                         + $", {data.CommTime?.ToString("yyyy-MM-dd HH:mm:ss")}, {data.SaveTime.ToString("yyyy-MM-dd HH:mm:ss")}";
                                 outputFile.WriteLine(writeData);
                             }
                         }
                         else if (CommLogCheck)
                         {
-                            var dataList = (ObservableCollection<HistoryCommStateLogData>)_worker.GetPointItems((int)SearchTypeCode.COMMSTATELOG);
+                            var dataList = (ObservableCollection<HistoryCommStateLog>)_worker.GetPointItems((int)SearchTypeCode.COMMSTATELOG);
                             if (dataList == null || dataList?.Count <= 0)
                             {
                                 outputFile.Close();
@@ -612,11 +612,11 @@ namespace KDMSViewer.ViewModel
                                 return;
                             }
 
-                            header = "D/L 이름, 단말장치명, CEQ ID, 장치 타입, 성공여부, 전체횟수, 성공횟수, 실패횟수, 통신 성공률, 정보수집시간, DB기록시간";
+                            header = "D/L 이름, 단말장치명, CEQ ID, CPS ID, 장치 타입, 성공여부, 전체횟수, 성공횟수, 실패횟수, 통신 성공률, 정보수집시간, DB기록시간";
                             outputFile.WriteLine(header);
                             foreach (var data in dataList)
                             {
-                                writeData = $"{data.Dl}, {data.Name}, {data.Ceqid}, {data.EqType}, {data.CommState} {data.CommTotalCount}, {data.CommSucessCount}, {data.CommFailCount}, {data.CommSucessRate}"
+                                writeData = $"{data.Dl}, {data.Name}, {data.Ceqid}, {data.Cpsid}, {data.EqType}, {data.CommState} {data.CommTotalCount}, {data.CommSucessCount}, {data.CommFailCount}, {data.CommSucessRate}"
                                         + $", {data.CommTime?.ToString("yyyy-MM-dd HH:mm:ss")}, {data.SaveTime.ToString("yyyy-MM-dd HH:mm:ss")}";
                                 outputFile.WriteLine(writeData);
                             }
@@ -878,7 +878,7 @@ namespace KDMSViewer.ViewModel
             {
                 if (check.IsChecked == true)
                 {
-                    check.IsChecked = true;
+                    check.IsChecked = true; 
                     check.Focus();
                 }
             }

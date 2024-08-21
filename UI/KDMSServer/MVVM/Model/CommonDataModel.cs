@@ -129,6 +129,10 @@ namespace KDMSServer.Model
 
         public void MinDataSave(DateTime date/*, List<rtdb_Analog> rtList, List<pdb_Analog> analogList, List<pdb_ConductingEquipment> equipmentList*/)
         {
+            var mappingInfos = _configuration.GetSection("MappingInfo");
+            var circuitnoId = Convert.ToInt32(mappingInfos.GetSection("Circuitno").Value ?? "38") ;
+            var commTimeId = Convert.ToInt32(mappingInfos.GetSection("CommTime").Value ?? "38");
+
             List<HistoryMinDatum> dataList = new List<HistoryMinDatum>();
             foreach (var equipment in pdbConductingequipments)
             {
@@ -172,13 +176,13 @@ namespace KDMSServer.Model
                             data.Ceqid = (int)equipment.ceqid;
                             break;
                         case 3:
-                            data.CommTime = GetMinDataTime(ceqAnalogList, AiInfos.FirstOrDefault(p => p.No == 12)?.Datapointid ?? 0, date);
+                            data.CommTime = GetMinDataTime(ceqAnalogList, circuitnoId, date);
                             break;
                         case 4:
                             data.Cpsid = (int)equipment.ec_fk;
                             break;
                         case 5:
-                            data.Circuitno = GetMinDataCircuitno(ceqAnalogList, AiInfos.FirstOrDefault(p => p.No == 12)?.Datapointid ?? 0);
+                            data.Circuitno = GetMinDataCircuitno(ceqAnalogList, commTimeId);
                             break;
                         case 6:
                             data.Name = GetStringData(equipment.name);
@@ -338,6 +342,14 @@ namespace KDMSServer.Model
 
         public void StatisticsMinDataSave(DateTime date/*, List<rtdb_Analog> rtList, List<pdb_Analog> analogList, List<pdb_ConductingEquipment> equipmentList*/)
         {
+            var mappingInfos = _configuration.GetSection("MappingInfo");
+            var circuitnoId = Convert.ToInt32(mappingInfos.GetSection("Circuitno").Value ?? "38");
+            var commTimeId = Convert.ToInt32(mappingInfos.GetSection("CommTime").Value ?? "38");
+            var currentAId = Convert.ToInt32(mappingInfos.GetSection("AverageCurrentA").Value ?? "45");
+            var currentBId = Convert.ToInt32(mappingInfos.GetSection("AverageCurrentB").Value ?? "46");
+            var currentCId = Convert.ToInt32(mappingInfos.GetSection("AverageCurrentC").Value ?? "47");
+            var currentNId = Convert.ToInt32(mappingInfos.GetSection("AverageCurrentN").Value ?? "65");
+
             List<Statistics15min> dataList = new List<Statistics15min>();
             foreach (var equipment in pdbConductingequipments)
             {
@@ -374,14 +386,14 @@ namespace KDMSServer.Model
                 data.SaveTime = date;
                 data.Ceqid = (int)equipment.ceqid;
                 data.Cpsid = (int)equipment.ec_fk;
-                data.Circuitno = GetMinDataCircuitno(ceqAnalogList, AiInfos.FirstOrDefault(p => p.No == 45)?.Datapointid ?? 0);
+                data.Circuitno = GetMinDataCircuitno(ceqAnalogList, circuitnoId);
                 data.Name = GetStringData(equipment.name);
                 data.Dl = GetStringData(findDl.name);
-                data.AverageCurrentA = GetMinDataValue(ceqAnalogList, 45);
-                data.AverageCurrentB = GetMinDataValue(ceqAnalogList, 46);
-                data.AverageCurrentC = GetMinDataValue(ceqAnalogList, 47);
-                data.AverageCurrentN = GetMinDataValue(ceqAnalogList, 65);
-                data.CommTime = GetMinDataTime(ceqAnalogList, AiInfos.FirstOrDefault(p => p.No == 45)?.Datapointid ?? 0, date);
+                data.AverageCurrentA = GetMinDataValue(ceqAnalogList, currentAId);
+                data.AverageCurrentB = GetMinDataValue(ceqAnalogList, currentBId);
+                data.AverageCurrentC = GetMinDataValue(ceqAnalogList, currentCId);
+                data.AverageCurrentN = GetMinDataValue(ceqAnalogList, currentNId);
+                data.CommTime = GetMinDataTime(ceqAnalogList, commTimeId, date);
 
                 dataList.Add(data);
 
@@ -790,6 +802,11 @@ namespace KDMSServer.Model
 
         public void FiAlarmDataSave(List<rtdb_Alarm> alarmList)
         {
+            var mappingInfos = _configuration.GetSection("MappingInfo");
+            var currentAId = Convert.ToInt32(mappingInfos.GetSection("FaultCurrentA").Value ?? "51");
+            var currentBId = Convert.ToInt32(mappingInfos.GetSection("FaultCurrentB").Value ?? "52");
+            var currentCId = Convert.ToInt32(mappingInfos.GetSection("FaultCurrentC").Value ?? "53");
+            var currentNId = Convert.ToInt32(mappingInfos.GetSection("FaultCurrentN").Value ?? "54");
             try
             {
                 var date = DateTime.Now;
@@ -877,11 +894,11 @@ namespace KDMSServer.Model
                             //    break;
                     }
 
-                    var ceqAnalogList = pdbAnalogs.Where(p => p.ceq_fk == (int)alarm.uiEqid && p.pid == alarm.uiPid).ToList();
-                    data.FaultCurrentA = GetMinDataValue(ceqAnalogList, 51);
-                    data.FaultCurrentB = GetMinDataValue(ceqAnalogList, 52);
-                    data.FaultCurrentC = GetMinDataValue(ceqAnalogList, 53);
-                    data.FaultCurrentN = GetMinDataValue(ceqAnalogList, 54);
+                    var ceqAnalogList = pdbAnalogs.Where(p => p.ceq_fk == (int)alarm.uiEqid).ToList(); // && p.pid == alarm.uiPid).ToList();
+                    data.FaultCurrentA = GetMinDataValue(ceqAnalogList, currentAId);
+                    data.FaultCurrentB = GetMinDataValue(ceqAnalogList, currentBId);
+                    data.FaultCurrentC = GetMinDataValue(ceqAnalogList, currentCId);
+                    data.FaultCurrentN = GetMinDataValue(ceqAnalogList, currentNId);
 
                     string query = $"insert into history_fi_alarm values ('{data.SaveTime.ToString("yyyy-MM-dd HH:mm:ss")}', {data.Ceqid}, '{data.LogTime?.ToString("yyyy-MM-dd HH:mm:ss.fff")}', '{data.FrtuTime?.ToString("yyyy-MM-dd HH:mm:ss.fff")}', " +
                         $" {data.Cpsid}, {data.Circuitno}, '{data.Name?.Trim()}', '{data.Dl?.Trim()}', '{data.AlarmName}', {data.Value}, '{data.LogDesc}', {data.FaultCurrentA}, {data.FaultCurrentB}, {data.FaultCurrentC}, {data.FaultCurrentN})";

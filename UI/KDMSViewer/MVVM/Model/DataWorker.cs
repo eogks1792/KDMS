@@ -856,8 +856,6 @@ namespace KDMSViewer.Model
                                 ToDate = toDate,
                             };
 
-                    
-
                             var model = App.Current.Services.GetService<ViewModel_SwitchData>()!;
                             if (model != null)
                             {
@@ -874,6 +872,7 @@ namespace KDMSViewer.Model
 
                                     model.PointItems = new ObservableCollection<HistoryMinDatum>(response.datas);
                                     model.TotalPage = (model.PointItems.Count / count) + 1;
+                                    model.UserPage = 1;
                                     for (int idx = 0; idx < model.TotalPage; idx++)
                                     {
                                         TabData item = new TabData();
@@ -885,7 +884,42 @@ namespace KDMSViewer.Model
                                             item.PointItems.Add(new HistoryMinData
                                             {
                                                 No = index,
-                                                Value = data
+                                                SaveTime = data.SaveTime,
+                                                Ceqid = data.Ceqid,
+                                                CommTime = data.CommTime,
+                                                Cpsid = data.Cpsid,
+                                                Circuitno = data.Circuitno,
+                                                Name = data.Name,
+                                                Dl = data.Dl,
+                                                Diagnostics = data.Diagnostics,
+                                                VoltageUnbalance = data.VoltageUnbalance,
+                                                CurrentUnbalance = data.CurrentUnbalance,
+                                                Frequency = data.Frequency,
+                                                CurrentA = data.CurrentA,
+                                                CurrentB = data.CurrentB,
+                                                CurrentC = data.CurrentC,
+                                                CurrentN = data.CurrentN,
+                                                VoltageA = data.VoltageA,
+                                                VoltageB = data.VoltageB,
+                                                VoltageC = data.VoltageC,
+                                                ApparentPowerA = data.ApparentPowerA,
+                                                ApparentPowerB = data.ApparentPowerB,
+                                                ApparentPowerC = data.ApparentPowerC,
+                                                PowerFactor3p = data.PowerFactor3p,
+                                                PowerFactorA = data.PowerFactorA,
+                                                PowerFactorB = data.PowerFactorB,
+                                                PowerFactorC = data.PowerFactorC,
+                                                FaultCurrentA = data.FaultCurrentA,
+                                                FaultCurrentB = data.FaultCurrentB,
+                                                FaultCurrentC = data.FaultCurrentC,
+                                                FaultCurrentN = data.FaultCurrentN,
+                                                CurrentPhaseA = data.CurrentPhaseA,
+                                                CurrentPhaseB = data.CurrentPhaseB,
+                                                CurrentPhaseC = data.CurrentPhaseC,
+                                                CurrentPhaseN = data.CurrentPhaseN,
+                                                VoltagePhaseA = data.VoltagePhaseA,
+                                                VoltagePhaseB = data.VoltagePhaseB,
+                                                VoltagePhaseC = data.VoltagePhaseC
                                             });
                                             index++;
                                             //item.PointItems.Add(data); 
@@ -895,16 +929,6 @@ namespace KDMSViewer.Model
 
                                     if(model.TabItems.Count > 0)
                                         model.SelectItem = model.TabItems.FirstOrDefault()!;
-
-                                    //int count = 0;
-                                    //foreach (var data in response.datas)
-                                    //{
-                                    //    count++;
-                                    //    if (count % 1000 == 0)
-                                    //        await Task.Delay(1);
-
-                                    //    DispatcherService.Invoke((System.Action)(() => { model.PointItems.Add(data); }));
-                                    //}
                                 }
                                 else
                                 {
@@ -925,24 +949,30 @@ namespace KDMSViewer.Model
                             var model = App.Current.Services.GetService<ViewModel_DayStatData>()!;
                             if (model != null)
                             {
-                                model.PointItems = new ObservableCollection<HistoryDaystatData>();
+                                //model.PointItems = new ObservableCollection<HistoryDaystatData>();
+                                model.TabItems = new ObservableCollection<TabData>();
                                 if (ceqList.Count <= 0)
                                     return;
 
                                 var response = await _mediator.Send(request);
                                 if (response != null && response.Result)
                                 {
-                                    int count = 0;
+                                    int count = 200;
                                     int index = 1;
-                                    foreach (var data in response.datas)
-                                    {
-                                        count++;
-                                        if (count % 1000 == 0)
-                                            await Task.Delay(1);
 
-                                        DispatcherService.Invoke((System.Action)(() => 
-                                        { 
-                                            model.PointItems.Add(new HistoryDaystatData 
+                                    model.PointItems = new ObservableCollection<HistoryDaystatDatum>(response.datas);
+                                    model.TotalPage = (model.PointItems.Count / count) + 1;
+                                    model.UserPage = 1;
+
+                                    for (int idx = 0; idx < model.TotalPage; idx++)
+                                    {
+                                        TabData item = new TabData();
+                                        item.Header = idx + 1;
+
+                                        var datas = model.PointItems.Skip(idx * count).Take(count).ToList();
+                                        foreach (var data in datas)
+                                        {
+                                            item.PointItems.Add(new HistoryDaystatData
                                             {
                                                 No = index++,
                                                 SaveTime = data.SaveTime,
@@ -970,9 +1000,14 @@ namespace KDMSViewer.Model
                                                 MinCurrentC = data.MinCurrentC,
                                                 MinCurrentN = data.MinCurrentN,
                                                 MinCommTime = data.MinCommTime
-                                            }); 
-                                        }));
+                                            });
+                                            index++;
+                                        }
+                                        DispatcherService.Invoke((System.Action)(() => { model.TabItems.Add(item); }));
                                     }
+
+                                    if (model.TabItems.Count > 0)
+                                        model.SelectItem = model.TabItems.FirstOrDefault()!;
                                 }
                                 else
                                 {
@@ -993,24 +1028,29 @@ namespace KDMSViewer.Model
                             var model = App.Current.Services.GetService<ViewModel_StatisticsMinData>()!;
                             if (model != null)
                             {
-                                model.PointItems = new ObservableCollection<Statistics15minData>();
+                                //model.PointItems = new ObservableCollection<Statistics15minData>();
+                                model.TabItems = new ObservableCollection<TabData>();
                                 if (ceqList.Count <= 0)
                                     return;
 
                                 var response = await _mediator.Send(request);
                                 if (response != null && response.Result)
                                 {
-                                    int count = 0;
+                                    int count = 200;
                                     int index = 1;
-                                    foreach (var data in response.datas)
-                                    {
-                                        count++;
-                                        if (count % 1000 == 0)
-                                            await Task.Delay(1);
 
-                                        DispatcherService.Invoke((System.Action)(() =>
+                                    model.PointItems = new ObservableCollection<Statistics15min>(response.datas);
+                                    model.TotalPage = (model.PointItems.Count / count) + 1;
+                                    model.UserPage = 1;
+                                    for (int idx = 0; idx < model.TotalPage; idx++)
+                                    {
+                                        TabData item = new TabData();
+                                        item.Header = idx + 1;
+
+                                        var datas = model.PointItems.Skip(idx * count).Take(count).ToList();
+                                        foreach (var data in datas)
                                         {
-                                            model.PointItems.Add(new Statistics15minData
+                                            item.PointItems.Add(new Statistics15minData
                                             {
                                                 No = index++,
                                                 SaveTime = data.SaveTime,
@@ -1025,8 +1065,13 @@ namespace KDMSViewer.Model
                                                 AverageCurrentC = data.AverageCurrentC,
                                                 AverageCurrentN = data.AverageCurrentN
                                             });
-                                        }));
+                                            index++;
+                                        }
+                                        DispatcherService.Invoke((System.Action)(() => { model.TabItems.Add(item); }));
                                     }
+
+                                    if (model.TabItems.Count > 0)
+                                        model.SelectItem = model.TabItems.FirstOrDefault()!;
                                 }
                                 else
                                 {
@@ -1047,24 +1092,29 @@ namespace KDMSViewer.Model
                             var model = App.Current.Services.GetService<ViewModel_StatisticsHourData>()!;
                             if (model != null)
                             {
-                                model.PointItems = new ObservableCollection<StatisticsHourData>();
+                                //model.PointItems = new ObservableCollection<StatisticsHourData>();
+                                model.TabItems = new ObservableCollection<TabData>();
                                 if (ceqList.Count <= 0)
                                     return;
 
                                 var response = await _mediator.Send(request);
                                 if (response != null && response.Result)
                                 {
-                                    int count = 0;
+                                    int count = 200;
                                     int index = 1;
-                                    foreach (var data in response.datas)
-                                    {
-                                        count++;
-                                        if (count % 1000 == 0)
-                                            await Task.Delay(1);
 
-                                        DispatcherService.Invoke((System.Action)(() =>
+                                    model.PointItems = new ObservableCollection<StatisticsHour>(response.datas);
+                                    model.TotalPage = (model.PointItems.Count / count) + 1;
+                                    model.UserPage = 1;
+                                    for (int idx = 0; idx < model.TotalPage; idx++)
+                                    {
+                                        TabData item = new TabData();
+                                        item.Header = idx + 1;
+
+                                        var datas = model.PointItems.Skip(idx * count).Take(count).ToList();
+                                        foreach (var data in datas)
                                         {
-                                            model.PointItems.Add(new StatisticsHourData
+                                            item.PointItems.Add(new StatisticsHourData
                                             {
                                                 No = index++,
                                                 SaveTime = data.SaveTime,
@@ -1088,8 +1138,14 @@ namespace KDMSViewer.Model
                                                 MinCurrentN = data.MinCurrentN,
                                                 MinCommTime = data.MinCommTime
                                             });
-                                        }));
+                                            index++;
+                                            //item.PointItems.Add(data); 
+                                        }
+                                        DispatcherService.Invoke((System.Action)(() => { model.TabItems.Add(item); }));
                                     }
+
+                                    if (model.TabItems.Count > 0)
+                                        model.SelectItem = model.TabItems.FirstOrDefault()!;
                                 }
                                 else
                                 {
@@ -1110,24 +1166,29 @@ namespace KDMSViewer.Model
                             var model = App.Current.Services.GetService<ViewModel_StatisticsDayData>()!;
                             if (model != null)
                             {
-                                model.PointItems = new ObservableCollection<StatisticsDayData>();
+                                //model.PointItems = new ObservableCollection<StatisticsDayData>();
+                                model.TabItems = new ObservableCollection<TabData>();
                                 if (ceqList.Count <= 0)
                                     return;
 
                                 var response = await _mediator.Send(request);
                                 if (response != null && response.Result)
                                 {
-                                    int count = 0;
+                                    int count = 200;
                                     int index = 1;
-                                    foreach (var data in response.datas)
-                                    {
-                                        count++;
-                                        if (count % 1000 == 0)
-                                            await Task.Delay(1);
 
-                                        DispatcherService.Invoke((System.Action)(() =>
+                                    model.PointItems = new ObservableCollection<StatisticsDay>(response.datas);
+                                    model.TotalPage = (model.PointItems.Count / count) + 1;
+                                    model.UserPage = 1;
+                                    for (int idx = 0; idx < model.TotalPage; idx++)
+                                    {
+                                        TabData item = new TabData();
+                                        item.Header = idx + 1;
+
+                                        var datas = model.PointItems.Skip(idx * count).Take(count).ToList();
+                                        foreach (var data in datas)
                                         {
-                                            model.PointItems.Add(new StatisticsDayData
+                                            item.PointItems.Add(new StatisticsDayData
                                             {
                                                 No = index++,
                                                 SaveTime = data.SaveTime,
@@ -1151,8 +1212,14 @@ namespace KDMSViewer.Model
                                                 MinCurrentN = data.MinCurrentN,
                                                 MinCommTime = data.MinCommTime
                                             });
-                                        }));
+                                            index++;
+                                            //item.PointItems.Add(data); 
+                                        }
+                                        DispatcherService.Invoke((System.Action)(() => { model.TabItems.Add(item); }));
                                     }
+
+                                    if (model.TabItems.Count > 0)
+                                        model.SelectItem = model.TabItems.FirstOrDefault()!;
                                 }
                                 else
                                 {
@@ -1173,24 +1240,29 @@ namespace KDMSViewer.Model
                             var model = App.Current.Services.GetService<ViewModel_StatisticsMonthData>()!;
                             if (model != null)
                             {
-                                model.PointItems = new ObservableCollection<StatisticsMonthData>();
+                                //model.PointItems = new ObservableCollection<StatisticsMonthData>();
+                                model.TabItems = new ObservableCollection<TabData>();
                                 if (ceqList.Count <= 0)
                                     return;
 
                                 var response = await _mediator.Send(request);
                                 if (response != null && response.Result)
                                 {
-                                    int count = 0;
+                                    int count = 200;
                                     int index = 1;
-                                    foreach (var data in response.datas)
-                                    {
-                                        count++;
-                                        if (count % 1000 == 0)
-                                            await Task.Delay(1);
 
-                                        DispatcherService.Invoke((System.Action)(() =>
+                                    model.PointItems = new ObservableCollection<StatisticsMonth>(response.datas);
+                                    model.TotalPage = (model.PointItems.Count / count) + 1;
+                                    model.UserPage = 1;
+                                    for (int idx = 0; idx < model.TotalPage; idx++)
+                                    {
+                                        TabData item = new TabData();
+                                        item.Header = idx + 1;
+
+                                        var datas = model.PointItems.Skip(idx * count).Take(count).ToList();
+                                        foreach (var data in datas)
                                         {
-                                            model.PointItems.Add(new StatisticsMonthData
+                                            item.PointItems.Add(new StatisticsMonthData
                                             {
                                                 No = index++,
                                                 SaveTime = data.SaveTime,
@@ -1214,8 +1286,14 @@ namespace KDMSViewer.Model
                                                 MinCurrentN = data.MinCurrentN,
                                                 MinCommTime = data.MinCommTime
                                             });
-                                        }));
+                                            index++;
+                                            //item.PointItems.Add(data); 
+                                        }
+                                        DispatcherService.Invoke((System.Action)(() => { model.TabItems.Add(item); }));
                                     }
+
+                                    if (model.TabItems.Count > 0)
+                                        model.SelectItem = model.TabItems.FirstOrDefault()!;
                                 }
                                 else
                                 {
@@ -1236,24 +1314,29 @@ namespace KDMSViewer.Model
                             var model = App.Current.Services.GetService<ViewModel_StatisticsYearData>()!;
                             if (model != null)
                             {
-                                model.PointItems = new ObservableCollection<StatisticsYearData>();
+                                //model.PointItems = new ObservableCollection<StatisticsYearData>();
+                                model.TabItems = new ObservableCollection<TabData>();
                                 if (ceqList.Count <= 0)
                                     return;
 
                                 var response = await _mediator.Send(request);
                                 if (response != null && response.Result)
                                 {
-                                    int count = 0;
+                                    int count = 200;
                                     int index = 1;
-                                    foreach (var data in response.datas)
-                                    {
-                                        count++;
-                                        if (count % 1000 == 0)
-                                            await Task.Delay(1);
 
-                                        DispatcherService.Invoke((System.Action)(() =>
+                                    model.PointItems = new ObservableCollection<StatisticsYear>(response.datas);
+                                    model.TotalPage = (model.PointItems.Count / count) + 1;
+                                    model.UserPage = 1;
+                                    for (int idx = 0; idx < model.TotalPage; idx++)
+                                    {
+                                        TabData item = new TabData();
+                                        item.Header = idx + 1;
+
+                                        var datas = model.PointItems.Skip(idx * count).Take(count).ToList();
+                                        foreach (var data in datas)
                                         {
-                                            model.PointItems.Add(new StatisticsYearData
+                                            item.PointItems.Add(new StatisticsYearData
                                             {
                                                 No = index++,
                                                 SaveTime = data.SaveTime,
@@ -1277,8 +1360,14 @@ namespace KDMSViewer.Model
                                                 MinCurrentN = data.MinCurrentN,
                                                 MinCommTime = data.MinCommTime
                                             });
-                                        }));
+                                            index++;
+                                            //item.PointItems.Add(data); 
+                                        }
+                                        DispatcherService.Invoke((System.Action)(() => { model.TabItems.Add(item); }));
                                     }
+
+                                    if (model.TabItems.Count > 0)
+                                        model.SelectItem = model.TabItems.FirstOrDefault()!;
                                 }
                                 else
                                 {
@@ -1299,24 +1388,29 @@ namespace KDMSViewer.Model
                             var model = App.Current.Services.GetService<ViewModel_FiAlarmData>()!;
                             if (model != null)
                             {
-                                model.PointItems = new ObservableCollection<HistoryFiAlarmData>();
+                                //model.PointItems = new ObservableCollection<HistoryFiAlarmData>();
+                                model.TabItems = new ObservableCollection<TabData>();
                                 if (ceqList.Count <= 0)
                                     return;
 
                                 var response = await _mediator.Send(request);
                                 if (response != null && response.Result)
                                 {
-                                    int count = 0;
+                                    int count = 200;
                                     int index = 1;
-                                    foreach (var data in response.datas)
-                                    {
-                                        count++;
-                                        if (count % 1000 == 0)
-                                            await Task.Delay(1);
 
-                                        DispatcherService.Invoke((System.Action)(() =>
+                                    model.PointItems = new ObservableCollection<HistoryFiAlarm>(response.datas);
+                                    model.TotalPage = (model.PointItems.Count / count) + 1;
+                                    model.UserPage = 1;
+                                    for (int idx = 0; idx < model.TotalPage; idx++)
+                                    {
+                                        TabData item = new TabData();
+                                        item.Header = idx + 1;
+
+                                        var datas = model.PointItems.Skip(idx * count).Take(count).ToList();
+                                        foreach (var data in datas)
                                         {
-                                            model.PointItems.Add(new HistoryFiAlarmData
+                                            item.PointItems.Add(new HistoryFiAlarmData
                                             {
                                                 No = index++,
                                                 SaveTime = data.SaveTime,
@@ -1335,8 +1429,14 @@ namespace KDMSViewer.Model
                                                 FaultCurrentC = data.FaultCurrentC,
                                                 FaultCurrentN = data.FaultCurrentN
                                             });
-                                        }));
+                                            index++;
+                                            //item.PointItems.Add(data); 
+                                        }
+                                        DispatcherService.Invoke((System.Action)(() => { model.TabItems.Add(item); }));
                                     }
+
+                                    if (model.TabItems.Count > 0)
+                                        model.SelectItem = model.TabItems.FirstOrDefault()!;
                                 }
                                 else
                                 {
@@ -1357,24 +1457,29 @@ namespace KDMSViewer.Model
                             var model = App.Current.Services.GetService<ViewModel_CommDayData>()!;
                             if (model != null)
                             {
-                                model.PointItems = new ObservableCollection<HistoryCommStateData>();
+                                //model.PointItems = new ObservableCollection<HistoryCommStateData>();
+                                model.TabItems = new ObservableCollection<TabData>();
                                 if (ceqList.Count <= 0)
                                     return;
 
                                 var response = await _mediator.Send(request);
                                 if (response != null && response.Result)
                                 {
-                                    int count = 0;
+                                    int count = 200;
                                     int index = 1;
-                                    foreach (var data in response.datas)
-                                    {
-                                        count++;
-                                        if (count % 1000 == 0)
-                                            await Task.Delay(1);
 
-                                        DispatcherService.Invoke((System.Action)(() =>
+                                    model.PointItems = new ObservableCollection<HistoryCommState>(response.datas);
+                                    model.TotalPage = (model.PointItems.Count / count) + 1;
+                                    model.UserPage = 1;
+                                    for (int idx = 0; idx < model.TotalPage; idx++)
+                                    {
+                                        TabData item = new TabData();
+                                        item.Header = idx + 1;
+
+                                        var datas = model.PointItems.Skip(idx * count).Take(count).ToList();
+                                        foreach (var data in datas)
                                         {
-                                            model.PointItems.Add(new HistoryCommStateData
+                                            item.PointItems.Add(new HistoryCommStateData
                                             {
                                                 No = index++,
                                                 SaveTime = data.SaveTime,
@@ -1389,8 +1494,14 @@ namespace KDMSViewer.Model
                                                 CommSucessRate = data.CommSucessRate,
                                                 CommTime = data.CommTime
                                             });
-                                        }));
+                                            index++;
+                                            //item.PointItems.Add(data); 
+                                        }
+                                        DispatcherService.Invoke((System.Action)(() => { model.TabItems.Add(item); }));
                                     }
+
+                                    if (model.TabItems.Count > 0)
+                                        model.SelectItem = model.TabItems.FirstOrDefault()!;
                                 }
                                 else
                                 {
@@ -1411,24 +1522,29 @@ namespace KDMSViewer.Model
                             var model = App.Current.Services.GetService<ViewModel_CommLogData>()!;
                             if (model != null)
                             {
-                                model.PointItems = new ObservableCollection<HistoryCommStateLogData>();
+                                //model.PointItems = new ObservableCollection<HistoryCommStateLogData>();
+                                model.TabItems = new ObservableCollection<TabData>();
                                 if (ceqList.Count <= 0)
                                     return;
 
                                 var response = await _mediator.Send(request);
                                 if (response != null && response.Result)
                                 {
-                                    int count = 0;
+                                    int count = 200;
                                     int index = 1;
-                                    foreach (var data in response.datas)
-                                    {
-                                        count++;
-                                        if (count % 1000 == 0)
-                                            await Task.Delay(1);
 
-                                        DispatcherService.Invoke((System.Action)(() =>
+                                    model.PointItems = new ObservableCollection<HistoryCommStateLog>(response.datas);
+                                    model.TotalPage = (model.PointItems.Count / count) + 1;
+                                    model.UserPage = 1;
+                                    for (int idx = 0; idx < model.TotalPage; idx++)
+                                    {
+                                        TabData item = new TabData();
+                                        item.Header = idx + 1;
+
+                                        var datas = model.PointItems.Skip(idx * count).Take(count).ToList();
+                                        foreach (var data in datas)
                                         {
-                                            model.PointItems.Add(new HistoryCommStateLogData
+                                            item.PointItems.Add(new HistoryCommStateLogData
                                             {
                                                 No = index++,
                                                 SaveTime = data.SaveTime,
@@ -1444,8 +1560,14 @@ namespace KDMSViewer.Model
                                                 CommSucessRate = data.CommSucessRate,
                                                 CommTime = data.CommTime
                                             });
-                                        }));
+                                            index++;
+                                            //item.PointItems.Add(data); 
+                                        }
+                                        DispatcherService.Invoke((System.Action)(() => { model.TabItems.Add(item); }));
                                     }
+
+                                    if (model.TabItems.Count > 0)
+                                        model.SelectItem = model.TabItems.FirstOrDefault()!;
                                 }
                                 else
                                 {
