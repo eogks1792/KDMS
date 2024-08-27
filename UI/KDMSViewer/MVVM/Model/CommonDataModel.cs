@@ -48,7 +48,7 @@ namespace KDMSViewer.Model
 
                 ConductingEquipments = new List<PdbConductingequipment>();
                 //var conductingEquipmentList = _kdmsContext.PdbConductingequipments.Where(p => (p.Psrtype >= 58 && p.Psrtype <= 88) || p.Psrtype == 105).ToList();
-                var conductingEquipmentList = _kdmsContext.PdbConductingequipments.Where(p => p.RtuType != 1).ToList();
+                var conductingEquipmentList = _kdmsContext.PdbConductingequipments.Where(p => p.RtuType == 2).ToList();
                 foreach (var equipment in conductingEquipmentList)
                 {
                     var findRemoteunit = Remoteunits.FirstOrDefault(p => p.EqType == 1 && p.EqFk == equipment.Ceqid);
@@ -89,7 +89,7 @@ namespace KDMSViewer.Model
                 subs.Tooltip = $"SUBS ID: {subs.Id}";
                 subs.IsExpanded = true;
 
-                foreach (var distributionline in Distributionlines.Where(p => p.StFk == substation.Stid))
+                foreach (var distributionline in Distributionlines.Where(p => p.StFk == substation.Stid).OrderBy(p => p.DlNo))
                 {
                     TreeDataModel dl = new TreeDataModel();
                     dl.Type = TreeTypeCode.DL;

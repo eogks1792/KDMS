@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("KDMS.EF.Core")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+74cc3d9edc8d723c7e462c58a2201c90f1eac6ea")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+97b6b3544e45c3fa08a68eec361cf2129b89cdc6")]
 [assembly: System.Reflection.AssemblyProductAttribute("KDMS.EF.Core")]
 [assembly: System.Reflection.AssemblyTitleAttribute("KDMS.EF.Core")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

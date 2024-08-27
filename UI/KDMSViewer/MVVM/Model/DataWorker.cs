@@ -43,7 +43,6 @@ namespace KDMSViewer.Model
 
         public List<TreeDataModel> TreeDatas;
 
-
         private bool ThreadFlag { get; set; } = true;
         public DataWorker(ILogger logger, IMediator mediator, IConfiguration configuration, CommonDataModel commonData) 
         {
@@ -883,7 +882,7 @@ namespace KDMSViewer.Model
                                         {
                                             item.PointItems.Add(new HistoryMinData
                                             {
-                                                No = index,
+                                                No = index++,
                                                 SaveTime = data.SaveTime,
                                                 Ceqid = data.Ceqid,
                                                 CommTime = data.CommTime,
@@ -921,7 +920,6 @@ namespace KDMSViewer.Model
                                                 VoltagePhaseB = data.VoltagePhaseB,
                                                 VoltagePhaseC = data.VoltagePhaseC
                                             });
-                                            index++;
                                             //item.PointItems.Add(data); 
                                         }
                                         DispatcherService.Invoke((System.Action)(() => { model.TabItems.Add(item); }));
@@ -1001,7 +999,6 @@ namespace KDMSViewer.Model
                                                 MinCurrentN = data.MinCurrentN,
                                                 MinCommTime = data.MinCommTime
                                             });
-                                            index++;
                                         }
                                         DispatcherService.Invoke((System.Action)(() => { model.TabItems.Add(item); }));
                                     }
@@ -1065,7 +1062,6 @@ namespace KDMSViewer.Model
                                                 AverageCurrentC = data.AverageCurrentC,
                                                 AverageCurrentN = data.AverageCurrentN
                                             });
-                                            index++;
                                         }
                                         DispatcherService.Invoke((System.Action)(() => { model.TabItems.Add(item); }));
                                     }
@@ -1138,7 +1134,6 @@ namespace KDMSViewer.Model
                                                 MinCurrentN = data.MinCurrentN,
                                                 MinCommTime = data.MinCommTime
                                             });
-                                            index++;
                                             //item.PointItems.Add(data); 
                                         }
                                         DispatcherService.Invoke((System.Action)(() => { model.TabItems.Add(item); }));
@@ -1212,7 +1207,6 @@ namespace KDMSViewer.Model
                                                 MinCurrentN = data.MinCurrentN,
                                                 MinCommTime = data.MinCommTime
                                             });
-                                            index++;
                                             //item.PointItems.Add(data); 
                                         }
                                         DispatcherService.Invoke((System.Action)(() => { model.TabItems.Add(item); }));
@@ -1286,7 +1280,6 @@ namespace KDMSViewer.Model
                                                 MinCurrentN = data.MinCurrentN,
                                                 MinCommTime = data.MinCommTime
                                             });
-                                            index++;
                                             //item.PointItems.Add(data); 
                                         }
                                         DispatcherService.Invoke((System.Action)(() => { model.TabItems.Add(item); }));
@@ -1360,7 +1353,6 @@ namespace KDMSViewer.Model
                                                 MinCurrentN = data.MinCurrentN,
                                                 MinCommTime = data.MinCommTime
                                             });
-                                            index++;
                                             //item.PointItems.Add(data); 
                                         }
                                         DispatcherService.Invoke((System.Action)(() => { model.TabItems.Add(item); }));
@@ -1429,7 +1421,6 @@ namespace KDMSViewer.Model
                                                 FaultCurrentC = data.FaultCurrentC,
                                                 FaultCurrentN = data.FaultCurrentN
                                             });
-                                            index++;
                                             //item.PointItems.Add(data); 
                                         }
                                         DispatcherService.Invoke((System.Action)(() => { model.TabItems.Add(item); }));
@@ -1494,7 +1485,6 @@ namespace KDMSViewer.Model
                                                 CommSucessRate = data.CommSucessRate,
                                                 CommTime = data.CommTime
                                             });
-                                            index++;
                                             //item.PointItems.Add(data); 
                                         }
                                         DispatcherService.Invoke((System.Action)(() => { model.TabItems.Add(item); }));
@@ -1560,7 +1550,6 @@ namespace KDMSViewer.Model
                                                 CommSucessRate = data.CommSucessRate,
                                                 CommTime = data.CommTime
                                             });
-                                            index++;
                                             //item.PointItems.Add(data); 
                                         }
                                         DispatcherService.Invoke((System.Action)(() => { model.TabItems.Add(item); }));

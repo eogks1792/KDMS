@@ -139,7 +139,7 @@ namespace KDMSServer.Model
                 if (equipment.ceqid <= 0)
                     continue;
 
-                if (equipment.rtu_type == 1)    // RTU 타입이 1이면 수동
+                if (equipment.rtu_type != 2)    // RTU 타입이2 자동
                     continue;
 
                 var findRemoteunit = pdbRemoteUnits.FirstOrDefault(p => p.eq_type == 1 && p.eq_fk == equipment.ceqid);
@@ -356,7 +356,7 @@ namespace KDMSServer.Model
                 if (equipment.ceqid <= 0)
                     continue;
 
-                if (equipment.rtu_type == 1)    // RTU 타입이 1이면 수동
+                if (equipment.rtu_type != 2)    // RTU 타입이2 자동
                     continue;
 
                 var findRemoteunit = pdbRemoteUnits.FirstOrDefault(p => p.eq_type == 1 && p.eq_fk == equipment.ceqid);
@@ -515,7 +515,7 @@ namespace KDMSServer.Model
                         continue;
                     }
 
-                    if (equipment.rtu_type == 1)    // RTU 타입이 1이면 수동
+                    if (equipment.rtu_type != 2)    // RTU 타입이2 자동
                         continue;
 
                     var findDl = pdbDistributionLines.FirstOrDefault(p => p.dlid == equipment.dl_fk);
@@ -560,7 +560,7 @@ namespace KDMSServer.Model
                             continue;
                         }
 
-                        if (equipment.rtu_type == 1)    // RTU 타입이 1이면 수동
+                        if (equipment.rtu_type != 2)    // RTU 타입이2 자동
                             continue;
 
                         HistoryCommState data = new HistoryCommState();
@@ -701,7 +701,7 @@ namespace KDMSServer.Model
                     continue;
                 }
 
-                if (equipment.rtu_type == 1)    // RTU 타입이 1이면 수동
+                if (equipment.rtu_type != 2)    // RTU 타입이2 자동
                     continue;
 
                 HistoryCommStateLog data = new HistoryCommStateLog();
