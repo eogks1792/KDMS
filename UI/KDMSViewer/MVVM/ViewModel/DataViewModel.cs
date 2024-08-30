@@ -258,7 +258,7 @@ namespace KDMSViewer.ViewModel
             Application.Current.Dispatcher.Invoke(() => 
             {
                 view.Close();
-                Mouse.OverrideCursor = Cursors.Arrow;
+                //Mouse.OverrideCursor = Cursors.Arrow;
             });
             IsInquiry = true;
         }
@@ -269,7 +269,7 @@ namespace KDMSViewer.ViewModel
             view = new MessageView();
             view.Show();
 
-            Mouse.OverrideCursor = Cursors.Wait;
+            //Mouse.OverrideCursor = Cursors.Wait;
             await Task.Run(() =>
             {
                 IsInquiry = false;

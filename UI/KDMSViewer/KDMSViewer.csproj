@@ -12,11 +12,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Images\checkbox.png" />
-    <None Remove="Images\checked.png" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="Images\Viewer.ico" />
   </ItemGroup>
 
@@ -43,6 +38,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="MVVM\View\MessageClickView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="MVVM\View\OperationBiView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>

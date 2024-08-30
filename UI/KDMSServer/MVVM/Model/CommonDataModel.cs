@@ -20,6 +20,7 @@ namespace KDMSServer.Model
 
         public List<SchduleInfo> SchduleInfos { get; set; }
         public List<StorageInfo> StorageInfos { get; set; }
+        public List<StorageType> StorageTypes { get; set; }
         public List<PdbList> pdbLists { get; set; }
         private List<AiInfo> AiInfos { get; set; }
         private List<AlarmInfo> AlarmInfos { get; set; }
@@ -59,6 +60,7 @@ namespace KDMSServer.Model
         {
             SchduleInfos = _kdmsContext.SchduleInfos.ToList();
             StorageInfos = _kdmsContext.StorageInfos.ToList();
+            StorageTypes = _kdmsContext.StorageTypes.ToList();
             pdbLists = _kdmsContext.PdbLists.ToList();
 
             AiInfos = _kdmsContext.AiInfos.ToList();
@@ -671,10 +673,14 @@ namespace KDMSServer.Model
             var date = DateTime.Now;
             foreach (var alarm in alarmList)
             {
-                var findRemoteunit = pdbRemoteUnits.FirstOrDefault(p => p.pid == alarm.uiRtuid);
+                //var findRemoteunit = pdbRemoteUnits.FirstOrDefault(p => p.pid == alarm.uiRtuid);
+                //if (findRemoteunit.pid <= 0)
+                //    _logger.Debug($"[통신상태 이력] Remoteunit RTUID:{alarm.uiRtuid} 없음 ");
+
+                var findRemoteunit = pdbRemoteUnits.FirstOrDefault(p => p.dmc_fk == alarm.uiPid);
                 if (findRemoteunit.pid <= 0)
                 {
-                    _logger.Debug($"[통신상태 이력] Remoteunit RTUID:{alarm.uiRtuid} 없음 ");
+                    _logger.Debug($"[통신상태 이력] Remoteunit DMCFK:{alarm.uiPid} 없음 ");
                     continue;
                 }
 
@@ -687,22 +693,24 @@ namespace KDMSServer.Model
                 if (findRemoteunit.protocol_fk == 0 && findRemoteunit.comm_type == 0)
                     continue;
 
-                var findDl = pdbDistributionLines.FirstOrDefault(p => p.dlid == alarm.uiDL);
+                pdb_ConductingEquipment equipment = new pdb_ConductingEquipment();
+                if (findRemoteunit.eq_type == 1)
+                    equipment = pdbConductingequipments.FirstOrDefault(p => findRemoteunit.eq_fk == p.ceqid);
+                else
+                    equipment = pdbConductingequipments.FirstOrDefault(p => findRemoteunit.eq_type == p.ec_fk);
+
+                if (equipment.ceqid <= 0)
+                    continue;
+
+                if (equipment.rtu_type != 2)    // RTU 타입이2 자동
+                    continue;
+
+                var findDl = pdbDistributionLines.FirstOrDefault(p => p.dlid == equipment.dl_fk);
                 if (findDl.dlid <= 0)
                 {
                     _logger.Debug($"[통신상태 이력] DistributionLine DlId:0 / Alarm DlId:{alarm.uiDL}");
                     continue;
                 }
-
-                var equipment = pdbConductingequipments.FirstOrDefault(p => p.ceqid == alarm.uiEqid);
-                if (equipment.ceqid <= 0)
-                {
-                    _logger.Debug($"[통신상태 이력] Conductingequipment CEQID:0 / Alarm EqId:{alarm.uiEqid}");
-                    continue;
-                }
-
-                if (equipment.rtu_type != 2)    // RTU 타입이2 자동
-                    continue;
 
                 HistoryCommStateLog data = new HistoryCommStateLog();
                 data.SaveTime = date;
@@ -711,7 +719,7 @@ namespace KDMSServer.Model
 
                 data.EqType = (int)findRemoteunit.eq_fk;
                 data.Ceqid = (int)equipment.ceqid;
-                data.Cpsid = 0;
+                data.Cpsid = (int)equipment.ec_fk;
                 data.CommState = GetCommStateValue(Convert.ToInt32(findRemoteunit.dmc_fk));
                 data.CommSucessCount = (int)GetCommDataValue(Convert.ToInt32(findRemoteunit.comm_dmc_fk + 3000));
                 data.CommFailCount = (int)GetCommDataValue(Convert.ToInt32(findRemoteunit.comm_dmc_fk + 6000));
@@ -840,7 +848,7 @@ namespace KDMSServer.Model
                         continue;
                     }
 
-                    if (equipment.rtu_type == 1)    // RTU 타입이 1이면 수동
+                    if (equipment.rtu_type != 2)    // RTU 타입이2 자동
                         continue;
 
                     HistoryFiAlarm data = new HistoryFiAlarm();
@@ -1519,7 +1527,7 @@ namespace KDMSServer.Model
             return retval;
         }
 
-        public bool StatisticsHourTableDelete(DateTime date, int day)
+        public bool StatisticsHourDataDelete(DateTime date, int day)
         {
             bool retval = false;
             try
@@ -1538,7 +1546,7 @@ namespace KDMSServer.Model
             return retval;
         }
 
-        public bool StatisticsDayTableDelete(DateTime date, int day)
+        public bool StatisticsDayDataDelete(DateTime date, int day)
         {
             bool retval = false;
             try
@@ -1557,7 +1565,7 @@ namespace KDMSServer.Model
             return retval;
         }
 
-        public bool StatisticsMonthTableDelete(DateTime date, int day)
+        public bool StatisticsMonthDataDelete(DateTime date, int day)
         {
             bool retval = false;
             try
@@ -1576,7 +1584,7 @@ namespace KDMSServer.Model
             return retval;
         }
 
-        public bool StatisticsYearTableDelete(DateTime date, int day)
+        public bool StatisticsYearDataDelete(DateTime date, int day)
         {
             bool retval = false;
             try
@@ -1595,7 +1603,7 @@ namespace KDMSServer.Model
             return retval;
         }
 
-        public bool FiAlarmTableDelete(DateTime date, int day)
+        public bool FiAlarmDataDelete(DateTime date, int day)
         {
             bool retval = false;
             try
@@ -1614,7 +1622,7 @@ namespace KDMSServer.Model
             return retval;
         }
 
-        public bool CommStateTableDelete(DateTime date, int day)
+        public bool CommStateDataDelete(DateTime date, int day)
         {
             bool retval = false;
             try
@@ -1633,7 +1641,7 @@ namespace KDMSServer.Model
             return retval;
         }
 
-        public bool CommStateLogTableDelete(DateTime date, int day)
+        public bool CommStateLogDataDelete(DateTime date, int day)
         {
             bool retval = false;
             try

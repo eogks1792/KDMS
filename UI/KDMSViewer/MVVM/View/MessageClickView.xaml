@@ -1,0 +1,41 @@
+﻿<dx:ThemedWindow x:Class="KDMSViewer.View.MessageClickView"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                 xmlns:local="clr-namespace:KDMSViewer.View"
+                 xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" 
+                 mc:Ignorable="d"
+                 Title="데이터 조회"
+                 WindowStyle="ToolWindow"
+                 WindowStartupLocation="CenterScreen"
+                 Height="130" Width="500"
+                 Background="Transparent"
+                 dx:ThemeManager.ThemeName="Win11Dark">
+    
+    <Grid >
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+
+        <ScrollViewer >
+            <TextBlock x:Name="Result"
+                       HorizontalAlignment="Stretch"
+                       TextWrapping="Wrap"
+                       FontSize="{StaticResource FontSizeSmall}"
+                       Style="{StaticResource baseTextBlock}"/>
+        </ScrollViewer>
+
+        <Button Grid.Row="1"
+                Margin="5 3 3 3"
+                Width="60"
+                Height="30"
+                Content="확인"
+                Click="Button_Click"
+                HorizontalAlignment="Right"
+                FontSize="{StaticResource FontSizeSmall}"
+                Style="{StaticResource btnMainType}"
+                Tag="1"/>
+    </Grid>
+</dx:ThemedWindow>

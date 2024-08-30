@@ -30,6 +30,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using System.Xml.Linq;
+using static DevExpress.Charts.Designer.Native.BarThicknessEditViewModel;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace KDMSViewer.Model
@@ -870,6 +871,7 @@ namespace KDMSViewer.Model
                                     int index = 1;
 
                                     model.PointItems = new ObservableCollection<HistoryMinDatum>(response.datas);
+                                    model.TotalCount = model.PointItems.Count;
                                     model.TotalPage = (model.PointItems.Count / count) + 1;
                                     model.UserPage = 1;
                                     for (int idx = 0; idx < model.TotalPage; idx++)
@@ -930,7 +932,8 @@ namespace KDMSViewer.Model
                                 }
                                 else
                                 {
-                                    MessageBox.Show($"HISTORY_MIN_DATA 테이블 \n\rCODE:{response.Error.Code} MSG:{response.Error.Message}", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
+                                    DataResultView($"HISTORY_MIN_DATA 테이블 CODE:{response.Error.Code} MSG:{response.Error.Message}");
+                                    //MessageBox.Show($"HISTORY_MIN_DATA 테이블 \n\rCODE:{response.Error.Code} MSG:{response.Error.Message}", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
                                 }
                             }
                         }
@@ -959,6 +962,7 @@ namespace KDMSViewer.Model
                                     int index = 1;
 
                                     model.PointItems = new ObservableCollection<HistoryDaystatDatum>(response.datas);
+                                    model.TotalCount = model.PointItems.Count;
                                     model.TotalPage = (model.PointItems.Count / count) + 1;
                                     model.UserPage = 1;
 
@@ -1008,7 +1012,8 @@ namespace KDMSViewer.Model
                                 }
                                 else
                                 {
-                                    MessageBox.Show($"HISTORY_DAYSTAT_DATA 테이블 \n\rCODE:{response.Error.Code} MSG:{response.Error.Message}", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
+                                    DataResultView($"HISTORY_DAYSTAT_DATA 테이블 CODE:{response.Error.Code} MSG:{response.Error.Message}");
+                                    //MessageBox.Show($"HISTORY_DAYSTAT_DATA 테이블 \n\rCODE:{response.Error.Code} MSG:{response.Error.Message}", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
                                 }
                             }
                         }
@@ -1037,6 +1042,7 @@ namespace KDMSViewer.Model
                                     int index = 1;
 
                                     model.PointItems = new ObservableCollection<Statistics15min>(response.datas);
+                                    model.TotalCount = model.PointItems.Count;
                                     model.TotalPage = (model.PointItems.Count / count) + 1;
                                     model.UserPage = 1;
                                     for (int idx = 0; idx < model.TotalPage; idx++)
@@ -1071,7 +1077,8 @@ namespace KDMSViewer.Model
                                 }
                                 else
                                 {
-                                    MessageBox.Show($"STATISTICS_15MIN 테이블 \n\rCODE:{response.Error.Code} MSG:{response.Error.Message}", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
+                                    DataResultView($"STATISTICS_15MIN 테이블 CODE:{response.Error.Code} MSG:{response.Error.Message}");
+                                    //MessageBox.Show($"STATISTICS_15MIN 테이블 \n\rCODE:{response.Error.Code} MSG:{response.Error.Message}", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
                                 }
                             }
                         }
@@ -1100,6 +1107,7 @@ namespace KDMSViewer.Model
                                     int index = 1;
 
                                     model.PointItems = new ObservableCollection<StatisticsHour>(response.datas);
+                                    model.TotalCount = model.PointItems.Count;
                                     model.TotalPage = (model.PointItems.Count / count) + 1;
                                     model.UserPage = 1;
                                     for (int idx = 0; idx < model.TotalPage; idx++)
@@ -1144,7 +1152,8 @@ namespace KDMSViewer.Model
                                 }
                                 else
                                 {
-                                    MessageBox.Show($"STATISTICS_HOUR 테이블 \n\rCODE:{response.Error.Code} MSG:{response.Error.Message}", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
+                                    DataResultView($"STATISTICS_HOUR 테이블 CODE:{response.Error.Code} MSG:{response.Error.Message}");
+                                    //MessageBox.Show($"STATISTICS_HOUR 테이블 \n\rCODE:{response.Error.Code} MSG:{response.Error.Message}", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
                                 }
                             }
                         }
@@ -1173,6 +1182,7 @@ namespace KDMSViewer.Model
                                     int index = 1;
 
                                     model.PointItems = new ObservableCollection<StatisticsDay>(response.datas);
+                                    model.TotalCount = model.PointItems.Count;
                                     model.TotalPage = (model.PointItems.Count / count) + 1;
                                     model.UserPage = 1;
                                     for (int idx = 0; idx < model.TotalPage; idx++)
@@ -1217,7 +1227,8 @@ namespace KDMSViewer.Model
                                 }
                                 else
                                 {
-                                    MessageBox.Show($"STATISTICS_DAY 테이블 \n\rCODE:{response.Error.Code} MSG:{response.Error.Message}", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
+                                    DataResultView($"STATISTICS_DAY 테이블 CODE:{response.Error.Code} MSG:{response.Error.Message}");
+                                    //MessageBox.Show($"STATISTICS_DAY 테이블 \n\rCODE:{response.Error.Code} MSG:{response.Error.Message}", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
                                 }
                             }
                         }
@@ -1246,6 +1257,7 @@ namespace KDMSViewer.Model
                                     int index = 1;
 
                                     model.PointItems = new ObservableCollection<StatisticsMonth>(response.datas);
+                                    model.TotalCount = model.PointItems.Count;
                                     model.TotalPage = (model.PointItems.Count / count) + 1;
                                     model.UserPage = 1;
                                     for (int idx = 0; idx < model.TotalPage; idx++)
@@ -1290,7 +1302,8 @@ namespace KDMSViewer.Model
                                 }
                                 else
                                 {
-                                    MessageBox.Show($"STATISTICS_MONTH 테이블 \n\rCODE:{response.Error.Code} MSG:{response.Error.Message}", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
+                                    DataResultView($"STATISTICS_MONTH 테이블 CODE:{response.Error.Code} MSG:{response.Error.Message}");
+                                    //MessageBox.Show($"STATISTICS_MONTH 테이블 \n\rCODE:{response.Error.Code} MSG:{response.Error.Message}", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
                                 }
                             }
                         }
@@ -1319,6 +1332,7 @@ namespace KDMSViewer.Model
                                     int index = 1;
 
                                     model.PointItems = new ObservableCollection<StatisticsYear>(response.datas);
+                                    model.TotalCount = model.PointItems.Count;
                                     model.TotalPage = (model.PointItems.Count / count) + 1;
                                     model.UserPage = 1;
                                     for (int idx = 0; idx < model.TotalPage; idx++)
@@ -1363,7 +1377,8 @@ namespace KDMSViewer.Model
                                 }
                                 else
                                 {
-                                    MessageBox.Show($"STATISTICS_YEAR 테이블 \n\rCODE:{response.Error.Code} MSG:{response.Error.Message}", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
+                                    DataResultView($"STATISTICS_YEAR 테이블 CODE:{response.Error.Code} MSG:{response.Error.Message}");
+                                    //MessageBox.Show($"STATISTICS_YEAR 테이블 \n\rCODE:{response.Error.Code} MSG:{response.Error.Message}", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
                                 }
                             }
                         }
@@ -1392,6 +1407,7 @@ namespace KDMSViewer.Model
                                     int index = 1;
 
                                     model.PointItems = new ObservableCollection<HistoryFiAlarm>(response.datas);
+                                    model.TotalCount = model.PointItems.Count;
                                     model.TotalPage = (model.PointItems.Count / count) + 1;
                                     model.UserPage = 1;
                                     for (int idx = 0; idx < model.TotalPage; idx++)
@@ -1431,7 +1447,8 @@ namespace KDMSViewer.Model
                                 }
                                 else
                                 {
-                                    MessageBox.Show($"HISTORY_FI_ALARM 테이블 \n\rCODE:{response.Error.Code} MSG:{response.Error.Message}", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
+                                    DataResultView($"HISTORY_FI_ALARM 테이블 CODE:{response.Error.Code} MSG:{response.Error.Message}");
+                                    //MessageBox.Show($"HISTORY_FI_ALARM 테이블 \n\rCODE:{response.Error.Code} MSG:{response.Error.Message}", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
                                 }
                             }
                         }
@@ -1460,6 +1477,7 @@ namespace KDMSViewer.Model
                                     int index = 1;
 
                                     model.PointItems = new ObservableCollection<HistoryCommState>(response.datas);
+                                    model.TotalCount = model.PointItems.Count;
                                     model.TotalPage = (model.PointItems.Count / count) + 1;
                                     model.UserPage = 1;
                                     for (int idx = 0; idx < model.TotalPage; idx++)
@@ -1495,7 +1513,8 @@ namespace KDMSViewer.Model
                                 }
                                 else
                                 {
-                                    MessageBox.Show($"HISTORY_COMM_STATE 테이블 \n\rCODE:{response.Error.Code} MSG:{response.Error.Message}", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
+                                    DataResultView($"HISTORY_COMM_STATE 테이블 CODE:{response.Error.Code} MSG:{response.Error.Message}");
+                                    //MessageBox.Show($"HISTORY_COMM_STATE 테이블 \n\rCODE:{response.Error.Code} MSG:{response.Error.Message}", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
                                 }
                             }
                         }
@@ -1524,6 +1543,7 @@ namespace KDMSViewer.Model
                                     int index = 1;
 
                                     model.PointItems = new ObservableCollection<HistoryCommStateLog>(response.datas);
+                                    model.TotalCount = model.PointItems.Count;
                                     model.TotalPage = (model.PointItems.Count / count) + 1;
                                     model.UserPage = 1;
                                     for (int idx = 0; idx < model.TotalPage; idx++)
@@ -1560,7 +1580,8 @@ namespace KDMSViewer.Model
                                 }
                                 else
                                 {
-                                    MessageBox.Show($"HISTORY_COMM_STATE_LOG 테이블 \n\rCODE:{response.Error.Code} MSG:{response.Error.Message}", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
+                                    DataResultView($"HISTORY_COMM_STATE_LOG 테이블 \nCODE:{response.Error.Code} MSG:{response.Error.Message}");
+                                    //MessageBox.Show($"HISTORY_COMM_STATE_LOG 테이블 \n\rCODE:{response.Error.Code} MSG:{response.Error.Message}", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
                                 }
                             }
                         }
@@ -1571,6 +1592,16 @@ namespace KDMSViewer.Model
             {
                 MessageBox.Show(ex.Message);
             }
+        }
+
+        private void DataResultView(string msg)
+        {
+            DispatcherService.Invoke((System.Action)(() => 
+            {
+                MessageClickView view = new MessageClickView();
+                view.Result.Text = msg;
+                view.ShowDialog();
+            }));
         }
 
         public object GetPointItems(int type)

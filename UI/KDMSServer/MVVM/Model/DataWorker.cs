@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using System.IO;
 using System.Net.Sockets;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace KDMSServer.Model
 {
@@ -954,181 +955,245 @@ namespace KDMSServer.Model
             int commStateValue = Convert.ToInt32(_commonData.StorageInfos.FirstOrDefault(x => x.StorageId == (int)ProcTypeCode.COMMSTATE)!.StorageValue);
             int commStateLogValue = Convert.ToInt32(_commonData.StorageInfos.FirstOrDefault(x => x.StorageId == (int)ProcTypeCode.COMMSTATELOG)!.StorageValue);
 
-            DateTime minDataInitialTime = DateTimeHelper.GetNextDateTime(minDataValue == 0 ? DateTime.MaxValue : DateTime.Now.AddDays(minDataValue), TimeDivisionCode.Day);
-            //DateTime minDataInitialTime = DateTimeHelper.GetNextDateTime(DateTime.Now, TimeDivisionCode.Minute, min:1);
-            _logger.DbLog($"[1분 실시간] 보관주기 시간: {minDataInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+            int minDataType = Convert.ToInt32(_commonData.StorageInfos.FirstOrDefault(x => x.StorageId == (int)ProcTypeCode.MINDATA)!.StorageType);
+            int dayStatType = Convert.ToInt32(_commonData.StorageInfos.FirstOrDefault(x => x.StorageId == (int)ProcTypeCode.DAYSTATDATA)!.StorageType);
+            int statisticsMinType = Convert.ToInt32(_commonData.StorageInfos.FirstOrDefault(x => x.StorageId == (int)ProcTypeCode.STATISTICSMIN)!.StorageType);
+            int statisticsHourType = Convert.ToInt32(_commonData.StorageInfos.FirstOrDefault(x => x.StorageId == (int)ProcTypeCode.STATISTICSHOUR)!.StorageType);
+            int statisticsDayType = Convert.ToInt32(_commonData.StorageInfos.FirstOrDefault(x => x.StorageId == (int)ProcTypeCode.STATISTICSDAY)!.StorageType);
+            int statisticsMonthType = Convert.ToInt32(_commonData.StorageInfos.FirstOrDefault(x => x.StorageId == (int)ProcTypeCode.STATISTICSMONTH)!.StorageType);
+            int statisticsYearType = Convert.ToInt32(_commonData.StorageInfos.FirstOrDefault(x => x.StorageId == (int)ProcTypeCode.STATISTICSYEAR)!.StorageType);
+            int fiAlarmType = Convert.ToInt32(_commonData.StorageInfos.FirstOrDefault(x => x.StorageId == (int)ProcTypeCode.FIALARM)!.StorageType);
+            int commStateType = Convert.ToInt32(_commonData.StorageInfos.FirstOrDefault(x => x.StorageId == (int)ProcTypeCode.COMMSTATE)!.StorageType);
+            int commStateLogType = Convert.ToInt32(_commonData.StorageInfos.FirstOrDefault(x => x.StorageId == (int)ProcTypeCode.COMMSTATELOG)!.StorageType);
 
-            DateTime dayStatInitialTime = DateTimeHelper.GetNextDateTime(dayStatValue == 0 ? DateTime.MaxValue : DateTime.Now.AddDays(dayStatValue), TimeDivisionCode.Day);
-            _logger.DbLog($"[1일 통계(1분실시간전류)] 보관주기 시간: {dayStatInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
-            
-            DateTime statisticsMinInitialTime = DateTimeHelper.GetNextDateTime(statisticsMinValue == 0 ? DateTime.MaxValue : DateTime.Now.AddDays(statisticsMinValue), TimeDivisionCode.Day);
-            _logger.DbLog($"[15분 실시간(평균부하전류)] 보관주기 시간: {statisticsMinInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
-            
-            DateTime statisticsHourInitialTime = DateTimeHelper.GetNextDateTime(statisticsHourValue == 0 ? DateTime.MaxValue : DateTime.Now.AddDays(statisticsHourValue), TimeDivisionCode.Day);
-            _logger.DbLog($"[시간 통계(평균부하전류)] 보관주기 시간: {statisticsHourInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+            DateTime DeleteInitialTime = DateTimeHelper.GetNextDateTime(DateTime.Now, TimeDivisionCode.Day, hour:1);
+            _logger.DbLog($"[서버] 보관주기 스케줄 삭제 시간: {DeleteInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
 
-            DateTime statisticsDayInitialTime = DateTimeHelper.GetNextDateTime(statisticsDayValue == 0 ? DateTime.MaxValue : DateTime.Now.AddDays(statisticsDayValue), TimeDivisionCode.Day);
-            _logger.DbLog($"[일 통계(평균부하전류)] 보관주기 시간: {statisticsDayInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+            _logger.DbLog($"[1분 실시간] 테이블 보관기간: {GetStroyeType(minDataValue, minDataType)}");
+            _logger.DbLog($"[1일 통계(1분실시간전류)] 테이블 보관기간: {GetStroyeType(dayStatValue, dayStatType)}");
+            _logger.DbLog($"[15분 실시간(평균부하전류) 데이터 보관기간: {GetStroyeType(statisticsMinValue, statisticsMinType)}");
+            _logger.DbLog($"[시간 통계(평균부하전류)] 데이터 보관기간: {GetStroyeType(statisticsHourValue, statisticsHourType)}");
+            _logger.DbLog($"[일 통계(평균부하전류)] 데이터 보관기간: {GetStroyeType(statisticsDayValue, statisticsDayType)}");
+            _logger.DbLog($"[월 통계(평균부하전류)] 데이터 보관기간: {GetStroyeType(statisticsMonthValue, statisticsMonthType)}");
+            _logger.DbLog($"[년 통계(평균부하전류)] 데이터 보관기간: {GetStroyeType(statisticsYearValue, statisticsYearType)}");
+            _logger.DbLog($"[알람 실시간] 데이터 보관기간: {GetStroyeType(fiAlarmValue, fiAlarmType)}");
+            _logger.DbLog($"[통신 성공률] 데이터 보관기간: {GetStroyeType(commStateValue, commStateType)}");
+            _logger.DbLog($"[통신 상태 이력] 데이터 보관기간: {GetStroyeType(commStateLogValue, commStateLogType)}");
 
-            DateTime statisticsMonthInitialTime = DateTimeHelper.GetNextDateTime(statisticsMonthValue == 0 ? DateTime.MaxValue : DateTime.Now.AddDays(statisticsMonthValue), TimeDivisionCode.Day);
-            _logger.DbLog($"[월 통계(평균부하전류)] 보관주기 시간: {statisticsMonthInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+            //DateTime minDataInitialTime = DateTimeHelper.GetNextDateTime(minDataValue == 0 ? DateTime.MaxValue : DateTime.Now.AddDays(minDataValue), TimeDivisionCode.Day);
+            //_logger.DbLog($"[1분 실시간] 보관주기 시간: {minDataInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
 
-            DateTime statisticsYearInitialTime = DateTimeHelper.GetNextDateTime(statisticsYearValue == 0 ? DateTime.MaxValue : DateTime.Now.AddDays(statisticsYearValue), TimeDivisionCode.Day);
-            _logger.DbLog($"[년 통계(평균부하전류)] 보관주기 시간: {statisticsYearInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+            //DateTime dayStatInitialTime = DateTimeHelper.GetNextDateTime(dayStatValue == 0 ? DateTime.MaxValue : DateTime.Now.AddDays(dayStatValue), TimeDivisionCode.Day);
+            //_logger.DbLog($"[1일 통계(1분실시간전류)] 보관주기 시간: {dayStatInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
 
-            DateTime fiAlarmInitialTime = DateTimeHelper.GetNextDateTime(fiAlarmValue == 0 ? DateTime.MaxValue : DateTime.Now.AddDays(fiAlarmValue), TimeDivisionCode.Day);
-            _logger.DbLog($"[알람 실시간] 보관주기 시간: {fiAlarmInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+            //DateTime statisticsMinInitialTime = DateTimeHelper.GetNextDateTime(statisticsMinValue == 0 ? DateTime.MaxValue : DateTime.Now.AddDays(statisticsMinValue), TimeDivisionCode.Day);
+            //_logger.DbLog($"[15분 실시간(평균부하전류)] 보관주기 시간: {statisticsMinInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
 
-            DateTime commStateInitialTime = DateTimeHelper.GetNextDateTime(commStateValue == 0 ? DateTime.MaxValue : DateTime.Now.AddDays(commStateValue), TimeDivisionCode.Day);
-            _logger.DbLog($"[통신 성공률] 보관주기 시간: {commStateInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+            //DateTime statisticsHourInitialTime = DateTimeHelper.GetNextDateTime(statisticsHourValue == 0 ? DateTime.MaxValue : DateTime.Now.AddDays(statisticsHourValue), TimeDivisionCode.Day);
+            //_logger.DbLog($"[시간 통계(평균부하전류)] 보관주기 시간: {statisticsHourInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
 
-            DateTime commStateLogInitialTime = DateTimeHelper.GetNextDateTime(commStateLogValue == 0 ? DateTime.MaxValue : DateTime.Now.AddDays(commStateLogValue), TimeDivisionCode.Day);
-            _logger.DbLog($"[통신 상태 이력] 보관주기 시간: {commStateLogInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+            //DateTime statisticsDayInitialTime = DateTimeHelper.GetNextDateTime(statisticsDayValue == 0 ? DateTime.MaxValue : DateTime.Now.AddDays(statisticsDayValue), TimeDivisionCode.Day);
+            //_logger.DbLog($"[일 통계(평균부하전류)] 보관주기 시간: {statisticsDayInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+
+            //DateTime statisticsMonthInitialTime = DateTimeHelper.GetNextDateTime(statisticsMonthValue == 0 ? DateTime.MaxValue : DateTime.Now.AddDays(statisticsMonthValue), TimeDivisionCode.Day);
+            //_logger.DbLog($"[월 통계(평균부하전류)] 보관주기 시간: {statisticsMonthInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+
+            //DateTime statisticsYearInitialTime = DateTimeHelper.GetNextDateTime(statisticsYearValue == 0 ? DateTime.MaxValue : DateTime.Now.AddDays(statisticsYearValue), TimeDivisionCode.Day);
+            //_logger.DbLog($"[년 통계(평균부하전류)] 보관주기 시간: {statisticsYearInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+
+            //DateTime fiAlarmInitialTime = DateTimeHelper.GetNextDateTime(fiAlarmValue == 0 ? DateTime.MaxValue : DateTime.Now.AddDays(fiAlarmValue), TimeDivisionCode.Day);
+            //_logger.DbLog($"[알람 실시간] 보관주기 시간: {fiAlarmInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+
+            //DateTime commStateInitialTime = DateTimeHelper.GetNextDateTime(commStateValue == 0 ? DateTime.MaxValue : DateTime.Now.AddDays(commStateValue), TimeDivisionCode.Day);
+            //_logger.DbLog($"[통신 성공률] 보관주기 시간: {commStateInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+
+            //DateTime commStateLogInitialTime = DateTimeHelper.GetNextDateTime(commStateLogValue == 0 ? DateTime.MaxValue : DateTime.Now.AddDays(commStateLogValue), TimeDivisionCode.Day);
+            //_logger.DbLog($"[통신 상태 이력] 보관주기 시간: {commStateLogInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
 
             while (DBThreadFlag)
             {
                 try
                 {
                     var nowTime = DateTime.Now;
-                    if (minDataInitialTime <= nowTime)
+                    if(DeleteInitialTime <= nowTime)
                     {
-                        if(minDataValue > 0)
-                        {
-                            _commonData.MinDataTableDrop(minDataInitialTime, minDataValue);
-                            minDataInitialTime = minDataInitialTime.AddDays(minDataValue);
-                        }
-                        else
-                        {
-                            minDataInitialTime = minDataInitialTime.AddDays(365);
-                        }
-                        _logger.DbLog($"[1분 실시간] NEXT 보관주기 시간: {minDataInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
-                    }
+                        _logger.DbLog($"[서버] 보관주기 스케줄 삭제 시작");
 
-                    if (dayStatInitialTime <= nowTime)
-                    {
-                        if(dayStatValue > 0)
-                        {
-                            _commonData.DayStatTableDrop(dayStatInitialTime, dayStatValue);
-                            dayStatInitialTime = dayStatInitialTime.AddDays(dayStatValue);
-                        }
-                        else
-                        {
-                            dayStatInitialTime = dayStatInitialTime.AddDays(365);
-                        }
-                        _logger.DbLog($"[1일 통계(1분실시간전류)] NEXT 보관주기 시간: {dayStatInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
-                    }
+                        if (minDataValue > 0)
+                            _commonData.MinDataTableDrop(DeleteInitialTime, minDataValue);
+                            
+                        if (dayStatValue > 0)
+                            _commonData.DayStatTableDrop(DeleteInitialTime, dayStatValue);
 
-                    if (statisticsMinInitialTime <= nowTime)
-                    {
                         if (statisticsMinValue > 0)
-                        {
-                            _commonData.StatisticsMinTableDelete(statisticsMinInitialTime, statisticsMinValue);
-                            statisticsMinInitialTime = statisticsMinInitialTime.AddDays(statisticsMinValue);
-                        }
-                        else
-                        {
-                            statisticsMinInitialTime = statisticsMinInitialTime.AddDays(365);
-                        }
-                        _logger.DbLog($"[15분 실시간(평균부하전류)] NEXT 보관주기 시간: {statisticsMinInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
-                    }
+                            _commonData.StatisticsMinTableDelete(DeleteInitialTime, statisticsMinValue);
 
-                    if (statisticsHourInitialTime <= nowTime)
-                    {
                         if (statisticsHourValue > 0)
-                        {
-                            _commonData.StatisticsHourTableDelete(statisticsHourInitialTime, statisticsHourValue);
-                            statisticsHourInitialTime = statisticsHourInitialTime.AddDays(statisticsHourValue);
-                        }
-                        else
-                        {
-                            statisticsHourInitialTime = statisticsHourInitialTime.AddDays(365);
-                        }
-                        _logger.DbLog($"[시간 통계(평균부하전류)] NEXT 보관주기 시간: {statisticsHourInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
-                    }
+                            _commonData.StatisticsHourDataDelete(DeleteInitialTime, statisticsHourValue);
 
-                    if (statisticsDayInitialTime <= nowTime)
-                    {
                         if (statisticsDayValue > 0)
-                        {
-                            _commonData.StatisticsDayTableDelete(statisticsDayInitialTime, statisticsDayValue);
-                            statisticsDayInitialTime = statisticsDayInitialTime.AddDays(statisticsDayValue);
-                        }
-                        else
-                        {
-                            statisticsDayInitialTime = statisticsDayInitialTime.AddDays(365);
-                        }
-                        _logger.DbLog($"[일 통계(평균부하전류)] NEXT 보관주기 시간: {statisticsDayInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
-                    }
+                            _commonData.StatisticsDayDataDelete(DeleteInitialTime, statisticsDayValue);
 
-                    if (statisticsMonthInitialTime <= nowTime)
-                    {
                         if (statisticsMonthValue > 0)
-                        {
-                            _commonData.StatisticsMonthTableDelete(statisticsMonthInitialTime, statisticsMonthValue);
-                            statisticsMonthInitialTime = statisticsMonthInitialTime.AddDays(statisticsMonthValue);
-                        }
-                        else
-                        {
-                            statisticsMonthInitialTime = statisticsMonthInitialTime.AddDays(365);
-                        }
-                        _logger.DbLog($"[월 통계(평균부하전류)] NEXT 보관주기 시간: {statisticsMonthInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
-                    }
+                            _commonData.StatisticsMonthDataDelete(DeleteInitialTime, statisticsMonthValue);
 
-                    if (statisticsYearInitialTime <= nowTime)
-                    {
                         if (statisticsYearValue > 0)
-                        {
-                            _commonData.StatisticsYearTableDelete(statisticsYearInitialTime, statisticsYearValue);
-                            statisticsYearInitialTime = statisticsYearInitialTime.AddDays(statisticsYearValue);
-                        }
-                        else
-                        {
-                            statisticsYearInitialTime = statisticsYearInitialTime.AddDays(365);
-                        }
-                        _logger.DbLog($"[년 통계(평균부하전류)] NEXT 보관주기 시간: {statisticsYearInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
-                    }
+                            _commonData.StatisticsYearDataDelete(DeleteInitialTime, statisticsYearValue);
 
-                    if (fiAlarmInitialTime <= nowTime)
-                    {
                         if (fiAlarmValue > 0)
-                        {
-                            _commonData.FiAlarmTableDelete(fiAlarmInitialTime, fiAlarmValue);
-                            fiAlarmInitialTime = fiAlarmInitialTime.AddDays(fiAlarmValue);
-                        }
-                        else
-                        {
-                            fiAlarmInitialTime = fiAlarmInitialTime.AddDays(365);
-                        }
-                        _logger.DbLog($"[실시간 알람] NEXT 보관주기 시간: {fiAlarmInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
-                    }
-
-                    if (commStateInitialTime <= nowTime)
-                    {
+                            _commonData.FiAlarmDataDelete(DeleteInitialTime, fiAlarmValue);
+                            
                         if (commStateValue > 0)
-                        {
-                            _commonData.CommStateTableDelete(commStateInitialTime, commStateValue);
-                            commStateInitialTime = commStateInitialTime.AddDays(commStateValue);
-                        }
-                        else
-                        {
-                            commStateInitialTime = commStateInitialTime.AddDays(365);
-                        }
-                        _logger.DbLog($"[통신 성공률] NEXT 보관주기 시간: {commStateInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+                            _commonData.CommStateDataDelete(DeleteInitialTime, commStateValue);
+
+                        if (commStateLogValue > 0)
+                            _commonData.CommStateLogDataDelete(DeleteInitialTime, commStateLogValue);
+
+                        _logger.DbLog($"[서버] 보관주기 스케줄 삭제 완료");
+
+                        DeleteInitialTime = DeleteInitialTime.AddDays(1);
+                        _logger.DbLog($"[서버] NEXT 보관주기 스케줄 삭제 시간: {DeleteInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
                     }
 
-                    if (commStateLogInitialTime <= nowTime)
-                    {
-                        if (commStateLogValue > 0)
-                        {
-                            _commonData.CommStateLogTableDelete(commStateLogInitialTime, commStateLogValue);
-                            commStateLogInitialTime = commStateLogInitialTime.AddDays(commStateLogValue);
-                        }
-                        else
-                        {
-                            commStateLogInitialTime = commStateLogInitialTime.AddDays(365);
-                        }
-                        _logger.DbLog($"[통신 상태 이력] NEXT 보관주기 시간: {commStateLogInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
-                    }
+                    //if (minDataInitialTime <= nowTime)
+                    //{
+                    //    if(minDataValue > 0)
+                    //    {
+                    //        _commonData.MinDataTableDrop(minDataInitialTime, minDataValue);
+                    //        minDataInitialTime = minDataInitialTime.AddDays(minDataValue);
+                    //    }
+                    //    else
+                    //    {
+                    //        minDataInitialTime = minDataInitialTime.AddDays(365);
+                    //    }
+                    //    _logger.DbLog($"[1분 실시간] NEXT 보관주기 시간: {minDataInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+                    //}
+
+                    //if (dayStatInitialTime <= nowTime)
+                    //{
+                    //    if(dayStatValue > 0)
+                    //    {
+                    //        _commonData.DayStatTableDrop(dayStatInitialTime, dayStatValue);
+                    //        dayStatInitialTime = dayStatInitialTime.AddDays(dayStatValue);
+                    //    }
+                    //    else
+                    //    {
+                    //        dayStatInitialTime = dayStatInitialTime.AddDays(365);
+                    //    }
+                    //    _logger.DbLog($"[1일 통계(1분실시간전류)] NEXT 보관주기 시간: {dayStatInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+                    //}
+
+                    //if (statisticsMinInitialTime <= nowTime)
+                    //{
+                    //    if (statisticsMinValue > 0)
+                    //    {
+                    //        _commonData.StatisticsMinTableDelete(statisticsMinInitialTime, statisticsMinValue);
+                    //        statisticsMinInitialTime = statisticsMinInitialTime.AddDays(statisticsMinValue);
+                    //    }
+                    //    else
+                    //    {
+                    //        statisticsMinInitialTime = statisticsMinInitialTime.AddDays(365);
+                    //    }
+                    //    _logger.DbLog($"[15분 실시간(평균부하전류)] NEXT 보관주기 시간: {statisticsMinInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+                    //}
+
+                    //if (statisticsHourInitialTime <= nowTime)
+                    //{
+                    //    if (statisticsHourValue > 0)
+                    //    {
+                    //        _commonData.StatisticsHourTableDelete(statisticsHourInitialTime, statisticsHourValue);
+                    //        statisticsHourInitialTime = statisticsHourInitialTime.AddDays(statisticsHourValue);
+                    //    }
+                    //    else
+                    //    {
+                    //        statisticsHourInitialTime = statisticsHourInitialTime.AddDays(365);
+                    //    }
+                    //    _logger.DbLog($"[시간 통계(평균부하전류)] NEXT 보관주기 시간: {statisticsHourInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+                    //}
+
+                    //if (statisticsDayInitialTime <= nowTime)
+                    //{
+                    //    if (statisticsDayValue > 0)
+                    //    {
+                    //        _commonData.StatisticsDayTableDelete(statisticsDayInitialTime, statisticsDayValue);
+                    //        statisticsDayInitialTime = statisticsDayInitialTime.AddDays(statisticsDayValue);
+                    //    }
+                    //    else
+                    //    {
+                    //        statisticsDayInitialTime = statisticsDayInitialTime.AddDays(365);
+                    //    }
+                    //    _logger.DbLog($"[일 통계(평균부하전류)] NEXT 보관주기 시간: {statisticsDayInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+                    //}
+
+                    //if (statisticsMonthInitialTime <= nowTime)
+                    //{
+                    //    if (statisticsMonthValue > 0)
+                    //    {
+                    //        _commonData.StatisticsMonthTableDelete(statisticsMonthInitialTime, statisticsMonthValue);
+                    //        statisticsMonthInitialTime = statisticsMonthInitialTime.AddDays(statisticsMonthValue);
+                    //    }
+                    //    else
+                    //    {
+                    //        statisticsMonthInitialTime = statisticsMonthInitialTime.AddDays(365);
+                    //    }
+                    //    _logger.DbLog($"[월 통계(평균부하전류)] NEXT 보관주기 시간: {statisticsMonthInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+                    //}
+
+                    //if (statisticsYearInitialTime <= nowTime)
+                    //{
+                    //    if (statisticsYearValue > 0)
+                    //    {
+                    //        _commonData.StatisticsYearTableDelete(statisticsYearInitialTime, statisticsYearValue);
+                    //        statisticsYearInitialTime = statisticsYearInitialTime.AddDays(statisticsYearValue);
+                    //    }
+                    //    else
+                    //    {
+                    //        statisticsYearInitialTime = statisticsYearInitialTime.AddDays(365);
+                    //    }
+                    //    _logger.DbLog($"[년 통계(평균부하전류)] NEXT 보관주기 시간: {statisticsYearInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+                    //}
+
+                    //if (fiAlarmInitialTime <= nowTime)
+                    //{
+                    //    if (fiAlarmValue > 0)
+                    //    {
+                    //        _commonData.FiAlarmTableDelete(fiAlarmInitialTime, fiAlarmValue);
+                    //        fiAlarmInitialTime = fiAlarmInitialTime.AddDays(fiAlarmValue);
+                    //    }
+                    //    else
+                    //    {
+                    //        fiAlarmInitialTime = fiAlarmInitialTime.AddDays(365);
+                    //    }
+                    //    _logger.DbLog($"[실시간 알람] NEXT 보관주기 시간: {fiAlarmInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+                    //}
+
+                    //if (commStateInitialTime <= nowTime)
+                    //{
+                    //    if (commStateValue > 0)
+                    //    {
+                    //        _commonData.CommStateTableDelete(commStateInitialTime, commStateValue);
+                    //        commStateInitialTime = commStateInitialTime.AddDays(commStateValue);
+                    //    }
+                    //    else
+                    //    {
+                    //        commStateInitialTime = commStateInitialTime.AddDays(365);
+                    //    }
+                    //    _logger.DbLog($"[통신 성공률] NEXT 보관주기 시간: {commStateInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+                    //}
+
+                    //if (commStateLogInitialTime <= nowTime)
+                    //{
+                    //    if (commStateLogValue > 0)
+                    //    {
+                    //        _commonData.CommStateLogTableDelete(commStateLogInitialTime, commStateLogValue);
+                    //        commStateLogInitialTime = commStateLogInitialTime.AddDays(commStateLogValue);
+                    //    }
+                    //    else
+                    //    {
+                    //        commStateLogInitialTime = commStateLogInitialTime.AddDays(365);
+                    //    }
+                    //    _logger.DbLog($"[통신 상태 이력] NEXT 보관주기 시간: {commStateLogInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+                    //}
                 }
                 catch
                 {
@@ -1138,6 +1203,24 @@ namespace KDMSServer.Model
             }
 
             _logger.DbLog($"[서버] 보관주기 쓰레드 종료");
+        }
+
+        private string GetStroyeType(int value, int type)
+        {
+            string retValue = string.Empty;
+
+            var find = _commonData.StorageTypes.FirstOrDefault(p => p.StorageType1 == type);
+            if (find != null)
+            {
+                if(value == 0)
+                    retValue = find.Name;
+                else
+                    retValue = $"{value} {find.Name}";
+            }
+            else
+                retValue = "None";
+
+            return retValue;
         }
 
         private async void TableCreateWorker()

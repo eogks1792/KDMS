@@ -19,6 +19,9 @@ namespace KDMSViewer.ViewModel
         private int _totalPage;
 
         [ObservableProperty]
+        private int _totalCount;
+
+        [ObservableProperty]
         private int _userPage;
 
         [ObservableProperty]

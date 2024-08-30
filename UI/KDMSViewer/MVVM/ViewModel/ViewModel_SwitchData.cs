@@ -20,6 +20,9 @@ namespace KDMSViewer.ViewModel
         private int _totalPage;
 
         [ObservableProperty]
+        private int _totalCount;
+
+        [ObservableProperty]
         private int _userPage;
 
         public ObservableCollection<HistoryMinDatum> PointItems { get; set; }
