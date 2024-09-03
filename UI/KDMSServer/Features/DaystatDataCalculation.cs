@@ -58,7 +58,7 @@ namespace KDMSServer.Features
                                 CurrentN = p.Average(x => x.CurrentN)
                             });
 
-                            var sum = findDatas.GroupBy(g => g.SaveTime).Select(p => new
+                            var sum = findDatas.GroupBy(g => g.CommTime).Select(p => new
                             {
                                 key = p.Key,
                                 sum = p.Sum(x => x.CurrentA + x.CurrentB + x.CurrentC),
@@ -91,7 +91,7 @@ namespace KDMSServer.Features
                                 MaxCurrentB = sum.OrderByDescending(p => p.key).MaxBy(p => p.sum).items.First().CurrentB,
                                 MaxCurrentC = sum.OrderByDescending(p => p.key).MaxBy(p => p.sum).items.First().CurrentC,
                                 MaxCurrentN = sum.OrderByDescending(p => p.key).MaxBy(p => p.sum).items.First().CurrentN,
-                                MaxCommTime = sum.OrderByDescending(p => p.key).MaxBy(p => p.sum).items.First().SaveTime,
+                                MaxCommTime = sum.OrderByDescending(p => p.key).MaxBy(p => p.sum).items.First().CommTime,
                                 //MinCurrentA = sum.MinBy(p => p.sum).items.FirstOrDefault()!.CurrentA,
                                 //MinCurrentB = sum.MinBy(p => p.sum).items.FirstOrDefault()!.CurrentB,
                                 //MinCurrentC = sum.MinBy(p => p.sum).items.FirstOrDefault()!.CurrentC,
@@ -101,7 +101,7 @@ namespace KDMSServer.Features
                                 MinCurrentB = sum.OrderByDescending(p => p.key).MinBy(p => p.sum).items.First().CurrentB,
                                 MinCurrentC = sum.OrderByDescending(p => p.key).MinBy(p => p.sum).items.First().CurrentC,
                                 MinCurrentN = sum.OrderByDescending(p => p.key).MinBy(p => p.sum).items.First().CurrentN,
-                                MinCommTime = sum.OrderByDescending(p => p.key).MinBy(p => p.sum).items.First().SaveTime
+                                MinCommTime = sum.OrderByDescending(p => p.key).MinBy(p => p.sum).items.First().CommTime
                             }).LastOrDefault();
 
                             dataList.Add(inputData);

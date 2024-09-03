@@ -227,13 +227,13 @@
                                             </DataTemplate>
                                         </GridViewColumn.CellTemplate>
                                     </GridViewColumn>
-                                    <GridViewColumn Header="장치 타입" Width="{Binding ElementName=eqtype, Path=ActualWidth}">
+                                    <!--<GridViewColumn Header="장치 타입" Width="{Binding ElementName=eqtype, Path=ActualWidth}">
                                         <GridViewColumn.CellTemplate>
                                             <DataTemplate>
                                                 <TextBlock Text="{Binding EqType}" TextAlignment="Center"/>
                                             </DataTemplate>
                                         </GridViewColumn.CellTemplate>
-                                    </GridViewColumn>
+                                    </GridViewColumn>-->
 
                                     <GridViewColumn Header="전체 횟수" Width="{Binding ElementName=total, Path=ActualWidth}">
                                         <GridViewColumn.CellTemplate>
@@ -286,32 +286,32 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="80"/>
                                 <ColumnDefinition Width="100"/>
+                                <ColumnDefinition Width="1.2*"/>
+                                <ColumnDefinition Width="100"/>
+                                <!--<ColumnDefinition Width="100"/>-->
+
+                                <ColumnDefinition Width="130"/>
+                                <ColumnDefinition Width="130"/>
+                                <ColumnDefinition Width="130"/>
+                                <ColumnDefinition Width="130"/>
+
                                 <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="100"/>
-                                <ColumnDefinition Width="100"/>
-
-                                <ColumnDefinition Width="130"/>
-                                <ColumnDefinition Width="130"/>
-                                <ColumnDefinition Width="130"/>
-                                <ColumnDefinition Width="130"/>
-
-                                <ColumnDefinition Width="180"/>
-                                <ColumnDefinition Width="180"/>
+                                <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="30"/>
                             </Grid.ColumnDefinitions>
                             <Grid Grid.Column="0" x:Name="no"/>
                             <Grid Grid.Column="1" x:Name="dl"/>
                             <Grid Grid.Column="2" x:Name="sw"/>
                             <Grid Grid.Column="3" x:Name="ceq"/>
-                            <Grid Grid.Column="4" x:Name="eqtype"/>
+                            <!--<Grid Grid.Column="4" x:Name="eqtype"/>-->
 
-                            <Grid Grid.Column="5" x:Name="total"/>
-                            <Grid Grid.Column="6" x:Name="sucess"/>
-                            <Grid Grid.Column="7" x:Name="faill"/>
-                            <Grid Grid.Column="8" x:Name="sucess_rate"/>
+                            <Grid Grid.Column="4" x:Name="total"/>
+                            <Grid Grid.Column="5" x:Name="sucess"/>
+                            <Grid Grid.Column="6" x:Name="faill"/>
+                            <Grid Grid.Column="7" x:Name="sucess_rate"/>
 
-                            <Grid Grid.Column="9" x:Name="comm_time"/>
-                            <Grid Grid.Column="10" x:Name="save_time"/>
+                            <Grid Grid.Column="8" x:Name="comm_time"/>
+                            <Grid Grid.Column="9" x:Name="save_time"/>
                         </Grid>
                     </Grid>
                 </DataTemplate>

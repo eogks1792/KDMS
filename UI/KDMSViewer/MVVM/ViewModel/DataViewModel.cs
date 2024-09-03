@@ -161,38 +161,29 @@ namespace KDMSViewer.ViewModel
         {
             foreach (var item in TreeItems)
             {
-                if (item.IsChecked)
-                {
-                    if (item.Type == TreeTypeCode.EQUIPMENT)
-                        CheckItems.Add(item.Id);
+                if(item.IsChecked && item.Type == TreeTypeCode.EQUIPMENT)
+                    CheckItems.Add(item.Id);
 
-                    if (item.DataModels.Count > 0)
-                        GetTreeItemCheckData(item.DataModels);
-                }
-                else
-                {
-                    if (item.DataModels.Count > 0)
-                        GetTreeItemCheckData(item.DataModels);
-                }
+                if (item.DataModels.Count > 0)
+                    GetTreeItemCheckData(item.DataModels);
             }
         }
 
         private void GetData()
         {
-            //Application.Current.Dispatcher.Invoke(() =>
-            //{
-            //    view = new LoadingView();
-            //    view.Owner = Application.Current.MainWindow;
-            //    view.Show();
-            //});
-            CheckItems = new List<long>();
+            if (CheckItems == null)
+                CheckItems = new List<long>();
+            else
+                CheckItems.Clear();
+
             GetTreeItemCheckData(TreeItems);
             if (CheckItems.Count <= 0)
             {
                 //IsInquiry = true;
                 //Application.Current.Dispatcher.Invoke(() => { Mouse.OverrideCursor = Cursors.Arrow; });
-                MessageBox.Show("트리목록에서 선택된 항목이 없습니다.", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
+                //MessageBox.Show("트리목록에서 선택된 항목이 없습니다.", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
                 //return;
+                _worker.DataResultView("트리목록에서 선택된 항목이 없습니다.");
             }
 
             // 데이터 취득 처리
@@ -249,11 +240,6 @@ namespace KDMSViewer.ViewModel
                     _worker.GetSearchData(CheckItems, (int)SearchTypeCode.COMMSTATELOG, FromDate, ToDate);
                 }
             }
-
-            //if (SwitchCheck)
-            //{
-            //    ChartDataInit();
-            //}
 
             Application.Current.Dispatcher.Invoke(() => 
             {

@@ -19,7 +19,7 @@
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
 
-        <ScrollViewer >
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
             <TextBlock x:Name="Result"
                        HorizontalAlignment="Stretch"
                        TextWrapping="Wrap"

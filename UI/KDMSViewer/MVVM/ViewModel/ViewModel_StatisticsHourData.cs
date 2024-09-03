@@ -91,7 +91,16 @@ namespace KDMSViewer.ViewModel
             TabControl tab = sender as TabControl;
             if (tab != null)
             {
-                TabItem item = (TabItem)(tab.ItemContainerGenerator.ContainerFromItem(tab.SelectedItem));
+                object tabSelectItem = null;
+                if (tab.SelectedItem == null)
+                {
+                    if (tab.Items.Count > 0)
+                        tabSelectItem = tab.Items[0];
+                }
+                else
+                    tabSelectItem = tab.SelectedItem;
+
+                TabItem item = (TabItem)(tab.ItemContainerGenerator.ContainerFromItem(tabSelectItem));
                 if (item != null)
                     item.Focus();
             }

@@ -81,12 +81,12 @@ namespace KDMSServer.Features
                                 MaxCurrentB = sum.OrderByDescending(p => p.key).MaxBy(p => p.sum).items.First().AverageCurrentB,
                                 MaxCurrentC = sum.OrderByDescending(p => p.key).MaxBy(p => p.sum).items.First().AverageCurrentC,
                                 MaxCurrentN = sum.OrderByDescending(p => p.key).MaxBy(p => p.sum).items.First().AverageCurrentN,
-                                MaxCommTime = sum.OrderByDescending(p => p.key).MaxBy(p => p.sum).items.First().SaveTime,
+                                MaxCommTime = sum.OrderByDescending(p => p.key).MaxBy(p => p.sum).items.First().MaxCommTime,
                                 MinCurrentA = sum.OrderByDescending(p => p.key).MinBy(p => p.sum).items.First().AverageCurrentA,
                                 MinCurrentB = sum.OrderByDescending(p => p.key).MinBy(p => p.sum).items.First().AverageCurrentB,
                                 MinCurrentC = sum.OrderByDescending(p => p.key).MinBy(p => p.sum).items.First().AverageCurrentC,
                                 MinCurrentN = sum.OrderByDescending(p => p.key).MinBy(p => p.sum).items.First().AverageCurrentN,
-                                MinCommTime = sum.OrderByDescending(p => p.key).MinBy(p => p.sum).items.First().SaveTime
+                                MinCommTime = sum.OrderByDescending(p => p.key).MinBy(p => p.sum).items.First().MinCommTime
                             }).LastOrDefault();
 
                             dataList.Add(inputData);

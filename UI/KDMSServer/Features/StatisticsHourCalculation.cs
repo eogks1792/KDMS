@@ -58,7 +58,7 @@ namespace KDMSServer.Features
                                 AverageCurrentN = p.Average(x => x.AverageCurrentN)
                             });
 
-                            var sum = findDatas.GroupBy(g => g.SaveTime).Select(p => new
+                            var sum = findDatas.GroupBy(g => g.CommTime).Select(p => new
                             {
                                 key = p.Key,
                                 sum = p.Sum(x => x.AverageCurrentA + x.AverageCurrentB + x.AverageCurrentC),
@@ -81,12 +81,12 @@ namespace KDMSServer.Features
                                 MaxCurrentB = sum.OrderByDescending(p => p.key).MaxBy(p => p.sum).items.First().AverageCurrentB,
                                 MaxCurrentC = sum.OrderByDescending(p => p.key).MaxBy(p => p.sum).items.First().AverageCurrentC,
                                 MaxCurrentN = sum.OrderByDescending(p => p.key).MaxBy(p => p.sum).items.First().AverageCurrentN,
-                                MaxCommTime = sum.OrderByDescending(p => p.key).MaxBy(p => p.sum).items.First().SaveTime,
+                                MaxCommTime = sum.OrderByDescending(p => p.key).MaxBy(p => p.sum).items.First().CommTime,
                                 MinCurrentA = sum.OrderByDescending(p => p.key).MinBy(p => p.sum).items.First().AverageCurrentA,
                                 MinCurrentB = sum.OrderByDescending(p => p.key).MinBy(p => p.sum).items.First().AverageCurrentB,
                                 MinCurrentC = sum.OrderByDescending(p => p.key).MinBy(p => p.sum).items.First().AverageCurrentC,
                                 MinCurrentN = sum.OrderByDescending(p => p.key).MinBy(p => p.sum).items.First().AverageCurrentN,
-                                MinCommTime = sum.OrderByDescending(p => p.key).MinBy(p => p.sum).items.First().SaveTime
+                                MinCommTime = sum.OrderByDescending(p => p.key).MinBy(p => p.sum).items.First().CommTime
                             }).LastOrDefault();
 
                             dataList.Add(inputData);

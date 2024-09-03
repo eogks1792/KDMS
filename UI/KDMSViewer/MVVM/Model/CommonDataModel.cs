@@ -133,6 +133,7 @@ namespace KDMSViewer.Model
                             equipment.Type = TreeTypeCode.EQUIPMENT;
                             equipment.Id = sw.Ceqid;
                             equipment.Name = sw.Name!.Trim() ?? string.Empty;
+                            equipment.Tooltip = $"CEQ ID: {equipment.Id}";
                             dl.DataModels.Add(equipment);
                         }
                     }

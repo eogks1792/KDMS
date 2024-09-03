@@ -8,7 +8,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 using System.Data;
+using System.Security.Claims;
 using System.Text;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace KDMSServer.Model
 {
@@ -127,6 +129,21 @@ namespace KDMSServer.Model
                 return 0;
 
             return (float)rtdbAnalogs.FirstOrDefault(p => p.pid == pid).value;
+        }
+
+        private float GetAlarmDataValue(List<pdb_Analog> analogList, int dataPointId, double value)
+        {
+            var pid = analogList.FirstOrDefault(p => p.dp_fk == dataPointId).pid;
+            if (rtdbAnalogs.Count <= 0)
+                return 0;
+
+            var findAnalog = rtdbAnalogs.FirstOrDefault(p => p.pid == pid);
+            if (findAnalog.pid > 0)
+                findAnalog.value = value;
+            else
+                return 0;
+
+            return (float)findAnalog.value;
         }
 
         public void MinDataSave(DateTime date/*, List<rtdb_Analog> rtList, List<pdb_Analog> analogList, List<pdb_ConductingEquipment> equipmentList*/)
@@ -477,7 +494,20 @@ namespace KDMSServer.Model
             if (rtdbDmcs.Count <= 0)
                 return false;
 
-            return rtdbDmcs.FirstOrDefault(p => p.pid == dmcFk).value == 4 ? true : false;
+            // 0: Offie Line
+            // 1: Fail
+            // 2: Disable
+            // 3: Fail Back
+            // 4: OnLine
+            var findState = rtdbDmcs.FirstOrDefault(p => p.pid == dmcFk).value;
+            _logger.ServerLog($"[통신상태 이력] DMCFK: {dmcFk} VALUE:{findState}");
+
+            if (findState == 4)
+                return true;
+            else
+                return false;
+
+            //return rtdbDmcs.FirstOrDefault(p => p.pid == dmcFk).value == 4 ? true : false;
         }
 
         private float GetCommDataValue(int commDmcFk)
@@ -546,42 +576,49 @@ namespace KDMSServer.Model
                 }
                 else
                 {
-                    var findList = pdbConductingequipments.Where(p => p.ceqid != 0 && p.ec_fk == remote.eq_fk).ToList();
+                    var findList = pdbConductingequipments.Where(p => p.ceqid != 0 && p.ec_fk == remote.eq_fk).OrderBy(p => p.ceqid) .ToList();
                     if (findList.Count <= 0)
                     {
                         _logger.Debug($"[통신 성공률] Conductingequipment CEQID:0 / Remote EqFk:{remote.eq_fk}");
                         continue;
                     }
 
-                    foreach (var equipment in findList)
+                    var equipment = findList.FirstOrDefault();
+                    if (equipment.ceqid <= 0)
                     {
-                        var findDl = pdbDistributionLines.FirstOrDefault(p => p.dlid == equipment.dl_fk);
-                        if (findDl.dlid <= 0)
-                        {
-                            _logger.Debug($"[통신 성공률] DistributionLine DlId:0 / Equipment DlFk:{equipment.dl_fk}");
-                            continue;
-                        }
-
-                        if (equipment.rtu_type != 2)    // RTU 타입이2 자동
-                            continue;
-
-                        HistoryCommState data = new HistoryCommState();
-                        data.SaveTime = date;
-                        data.Dl = GetStringData(findDl.name);
-                        data.Name = GetStringData(equipment.name);
-
-                        data.EqType = (int)remote.eq_fk;
-                        data.Ceqid = (int)equipment.ceqid;
-                        data.Cpsid = (int)equipment.ec_fk;
-
-                        data.CommSucessCount = (int)GetCommDataValue(Convert.ToInt32(remote.comm_dmc_fk + 3000));
-                        data.CommFailCount = (int)GetCommDataValue(Convert.ToInt32(remote.comm_dmc_fk + 6000));
-                        data.CommTotalCount = data.CommSucessCount + data.CommFailCount;
-                        data.CommSucessRate = GetCommDataValue(Convert.ToInt32(remote.comm_dmc_fk));
-                        data.CommTime = GetCommDataTime(Convert.ToInt32(remote.comm_dmc_fk), date);
-
-                        dataList.Add(data);
+                        _logger.Debug($"[통신 성공률] Conductingequipment CEQID:0 / Remote EqFk:{remote.eq_fk} First");
+                        continue;
                     }
+
+                    //foreach (var equipment in findList)
+                    //{
+                    var findDl = pdbDistributionLines.FirstOrDefault(p => p.dlid == equipment.dl_fk);
+                    if (findDl.dlid <= 0)
+                    {
+                        _logger.Debug($"[통신 성공률] DistributionLine DlId:0 / Equipment DlFk:{equipment.dl_fk}");
+                        continue;
+                    }
+
+                    if (equipment.rtu_type != 2)    // RTU 타입이2 자동
+                        continue;
+
+                    HistoryCommState data = new HistoryCommState();
+                    data.SaveTime = date;
+                    data.Dl = GetStringData(findDl.name);
+                    data.Name = GetStringData(equipment.name);
+
+                    data.EqType = (int)remote.eq_fk;
+                    data.Ceqid = (int)equipment.ceqid;
+                    data.Cpsid = (int)equipment.ec_fk;
+
+                    data.CommSucessCount = (int)GetCommDataValue(Convert.ToInt32(remote.comm_dmc_fk + 3000));
+                    data.CommFailCount = (int)GetCommDataValue(Convert.ToInt32(remote.comm_dmc_fk + 6000));
+                    data.CommTotalCount = data.CommSucessCount + data.CommFailCount;
+                    data.CommSucessRate = GetCommDataValue(Convert.ToInt32(remote.comm_dmc_fk));
+                    data.CommTime = GetCommDataTime(Convert.ToInt32(remote.comm_dmc_fk), date);
+
+                    dataList.Add(data);
+                    //}
                 }
             }
 
@@ -684,6 +721,10 @@ namespace KDMSServer.Model
                     continue;
                 }
 
+                var findDmc = rtdbDmcs.FirstOrDefault(p => p.pid == alarm.uiPid);
+                if(findDmc.pid > 0)
+                    findDmc.value = alarm.fVal;
+
                 if (findRemoteunit.dmc_fk == 0 && findRemoteunit.comm_dmc_fk == 0)
                 {
                     _logger.Debug($"[통신상태 이력] Remoteunit DMCFK:0 / COMMDMC_FK:0 → RTDM DMC PID NOT FOUND");
@@ -697,7 +738,7 @@ namespace KDMSServer.Model
                 if (findRemoteunit.eq_type == 1)
                     equipment = pdbConductingequipments.FirstOrDefault(p => findRemoteunit.eq_fk == p.ceqid);
                 else
-                    equipment = pdbConductingequipments.FirstOrDefault(p => findRemoteunit.eq_type == p.ec_fk);
+                    equipment = pdbConductingequipments.FirstOrDefault(p => findRemoteunit.eq_fk == p.ec_fk);
 
                 if (equipment.ceqid <= 0)
                     continue;
@@ -903,10 +944,10 @@ namespace KDMSServer.Model
                     }
 
                     var ceqAnalogList = pdbAnalogs.Where(p => p.ceq_fk == (int)alarm.uiEqid).ToList(); // && p.pid == alarm.uiPid).ToList();
-                    data.FaultCurrentA = GetMinDataValue(ceqAnalogList, currentAId);
-                    data.FaultCurrentB = GetMinDataValue(ceqAnalogList, currentBId);
-                    data.FaultCurrentC = GetMinDataValue(ceqAnalogList, currentCId);
-                    data.FaultCurrentN = GetMinDataValue(ceqAnalogList, currentNId);
+                    data.FaultCurrentA = GetAlarmDataValue(ceqAnalogList, currentAId, alarm.fVal);
+                    data.FaultCurrentB = GetAlarmDataValue(ceqAnalogList, currentBId, alarm.fVal);
+                    data.FaultCurrentC = GetAlarmDataValue(ceqAnalogList, currentCId, alarm.fVal);
+                    data.FaultCurrentN = GetAlarmDataValue(ceqAnalogList, currentNId, alarm.fVal);
 
                     string query = $"insert into history_fi_alarm values ('{data.SaveTime.ToString("yyyy-MM-dd HH:mm:ss")}', {data.Ceqid}, '{data.LogTime?.ToString("yyyy-MM-dd HH:mm:ss.fff")}', '{data.FrtuTime?.ToString("yyyy-MM-dd HH:mm:ss.fff")}', " +
                         $" {data.Cpsid}, {data.Circuitno}, '{data.Name?.Trim()}', '{data.Dl?.Trim()}', '{data.AlarmName}', {data.Value}, '{data.LogDesc}', {data.FaultCurrentA}, {data.FaultCurrentB}, {data.FaultCurrentC}, {data.FaultCurrentN})";

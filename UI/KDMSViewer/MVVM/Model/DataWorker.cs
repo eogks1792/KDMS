@@ -171,7 +171,8 @@ namespace KDMSViewer.Model
                             }
                             else
                             {
-                                MessageBox.Show($"HISTORY_MIN_DATA 테이블 \n\rCODE:{response.Error.Code} MSG:{response.Error.Message}", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
+                                DataResultView($"HISTORY_MIN_DATA 테이블 MSG:{response.Error.Message}");
+                                //MessageBox.Show($"HISTORY_MIN_DATA 테이블 \n\rCODE:{response.Error.Code} MSG:{response.Error.Message}", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
                             }
                         }
                         break;
@@ -288,7 +289,8 @@ namespace KDMSViewer.Model
                             }
                             else
                             {
-                                MessageBox.Show($"HISTORY_DAYSTAT_DATA 테이블 \n\rCODE:{response.Error.Code} MSG:{response.Error.Message}", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
+                                DataResultView($"HISTORY_DAYSTAT_DATA 테이블 MSG:{response.Error.Message}");
+                                //MessageBox.Show($"HISTORY_DAYSTAT_DATA 테이블 \n\rCODE:{response.Error.Code} MSG:{response.Error.Message}", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
                             }
                         }
                         break;
@@ -339,7 +341,8 @@ namespace KDMSViewer.Model
                             }
                             else
                             {
-                                MessageBox.Show($"STATISTICS_15MIN 테이블 \n\rCODE:{response.Error.Code} MSG:{response.Error.Message}", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
+                                DataResultView($"STATISTICS_15MIN 테이블 MSG:{response.Error.Message}");
+                                //MessageBox.Show($"STATISTICS_15MIN 테이블 \n\rCODE:{response.Error.Code} MSG:{response.Error.Message}", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
                             }
                         }
                         break;
@@ -457,7 +460,8 @@ namespace KDMSViewer.Model
                             }
                             else
                             {
-                                MessageBox.Show($"STATISTICS_HOUR 테이블 \n\rCODE:{response.Error.Code} MSG:{response.Error.Message}", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
+                                DataResultView($"STATISTICS_HOUR 테이블 MSG:{response.Error.Message}");
+                                //MessageBox.Show($"STATISTICS_HOUR 테이블 \n\rCODE:{response.Error.Code} MSG:{response.Error.Message}", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
                             }
                         }
                         break;
@@ -574,7 +578,8 @@ namespace KDMSViewer.Model
                             }
                             else
                             {
-                                MessageBox.Show($"STATISTICS_DAY 테이블 \n\rCODE:{response.Error.Code} MSG:{response.Error.Message}", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
+                                DataResultView($"STATISTICS_DAY 테이블 MSG:{response.Error.Message}");
+                                //MessageBox.Show($"STATISTICS_DAY 테이블 \n\rCODE:{response.Error.Code} MSG:{response.Error.Message}", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
                             }
                         }
                         break;
@@ -692,7 +697,8 @@ namespace KDMSViewer.Model
                             }
                             else
                             {
-                                MessageBox.Show($"STATISTICS_MONTH 테이블 \n\rCODE:{response.Error.Code} MSG:{response.Error.Message}", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
+                                DataResultView($"STATISTICS_MONTH 테이블 MSG:{response.Error.Message}");
+                                //MessageBox.Show($"STATISTICS_MONTH 테이블 \n\rCODE:{response.Error.Code} MSG:{response.Error.Message}", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
                             }
                         }
                         break;
@@ -809,7 +815,8 @@ namespace KDMSViewer.Model
                             }
                             else
                             {
-                                MessageBox.Show($"STATISTICS_YEAR 테이블 \n\rCODE:{response.Error.Code} MSG:{response.Error.Message}", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
+                                DataResultView($"STATISTICS_YEAR 테이블 MSG:{response.Error.Message}");
+                                //MessageBox.Show($"STATISTICS_YEAR 테이블 \n\rCODE:{response.Error.Code} MSG:{response.Error.Message}", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
                             }
                         }
                         break;
@@ -833,7 +840,7 @@ namespace KDMSViewer.Model
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                DataResultView($"차트 데이터 조회 예외발생 ex:{ex.Message}");
             }
         }
 
@@ -932,7 +939,7 @@ namespace KDMSViewer.Model
                                 }
                                 else
                                 {
-                                    DataResultView($"HISTORY_MIN_DATA 테이블 CODE:{response.Error.Code} MSG:{response.Error.Message}");
+                                    DataResultView($"HISTORY_MIN_DATA 테이블 MSG:{response.Error.Message}");
                                     //MessageBox.Show($"HISTORY_MIN_DATA 테이블 \n\rCODE:{response.Error.Code} MSG:{response.Error.Message}", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
                                 }
                             }
@@ -1012,7 +1019,7 @@ namespace KDMSViewer.Model
                                 }
                                 else
                                 {
-                                    DataResultView($"HISTORY_DAYSTAT_DATA 테이블 CODE:{response.Error.Code} MSG:{response.Error.Message}");
+                                    DataResultView($"HISTORY_DAYSTAT_DATA 테이블 MSG:{response.Error.Message}");
                                     //MessageBox.Show($"HISTORY_DAYSTAT_DATA 테이블 \n\rCODE:{response.Error.Code} MSG:{response.Error.Message}", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
                                 }
                             }
@@ -1077,7 +1084,7 @@ namespace KDMSViewer.Model
                                 }
                                 else
                                 {
-                                    DataResultView($"STATISTICS_15MIN 테이블 CODE:{response.Error.Code} MSG:{response.Error.Message}");
+                                    DataResultView($"STATISTICS_15MIN 테이블 MSG:{response.Error.Message}");
                                     //MessageBox.Show($"STATISTICS_15MIN 테이블 \n\rCODE:{response.Error.Code} MSG:{response.Error.Message}", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
                                 }
                             }
@@ -1152,7 +1159,7 @@ namespace KDMSViewer.Model
                                 }
                                 else
                                 {
-                                    DataResultView($"STATISTICS_HOUR 테이블 CODE:{response.Error.Code} MSG:{response.Error.Message}");
+                                    DataResultView($"STATISTICS_HOUR 테이블 MSG:{response.Error.Message}");
                                     //MessageBox.Show($"STATISTICS_HOUR 테이블 \n\rCODE:{response.Error.Code} MSG:{response.Error.Message}", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
                                 }
                             }
@@ -1227,7 +1234,7 @@ namespace KDMSViewer.Model
                                 }
                                 else
                                 {
-                                    DataResultView($"STATISTICS_DAY 테이블 CODE:{response.Error.Code} MSG:{response.Error.Message}");
+                                    DataResultView($"STATISTICS_DAY 테이블 MSG:{response.Error.Message}");
                                     //MessageBox.Show($"STATISTICS_DAY 테이블 \n\rCODE:{response.Error.Code} MSG:{response.Error.Message}", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
                                 }
                             }
@@ -1302,7 +1309,7 @@ namespace KDMSViewer.Model
                                 }
                                 else
                                 {
-                                    DataResultView($"STATISTICS_MONTH 테이블 CODE:{response.Error.Code} MSG:{response.Error.Message}");
+                                    DataResultView($"STATISTICS_MONTH 테이블 MSG:{response.Error.Message}");
                                     //MessageBox.Show($"STATISTICS_MONTH 테이블 \n\rCODE:{response.Error.Code} MSG:{response.Error.Message}", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
                                 }
                             }
@@ -1377,7 +1384,7 @@ namespace KDMSViewer.Model
                                 }
                                 else
                                 {
-                                    DataResultView($"STATISTICS_YEAR 테이블 CODE:{response.Error.Code} MSG:{response.Error.Message}");
+                                    DataResultView($"STATISTICS_YEAR 테이블 MSG:{response.Error.Message}");
                                     //MessageBox.Show($"STATISTICS_YEAR 테이블 \n\rCODE:{response.Error.Code} MSG:{response.Error.Message}", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
                                 }
                             }
@@ -1447,7 +1454,7 @@ namespace KDMSViewer.Model
                                 }
                                 else
                                 {
-                                    DataResultView($"HISTORY_FI_ALARM 테이블 CODE:{response.Error.Code} MSG:{response.Error.Message}");
+                                    DataResultView($"HISTORY_FI_ALARM 테이블 MSG:{response.Error.Message}");
                                     //MessageBox.Show($"HISTORY_FI_ALARM 테이블 \n\rCODE:{response.Error.Code} MSG:{response.Error.Message}", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
                                 }
                             }
@@ -1513,7 +1520,7 @@ namespace KDMSViewer.Model
                                 }
                                 else
                                 {
-                                    DataResultView($"HISTORY_COMM_STATE 테이블 CODE:{response.Error.Code} MSG:{response.Error.Message}");
+                                    DataResultView($"HISTORY_COMM_STATE 테이블 MSG:{response.Error.Message}");
                                     //MessageBox.Show($"HISTORY_COMM_STATE 테이블 \n\rCODE:{response.Error.Code} MSG:{response.Error.Message}", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
                                 }
                             }
@@ -1580,7 +1587,7 @@ namespace KDMSViewer.Model
                                 }
                                 else
                                 {
-                                    DataResultView($"HISTORY_COMM_STATE_LOG 테이블 \nCODE:{response.Error.Code} MSG:{response.Error.Message}");
+                                    DataResultView($"HISTORY_COMM_STATE_LOG 테이블 MSG:{response.Error.Message}");
                                     //MessageBox.Show($"HISTORY_COMM_STATE_LOG 테이블 \n\rCODE:{response.Error.Code} MSG:{response.Error.Message}", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
                                 }
                             }
@@ -1590,15 +1597,17 @@ namespace KDMSViewer.Model
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                DataResultView($"실시간/통계 데이터 조회 예외발생 ex:{ex.Message}");
+                //MessageBox.Show(ex.Message);
             }
         }
 
-        private void DataResultView(string msg)
+        public void DataResultView(string msg, string title = "데이터 조회")
         {
             DispatcherService.Invoke((System.Action)(() => 
             {
                 MessageClickView view = new MessageClickView();
+                view.Title = title;
                 view.Result.Text = msg;
                 view.ShowDialog();
             }));
