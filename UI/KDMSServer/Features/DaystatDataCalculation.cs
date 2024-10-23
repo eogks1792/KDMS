@@ -67,7 +67,7 @@ namespace KDMSServer.Features
 
                             var inputData = findDatas.Select(p => new HistoryDaystatDatum
                             {
-                                SaveTime = p.SaveTime,
+                                SaveTime = request.Time,
                                 Ceqid = p.Ceqid,
                                 CommTime = p.CommTime,
                                 Cpsid = p.Cpsid,

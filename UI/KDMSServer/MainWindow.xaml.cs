@@ -1,5 +1,6 @@
 ﻿using DevExpress.Xpf.Core;
 using KDMSServer.Model;
+using System.Security.Claims;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -24,7 +25,34 @@ namespace KDMSServer
         {
             InitializeComponent();
             _worker = worker;
+
+            //TEST();
         }
+
+        //public void TEST()
+        //{
+        //    List<rtdb_Dmc> rtdbDmcs = new List<rtdb_Dmc>();
+
+        //    rtdb_Dmc dmc = new rtdb_Dmc();
+        //    dmc.pid = 1;
+        //    dmc.value = 99;
+        //    dmc.tlq = 0;
+        //    rtdbDmcs.Add(dmc);
+
+        //    var findDmc = rtdbDmcs.FirstOrDefault(p => p.pid == 1);
+        //    if (findDmc.pid > 0)
+        //    {
+        //        //var index = rtdbDmcs.IndexOf(findDmc);
+        //        findDmc.value = 50;
+        //        //rtdbDmcs[index] = findDmc;
+        //    }
+
+        //    foreach(var data in rtdbDmcs)
+        //    {
+        //        MessageBox.Show(data.value.ToString());
+        //    }
+        //}
+
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {

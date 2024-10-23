@@ -67,7 +67,7 @@ namespace KDMSServer.Features
 
                             var inputData = findDatas.Select(p => new StatisticsYear
                             {
-                                SaveTime = p.SaveTime,
+                                SaveTime = request.Time,
                                 Ceqid = p.Ceqid,
                                 Cpsid = p.Cpsid,
                                 Circuitno = p.Circuitno,

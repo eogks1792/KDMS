@@ -657,34 +657,104 @@ namespace KDMSViewer.Model
                     switch (storage.StorageId)
                     {
                         case (int)ProcDataCode.HISTORY_MIN_DATA:
-                            storage.StorageValue = model.HisMinTime.ToString();
+                            {
+                                if (model.HisMinTime > 0)
+                                    storage.StorageType = 1;
+                                else
+                                    storage.StorageType = 0;
+
+                                storage.StorageValue = model.HisMinTime.ToString();
+                            }
                             break;
                         case (int)ProcDataCode.HISTORY_DAYSTAT_DATA:
-                            storage.StorageValue = model.HisStatTime.ToString();
+                            {
+                                if (model.HisStatTime > 0)
+                                    storage.StorageType = 1;
+                                else
+                                    storage.StorageType = 0;
+
+                                storage.StorageValue = model.HisStatTime.ToString();
+                            }
                             break;
                         case (int)ProcDataCode.STATISTICS_15MIN:
-                            storage.StorageValue = model.StatMinTime.ToString();
+                            {
+                                if (model.StatMinTime > 0)
+                                    storage.StorageType = 1;
+                                else
+                                    storage.StorageType = 0;
+
+                                storage.StorageValue = model.StatMinTime.ToString();
+                            }
                             break;
                         case (int)ProcDataCode.STATISTICS_HOUR:
-                            storage.StorageValue = model.StatHourTime.ToString();
+                            {
+                                if (model.StatHourTime > 0)
+                                    storage.StorageType = 1;
+                                else
+                                    storage.StorageType = 0;
+
+                                storage.StorageValue = model.StatHourTime.ToString();
+                            }
                             break;
                         case (int)ProcDataCode.STATISTICS_DAY:
-                            storage.StorageValue = model.StatDayTime.ToString();
+                            {
+                                if (model.StatDayTime > 0)
+                                    storage.StorageType = 1;
+                                else
+                                    storage.StorageType = 0;
+
+                                storage.StorageValue = model.StatDayTime.ToString();
+                            }
                             break;
                         case (int)ProcDataCode.STATISTICS_MONTH:
-                            storage.StorageValue = model.StatMonthTime.ToString();
+                            {
+                                if (model.StatMonthTime > 0)
+                                    storage.StorageType = 1;
+                                else
+                                    storage.StorageType = 0;
+
+                                storage.StorageValue = model.StatMonthTime.ToString();
+                            }
                             break;
                         case (int)ProcDataCode.STATISTICS_YEAR:
-                            storage.StorageValue = model.StatYearTime.ToString();
+                            {
+                                if (model.StatYearTime > 0)
+                                    storage.StorageType = 1;
+                                else
+                                    storage.StorageType = 0;
+
+                                storage.StorageValue = model.StatYearTime.ToString();
+                            }
                             break;
                         case (int)ProcDataCode.HISTORY_FI_ALARM:
-                            storage.StorageValue = model.HisFiTime.ToString();
+                            {
+                                if (model.HisFiTime > 0)
+                                    storage.StorageType = 1;
+                                else
+                                    storage.StorageType = 0;
+
+                                storage.StorageValue = model.HisFiTime.ToString();
+                            }
                             break;
                         case (int)ProcDataCode.HISTORY_COMM_STATE:
-                            storage.StorageValue = model.HisCommTime.ToString();
+                            {
+                                if (model.HisCommTime > 0)
+                                    storage.StorageType = 1;
+                                else
+                                    storage.StorageType = 0;
+
+                                storage.StorageValue = model.HisCommTime.ToString();
+                            }
                             break;
                         case (int)ProcDataCode.HISTORY_COMM_STATE_LOG:
-                            storage.StorageValue = model.HisCommLogTime.ToString();
+                            {
+                                if (model.HisCommLogTime > 0)
+                                    storage.StorageType = 1;
+                                else
+                                    storage.StorageType = 0;
+
+                                storage.StorageValue = model.HisCommLogTime.ToString();
+                            }
                             break;
                     }
                 }

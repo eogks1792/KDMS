@@ -1,5 +1,4 @@
-﻿using DevExpress.Mvvm.Native;
-using KDMS.EF.Core.Contexts;
+﻿using KDMS.EF.Core.Contexts;
 using KDMSServer.Features;
 using KDMSServer.MVVM.Model;
 using KDMSServer.ViewModel;
@@ -12,7 +11,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using System.IO;
 using System.Net.Sockets;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace KDMSServer.Model
 {
@@ -534,7 +532,7 @@ namespace KDMSServer.Model
                     SocketClose();
                 }
 
-                await Task.Delay(1000);
+                await Task.Delay(100);
             }
 
             _logger.ServerLog($"[서버] 이벤트 쓰레드 종료");
@@ -614,7 +612,7 @@ namespace KDMSServer.Model
                         }
 
                         commstateDataInitialTime = commstateDataInitialTime.AddHours(12);
-                        _logger.ServerLog($"[PDB 목록] NEXT 다운로드 시간: {commstateDataInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+                        _logger.ServerLog($"[통신 성공률] NEXT 다운로드 시간: {commstateDataInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
                     }
 
                     if (pdbModifyInitialTime <= nowTime)
@@ -1014,8 +1012,20 @@ namespace KDMSServer.Model
             {
                 try
                 {
+                    // 삭제 백업 테스트
+                    //_commonData.MinDataTableBackup(DeleteInitialTime, 30);
+                    //_commonData.DayStatTableBackup(DeleteInitialTime, 30);
+                    //_commonData.StatisticsMinTableBackup(DeleteInitialTime, 30);
+                    //_commonData.StatisticsHourDataBackup(DeleteInitialTime, 30);
+                    //_commonData.StatisticsDayDataBakcup(DeleteInitialTime, 30);
+                    //_commonData.StatisticsMonthDataBackup(DeleteInitialTime, 30);
+                    //_commonData.StatisticsYearDataBackup(DeleteInitialTime, 30);
+                    //_commonData.FiAlarmDataBackup(DeleteInitialTime, 30);
+                    //_commonData.CommStateDataBackup(DeleteInitialTime, 30);
+                    //_commonData.CommStateLogDataBackup(DeleteInitialTime, 30);
+
                     var nowTime = DateTime.Now;
-                    if(DeleteInitialTime <= nowTime)
+                    if (DeleteInitialTime <= nowTime)
                     {
                         _logger.DbLog($"[서버] 보관주기 스케줄 삭제 시작");
 
@@ -1054,146 +1064,6 @@ namespace KDMSServer.Model
                         DeleteInitialTime = DeleteInitialTime.AddDays(1);
                         _logger.DbLog($"[서버] NEXT 보관주기 스케줄 삭제 시간: {DeleteInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
                     }
-
-                    //if (minDataInitialTime <= nowTime)
-                    //{
-                    //    if(minDataValue > 0)
-                    //    {
-                    //        _commonData.MinDataTableDrop(minDataInitialTime, minDataValue);
-                    //        minDataInitialTime = minDataInitialTime.AddDays(minDataValue);
-                    //    }
-                    //    else
-                    //    {
-                    //        minDataInitialTime = minDataInitialTime.AddDays(365);
-                    //    }
-                    //    _logger.DbLog($"[1분 실시간] NEXT 보관주기 시간: {minDataInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
-                    //}
-
-                    //if (dayStatInitialTime <= nowTime)
-                    //{
-                    //    if(dayStatValue > 0)
-                    //    {
-                    //        _commonData.DayStatTableDrop(dayStatInitialTime, dayStatValue);
-                    //        dayStatInitialTime = dayStatInitialTime.AddDays(dayStatValue);
-                    //    }
-                    //    else
-                    //    {
-                    //        dayStatInitialTime = dayStatInitialTime.AddDays(365);
-                    //    }
-                    //    _logger.DbLog($"[1일 통계(1분실시간전류)] NEXT 보관주기 시간: {dayStatInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
-                    //}
-
-                    //if (statisticsMinInitialTime <= nowTime)
-                    //{
-                    //    if (statisticsMinValue > 0)
-                    //    {
-                    //        _commonData.StatisticsMinTableDelete(statisticsMinInitialTime, statisticsMinValue);
-                    //        statisticsMinInitialTime = statisticsMinInitialTime.AddDays(statisticsMinValue);
-                    //    }
-                    //    else
-                    //    {
-                    //        statisticsMinInitialTime = statisticsMinInitialTime.AddDays(365);
-                    //    }
-                    //    _logger.DbLog($"[15분 실시간(평균부하전류)] NEXT 보관주기 시간: {statisticsMinInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
-                    //}
-
-                    //if (statisticsHourInitialTime <= nowTime)
-                    //{
-                    //    if (statisticsHourValue > 0)
-                    //    {
-                    //        _commonData.StatisticsHourTableDelete(statisticsHourInitialTime, statisticsHourValue);
-                    //        statisticsHourInitialTime = statisticsHourInitialTime.AddDays(statisticsHourValue);
-                    //    }
-                    //    else
-                    //    {
-                    //        statisticsHourInitialTime = statisticsHourInitialTime.AddDays(365);
-                    //    }
-                    //    _logger.DbLog($"[시간 통계(평균부하전류)] NEXT 보관주기 시간: {statisticsHourInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
-                    //}
-
-                    //if (statisticsDayInitialTime <= nowTime)
-                    //{
-                    //    if (statisticsDayValue > 0)
-                    //    {
-                    //        _commonData.StatisticsDayTableDelete(statisticsDayInitialTime, statisticsDayValue);
-                    //        statisticsDayInitialTime = statisticsDayInitialTime.AddDays(statisticsDayValue);
-                    //    }
-                    //    else
-                    //    {
-                    //        statisticsDayInitialTime = statisticsDayInitialTime.AddDays(365);
-                    //    }
-                    //    _logger.DbLog($"[일 통계(평균부하전류)] NEXT 보관주기 시간: {statisticsDayInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
-                    //}
-
-                    //if (statisticsMonthInitialTime <= nowTime)
-                    //{
-                    //    if (statisticsMonthValue > 0)
-                    //    {
-                    //        _commonData.StatisticsMonthTableDelete(statisticsMonthInitialTime, statisticsMonthValue);
-                    //        statisticsMonthInitialTime = statisticsMonthInitialTime.AddDays(statisticsMonthValue);
-                    //    }
-                    //    else
-                    //    {
-                    //        statisticsMonthInitialTime = statisticsMonthInitialTime.AddDays(365);
-                    //    }
-                    //    _logger.DbLog($"[월 통계(평균부하전류)] NEXT 보관주기 시간: {statisticsMonthInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
-                    //}
-
-                    //if (statisticsYearInitialTime <= nowTime)
-                    //{
-                    //    if (statisticsYearValue > 0)
-                    //    {
-                    //        _commonData.StatisticsYearTableDelete(statisticsYearInitialTime, statisticsYearValue);
-                    //        statisticsYearInitialTime = statisticsYearInitialTime.AddDays(statisticsYearValue);
-                    //    }
-                    //    else
-                    //    {
-                    //        statisticsYearInitialTime = statisticsYearInitialTime.AddDays(365);
-                    //    }
-                    //    _logger.DbLog($"[년 통계(평균부하전류)] NEXT 보관주기 시간: {statisticsYearInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
-                    //}
-
-                    //if (fiAlarmInitialTime <= nowTime)
-                    //{
-                    //    if (fiAlarmValue > 0)
-                    //    {
-                    //        _commonData.FiAlarmTableDelete(fiAlarmInitialTime, fiAlarmValue);
-                    //        fiAlarmInitialTime = fiAlarmInitialTime.AddDays(fiAlarmValue);
-                    //    }
-                    //    else
-                    //    {
-                    //        fiAlarmInitialTime = fiAlarmInitialTime.AddDays(365);
-                    //    }
-                    //    _logger.DbLog($"[실시간 알람] NEXT 보관주기 시간: {fiAlarmInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
-                    //}
-
-                    //if (commStateInitialTime <= nowTime)
-                    //{
-                    //    if (commStateValue > 0)
-                    //    {
-                    //        _commonData.CommStateTableDelete(commStateInitialTime, commStateValue);
-                    //        commStateInitialTime = commStateInitialTime.AddDays(commStateValue);
-                    //    }
-                    //    else
-                    //    {
-                    //        commStateInitialTime = commStateInitialTime.AddDays(365);
-                    //    }
-                    //    _logger.DbLog($"[통신 성공률] NEXT 보관주기 시간: {commStateInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
-                    //}
-
-                    //if (commStateLogInitialTime <= nowTime)
-                    //{
-                    //    if (commStateLogValue > 0)
-                    //    {
-                    //        _commonData.CommStateLogTableDelete(commStateLogInitialTime, commStateLogValue);
-                    //        commStateLogInitialTime = commStateLogInitialTime.AddDays(commStateLogValue);
-                    //    }
-                    //    else
-                    //    {
-                    //        commStateLogInitialTime = commStateLogInitialTime.AddDays(365);
-                    //    }
-                    //    _logger.DbLog($"[통신 상태 이력] NEXT 보관주기 시간: {commStateLogInitialTime.ToString("yyyy-MM-dd HH:mm:ss")}");
-                    //}
                 }
                 catch
                 {

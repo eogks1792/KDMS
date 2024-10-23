@@ -1,19 +1,7 @@
 ﻿using DevExpress.Xpf.Core;
 using KDMSViewer.Model;
-using System.Diagnostics;
-using System.Reflection.Metadata;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Interop;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using static KDMSViewer.Model.Win32API;
 
 namespace KDMSViewer
 {
@@ -51,15 +39,15 @@ namespace KDMSViewer
 
         private void OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if(e.ClickCount == 2)
+            if (e.ClickCount == 2)
             {
-                if(this.WindowState == WindowState.Maximized)
+                if (this.WindowState == WindowState.Maximized)
                     this.WindowState = WindowState.Normal;
                 else
                     this.WindowState = WindowState.Maximized;
             }
         }
 
-       
+
     }
 }

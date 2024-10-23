@@ -18,7 +18,7 @@
                   Closing="Window_Closing"
                   dx:ThemeManager.ThemeName="Win11Dark">
 
-    <Window.Resources>
+    <dx:ThemedWindow.Resources>
         <Style TargetType="{x:Type GridViewColumnHeader}">
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="Foreground" Value="White"/>
@@ -32,9 +32,9 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-    </Window.Resources>
+    </dx:ThemedWindow.Resources>
 
-    <Grid>
+            <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
             <ColumnDefinition />

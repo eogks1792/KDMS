@@ -868,6 +868,9 @@ namespace KDMSViewer.Model
                             {
                                 //model.PointItems = new ObservableCollection<HistoryMinDatum>();
                                 model.TabItems = new ObservableCollection<TabData>();
+                                model.TotalCount = 0;
+                                model.TotalPage = 0;
+                                model.UserPage = 0;
                                 if (ceqList.Count <= 0)
                                     return;
 
@@ -959,6 +962,10 @@ namespace KDMSViewer.Model
                             {
                                 //model.PointItems = new ObservableCollection<HistoryDaystatData>();
                                 model.TabItems = new ObservableCollection<TabData>();
+                                model.TotalCount = 0;
+                                model.TotalPage = 0;
+                                model.UserPage = 0;
+
                                 if (ceqList.Count <= 0)
                                     return;
 
@@ -1039,6 +1046,9 @@ namespace KDMSViewer.Model
                             {
                                 //model.PointItems = new ObservableCollection<Statistics15minData>();
                                 model.TabItems = new ObservableCollection<TabData>();
+                                model.TotalCount = 0;
+                                model.TotalPage = 0;
+                                model.UserPage = 0;
                                 if (ceqList.Count <= 0)
                                     return;
 
@@ -1104,6 +1114,9 @@ namespace KDMSViewer.Model
                             {
                                 //model.PointItems = new ObservableCollection<StatisticsHourData>();
                                 model.TabItems = new ObservableCollection<TabData>();
+                                model.TotalCount = 0;
+                                model.TotalPage = 0;
+                                model.UserPage = 0;
                                 if (ceqList.Count <= 0)
                                     return;
 
@@ -1179,6 +1192,9 @@ namespace KDMSViewer.Model
                             {
                                 //model.PointItems = new ObservableCollection<StatisticsDayData>();
                                 model.TabItems = new ObservableCollection<TabData>();
+                                model.TotalCount = 0;
+                                model.TotalPage = 0;
+                                model.UserPage = 0;
                                 if (ceqList.Count <= 0)
                                     return;
 
@@ -1254,6 +1270,9 @@ namespace KDMSViewer.Model
                             {
                                 //model.PointItems = new ObservableCollection<StatisticsMonthData>();
                                 model.TabItems = new ObservableCollection<TabData>();
+                                model.TotalCount = 0;
+                                model.TotalPage = 0;
+                                model.UserPage = 0;
                                 if (ceqList.Count <= 0)
                                     return;
 
@@ -1329,6 +1348,9 @@ namespace KDMSViewer.Model
                             {
                                 //model.PointItems = new ObservableCollection<StatisticsYearData>();
                                 model.TabItems = new ObservableCollection<TabData>();
+                                model.TotalCount = 0;
+                                model.TotalPage = 0;
+                                model.UserPage = 0;
                                 if (ceqList.Count <= 0)
                                     return;
 
@@ -1404,6 +1426,9 @@ namespace KDMSViewer.Model
                             {
                                 //model.PointItems = new ObservableCollection<HistoryFiAlarmData>();
                                 model.TabItems = new ObservableCollection<TabData>();
+                                model.TotalCount = 0;
+                                model.TotalPage = 0;
+                                model.UserPage = 0;
                                 if (ceqList.Count <= 0)
                                     return;
 
@@ -1474,6 +1499,9 @@ namespace KDMSViewer.Model
                             {
                                 //model.PointItems = new ObservableCollection<HistoryCommStateData>();
                                 model.TabItems = new ObservableCollection<TabData>();
+                                model.TotalCount = 0;
+                                model.TotalPage = 0;
+                                model.UserPage = 0;
                                 if (ceqList.Count <= 0)
                                     return;
 
@@ -1540,6 +1568,9 @@ namespace KDMSViewer.Model
                             {
                                 //model.PointItems = new ObservableCollection<HistoryCommStateLogData>();
                                 model.TabItems = new ObservableCollection<TabData>();
+                                model.TotalCount = 0;
+                                model.TotalPage = 0;
+                                model.UserPage = 0;
                                 if (ceqList.Count <= 0)
                                     return;
 
@@ -1734,80 +1765,7 @@ namespace KDMSViewer.Model
                             {
                                 mainModel.DBState = $"DB 상태: 비정상";
                             }
-                            //var connectionString = _configuration.GetConnectionString("Server");
-                            //if (!string.IsNullOrEmpty(connectionString))
-                            //{
-                            //    var ipAdderss = connectionString.Split(';')[0].Replace("Server=", "");
-                            //    var dBName = connectionString.Split(';')[1].Replace("Database=", "");
-                            //    var userName = connectionString.Split(';')[2].Replace("User=", "");
-                            //    var userPassword = connectionString.Split(';')[3].Replace("Password=", "");
-
-                            //    try
-                            //    {
-                            //        bool retValue = ConnectCheck.IsConnection(configModel.ConnectionString);
-                            //        if (retValue)
-                            //            mainModel.DBState = $"DB 상태: 정상";
-                            //        else
-                            //            mainModel.DBState = $"DB 상태: 비정상";
-                            //    }
-                            //    catch
-                            //    {
-                            //        mainModel.DBState = $"DB 상태: 비정상";
-                            //    }
-                            //}
                         }
-
-                        // BI 연계 데이터
-                        //var biModel = App.Current.Services.GetService<OperationBiViewModel>()!;
-                        //if (biModel != null)
-                        //{
-                        //    mainModel.BiCount = biModel.DataCount;
-                        //}
-
-                        //// AI 연계 데이터
-                        //var aiModel = App.Current.Services.GetService<OperationAiViewModel>()!;
-                        //if (aiModel != null)
-                        //{
-                        //    mainModel.AiCount = aiModel.DataCount;
-                        //}
-
-                        //// 알람 연계 데이터
-                        //var alarmModel = App.Current.Services.GetService<OperationAlarmViewModel>()!;
-                        //if (alarmModel != null)
-                        //{
-                        //    mainModel.AlarmCount = alarmModel.DataCount;
-                        //}
-
-                        // 스케줄 정보
-                        //var schduleModel = App.Current.Services.GetService<OperationSchduleViewModel>()!;
-                        //if (schduleModel != null)
-                        //{
-                        //    mainModel.ScheduleMeasureBIBO = $" - BI 계측: {schduleModel.biTime} / BO 계측: {schduleModel.boTime}";
-                        //    //mainModel.ScheduleMeasureBO = $" - BO 계측: {schduleModel.boTime} (분)";
-                        //    mainModel.ScheduleMeasureAIAO = $" - AI 계측: {schduleModel.aiTime} / AO 계측: {schduleModel.aoTime}";
-                        //    //mainModel.ScheduleMeasureAO = $" - AO 계측: {schduleModel.aoTime} (분)";
-                        //    mainModel.ScheduleMeasureCounter = $" - CNT 계측: {schduleModel.counterTime}";
-                        //    mainModel.StoragePeriodStatistics = $" - 통계생성: {schduleModel.statisticalTime.ToString("HH:mm:ss")}";
-                        //}
-
-                        // 보관주기 정보
-                        //var storageModel = App.Current.Services.GetService<OperationStorageViewModel>()!;
-                        //if (storageModel != null)
-                        //{
-                        //    //mainModel.StoragePeriodData = $" - 데이터: {storageModel.GetStorage()}";
-                        //    mainModel.SPRealMinData = $" - MIN_DATA : {storageModel.hisMinTime}";
-                        //    mainModel.SPDayStatData = $" - DAYSTAT_DATA : {storageModel.hisStatTime}";
-                        //    mainModel.SPStatMinData = $" - STATISTICS_15MIN : {storageModel.statMinTime}";
-                        //    mainModel.SPStatHourData = $" - STATISTICS_HOUR : {storageModel.statHourTime}";
-                        //    mainModel.SPStatDayData = $" - STATISTICS_DAY : {storageModel.statDayTime}";
-                        //    mainModel.SPStatMonthData = $" - STATISTICS_MONTH : {storageModel.statMonthTime}";
-                        //    mainModel.SPStatYearData = $" - STATISTICS_YEAR : {storageModel.statYearTime}";
-                        //    mainModel.SPFiData = $" - FI_ALARM : {storageModel.hisFiTime}";
-                        //    mainModel.SPCommData = $" - COMM_STATE : {storageModel.hisCommTime}";
-                        //    mainModel.SPCommLogData = $" - COMM_STATE_LOG : {storageModel.hisCommLogTime}";
-
-                        //    //mainModel.ScheduleDelete = $" - 삭제주기: {storageModel.deleteTime}";
-                        //}
                     }
                     await Task.Delay(1000);
                 }

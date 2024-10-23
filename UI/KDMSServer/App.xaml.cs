@@ -18,7 +18,7 @@ namespace KDMSServer
     /// </summary>
     public partial class App : Application
     {
-        private Mutex mutex = null;
+       private Mutex mutex = null;
         public new static App Current => (App)Application.Current;
         public IServiceProvider Services { get; }
 

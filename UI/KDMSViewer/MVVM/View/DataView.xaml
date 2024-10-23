@@ -533,8 +533,9 @@
                                                 Margin="5"
                                                 AllowDefaultButton="False"
                                                 EditValue="{Binding FromDate}" 
-                                                Mask="{Binding TimeEditMask}"
-                                                MaskType="DateTime"
+                                                Mask="HH:mm:ss"
+                                                NullText="00:00:00"
+                                                MaskType="DateTimeAdvancingCaret"
                                                 DisplayFormatString="{Binding TimeEditMask}"
                                                 FontSize="{StaticResource FontSizeRegular}"
                                                 MaskUseAsDisplayFormat="True">  
@@ -580,8 +581,9 @@
                                                 Margin="5"
                                                 AllowDefaultButton="False"
                                                 EditValue="{Binding ToDate}" 
-                                                Mask="{Binding TimeEditMask}"
-                                                MaskType="DateTime"
+                                                Mask="HH:mm:ss"
+                                                NullText="00:00:00"
+                                                MaskType="DateTimeAdvancingCaret"
                                                 DisplayFormatString="{Binding TimeEditMask}"
                                                 FontSize="{StaticResource FontSizeRegular}"
                                                 MaskUseAsDisplayFormat="True">

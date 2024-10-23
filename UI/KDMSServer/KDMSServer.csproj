@@ -17,8 +17,8 @@
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.1.0" />
-    <PackageReference Include="DevExpress.Wpf.Core" Version="23.1.4" />
-    <PackageReference Include="DevExpress.Wpf.Themes.Win11Dark" Version="23.1.4" />
+    <PackageReference Include="DevExpress.Wpf.Core" Version="23.1.6" />
+    <PackageReference Include="DevExpress.Wpf.Themes.Win11Dark" Version="23.1.6" />
     <PackageReference Include="MediatR" Version="12.2.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />

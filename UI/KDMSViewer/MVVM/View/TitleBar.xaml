@@ -50,7 +50,10 @@
             </Button>
             <Button x:Name="btnMaximize" Click="OnMaximizeClick"
                     Margin="5 0 0 0">
-                <fa6:SvgAwesome Icon="Regular_Square"/>
+                <fa6:SvgAwesome Icon="Regular_WindowMaximize"
+                                Height="18"
+                                Width="18"/>
+                <!--Icon="Regular_WindowRestore"  최대화 복원-->
             </Button>
             <Button x:Name="btnMinimize" Click="OnMinimizeClick">
                 <fa6:SvgAwesome Icon="Solid_Minus"/>

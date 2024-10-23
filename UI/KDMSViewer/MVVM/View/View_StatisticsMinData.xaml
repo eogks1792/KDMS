@@ -231,28 +231,28 @@
                                             </DataTemplate>
                                         </GridViewColumn.CellTemplate>
                                     </GridViewColumn>
-                                    <GridViewColumn Header="전류A(평균)" Width="{Binding ElementName=avg_cur_a, Path=ActualWidth}">
+                                    <GridViewColumn Header="전류A" Width="{Binding ElementName=avg_cur_a, Path=ActualWidth}">
                                         <GridViewColumn.CellTemplate>
                                             <DataTemplate>
                                                 <TextBlock Text="{Binding AverageCurrentA}" TextAlignment="Center"/>
                                             </DataTemplate>
                                         </GridViewColumn.CellTemplate>
                                     </GridViewColumn>
-                                    <GridViewColumn Header="전류B(평균)" Width="{Binding ElementName=avg_cur_b, Path=ActualWidth}">
+                                    <GridViewColumn Header="전류B" Width="{Binding ElementName=avg_cur_b, Path=ActualWidth}">
                                         <GridViewColumn.CellTemplate>
                                             <DataTemplate>
                                                 <TextBlock Text="{Binding AverageCurrentB}" TextAlignment="Center"/>
                                             </DataTemplate>
                                         </GridViewColumn.CellTemplate>
                                     </GridViewColumn>
-                                    <GridViewColumn Header="전류C(평균)" Width="{Binding ElementName=avg_cur_c, Path=ActualWidth}">
+                                    <GridViewColumn Header="전류C" Width="{Binding ElementName=avg_cur_c, Path=ActualWidth}">
                                         <GridViewColumn.CellTemplate>
                                             <DataTemplate>
                                                 <TextBlock Text="{Binding AverageCurrentC}" TextAlignment="Center"/>
                                             </DataTemplate>
                                         </GridViewColumn.CellTemplate>
                                     </GridViewColumn>
-                                    <GridViewColumn Header="전류N(평균)" Width="{Binding ElementName=avg_cur_n, Path=ActualWidth}">
+                                    <GridViewColumn Header="전류N" Width="{Binding ElementName=avg_cur_n, Path=ActualWidth}">
                                         <GridViewColumn.CellTemplate>
                                             <DataTemplate>
                                                 <TextBlock Text="{Binding AverageCurrentN}" TextAlignment="Center"/>
