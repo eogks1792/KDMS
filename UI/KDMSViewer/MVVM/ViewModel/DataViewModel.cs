@@ -391,7 +391,8 @@ namespace KDMSViewer.ViewModel
                             {
                                 outputFile.Close();
                                 File.Delete(saveDialog.FileName);
-                                MessageBox.Show($"데이터가 없습니다.", "파일 저장", MessageBoxButton.OK, MessageBoxImage.Information);
+                                _worker.DataResultView("데이터가 없습니다.", "파일 저장");
+                                //MessageBox.Show($"데이터가 없습니다.", "파일 저장", MessageBoxButton.OK, MessageBoxImage.Information);
                                 return;
                             }
 
@@ -415,7 +416,8 @@ namespace KDMSViewer.ViewModel
                             {
                                 outputFile.Close();
                                 File.Delete(saveDialog.FileName);
-                                MessageBox.Show($"데이터가 없습니다.", "파일 저장", MessageBoxButton.OK, MessageBoxImage.Information);
+                                _worker.DataResultView("데이터가 없습니다.", "파일 저장");
+                                //MessageBox.Show($"데이터가 없습니다.", "파일 저장", MessageBoxButton.OK, MessageBoxImage.Information);
                                 return;
                             }
 
@@ -435,7 +437,8 @@ namespace KDMSViewer.ViewModel
                             {
                                 outputFile.Close();
                                 File.Delete(saveDialog.FileName);
-                                MessageBox.Show($"데이터가 없습니다.", "파일 저장", MessageBoxButton.OK, MessageBoxImage.Information);
+                                _worker.DataResultView("데이터가 없습니다.", "파일 저장");
+                                //MessageBox.Show($"데이터가 없습니다.", "파일 저장", MessageBoxButton.OK, MessageBoxImage.Information);
                                 return;
                             }
 
@@ -461,7 +464,8 @@ namespace KDMSViewer.ViewModel
                             {
                                 outputFile.Close();
                                 File.Delete(saveDialog.FileName);
-                                MessageBox.Show($"데이터가 없습니다.", "파일 저장", MessageBoxButton.OK, MessageBoxImage.Information);
+                                _worker.DataResultView("데이터가 없습니다.", "파일 저장");
+                                //MessageBox.Show($"데이터가 없습니다.", "파일 저장", MessageBoxButton.OK, MessageBoxImage.Information);
                                 return;
                             }
 
@@ -482,7 +486,8 @@ namespace KDMSViewer.ViewModel
                             {
                                 outputFile.Close();
                                 File.Delete(saveDialog.FileName);
-                                MessageBox.Show($"데이터가 없습니다.", "파일 저장", MessageBoxButton.OK, MessageBoxImage.Information);
+                                _worker.DataResultView("데이터가 없습니다.", "파일 저장");
+                                //MessageBox.Show($"데이터가 없습니다.", "파일 저장", MessageBoxButton.OK, MessageBoxImage.Information);
                                 return;
                             }
 
@@ -507,7 +512,8 @@ namespace KDMSViewer.ViewModel
                             {
                                 outputFile.Close();
                                 File.Delete(saveDialog.FileName);
-                                MessageBox.Show($"데이터가 없습니다.", "파일 저장", MessageBoxButton.OK, MessageBoxImage.Information);
+                                _worker.DataResultView("데이터가 없습니다.", "파일 저장");
+                                //MessageBox.Show($"데이터가 없습니다.", "파일 저장", MessageBoxButton.OK, MessageBoxImage.Information);
                                 return;
                             }
 
@@ -532,7 +538,8 @@ namespace KDMSViewer.ViewModel
                             {
                                 outputFile.Close();
                                 File.Delete(saveDialog.FileName);
-                                MessageBox.Show($"데이터가 없습니다.", "파일 저장", MessageBoxButton.OK, MessageBoxImage.Information);
+                                _worker.DataResultView("데이터가 없습니다.", "파일 저장");
+                                //MessageBox.Show($"데이터가 없습니다.", "파일 저장", MessageBoxButton.OK, MessageBoxImage.Information);
                                 return;
                             }
 
@@ -557,7 +564,8 @@ namespace KDMSViewer.ViewModel
                             {
                                 outputFile.Close();
                                 File.Delete(saveDialog.FileName);
-                                MessageBox.Show($"데이터가 없습니다.", "파일 저장", MessageBoxButton.OK, MessageBoxImage.Information);
+                                _worker.DataResultView("데이터가 없습니다.", "파일 저장");
+                                //MessageBox.Show($"데이터가 없습니다.", "파일 저장", MessageBoxButton.OK, MessageBoxImage.Information);
                                 return;
                             }
 
@@ -582,7 +590,8 @@ namespace KDMSViewer.ViewModel
                             {
                                 outputFile.Close();
                                 File.Delete(saveDialog.FileName);
-                                MessageBox.Show($"데이터가 없습니다.", "파일 저장", MessageBoxButton.OK, MessageBoxImage.Information);
+                                _worker.DataResultView("데이터가 없습니다.", "파일 저장");
+                                //MessageBox.Show($"데이터가 없습니다.", "파일 저장", MessageBoxButton.OK, MessageBoxImage.Information);
                                 return;
                             }
 
@@ -603,7 +612,8 @@ namespace KDMSViewer.ViewModel
                             {
                                 outputFile.Close();
                                 File.Delete(saveDialog.FileName);
-                                MessageBox.Show($"데이터가 없습니다.", "파일 저장", MessageBoxButton.OK, MessageBoxImage.Information);
+                                _worker.DataResultView("데이터가 없습니다.", "파일 저장");
+                                //MessageBox.Show($"데이터가 없습니다.", "파일 저장", MessageBoxButton.OK, MessageBoxImage.Information);
                                 return;
                             }
 
@@ -618,13 +628,16 @@ namespace KDMSViewer.ViewModel
                             }
                         }
 
-                        MessageBox.Show($"{saveDialog.SafeFileName} 파일 저장 성공.", "파일 저장", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                        _worker.DataResultView($"{saveDialog.SafeFileName} 파일 저장 성공", "파일 저장");
+                        //MessageBox.Show($"{saveDialog.SafeFileName} 파일 저장 성공.", "파일 저장", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"파일:{saveDialog.SafeFileName} 저장중 예외 발생 ex:{ex.Message}", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Error);
+                //MessageBox.Show($"파일:{saveDialog.SafeFileName} 저장중 예외 발생 ex:{ex.Message}", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Error);
+                _worker.DataResultView($"파일:{saveDialog.SafeFileName}\n저장중 예외 발생 ex:{ex.Message}", "파일 저장");
             }
         }
 

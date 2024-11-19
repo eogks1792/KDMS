@@ -106,8 +106,8 @@ namespace KDMSViewer
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(ServiceExtenions.GetAllAssemblies().ToArray()));
 
             //Data
-            services.AddSingleton<CommonDataModel>();
             services.AddSingleton<DataWorker>();
+            services.AddSingleton<CommonDataModel>();
 
             return services.BuildServiceProvider();
         }

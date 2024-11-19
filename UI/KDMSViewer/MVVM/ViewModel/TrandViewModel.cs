@@ -468,13 +468,21 @@ namespace KDMSViewer.ViewModel
         {
             if (TreeSelected == null)
             {
-                MessageBox.Show("선택된 데이터가 없습니다. \n\r개페기 및 다회로 스위치를 선택하세요.", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
+                IsInquiry = true;
+                Application.Current.Dispatcher.Invoke(() => { Mouse.OverrideCursor = Cursors.Arrow; });
+                
+                _worker.DataResultView("선택된 데이터가 없습니다. \n개페기 및 다회로 스위치를 선택하세요.");
+                //MessageBox.Show("선택된 데이터가 없습니다. \n\r개페기 및 다회로 스위치를 선택하세요.", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
 
             if (TreeSelected.Type != TreeTypeCode.EQUIPMENT)
             {
-                MessageBox.Show("선택된 데이터는 개페기 및 다회로 스위치가 아닙니다.", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
+                IsInquiry = true;
+                Application.Current.Dispatcher.Invoke(() => { Mouse.OverrideCursor = Cursors.Arrow; });
+
+                _worker.DataResultView("선택된 데이터는 개페기 및 다회로 스위치가 아닙니다.");
+                //MessageBox.Show("선택된 데이터는 개페기 및 다회로 스위치가 아닙니다.", "데이터 조회", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
 

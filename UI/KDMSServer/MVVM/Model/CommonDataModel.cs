@@ -1732,7 +1732,6 @@ namespace KDMSServer.Model
             return retval;
         }
 
-
         public bool DayStatTableDrop(DateTime date, int day)
         {
             bool retval = false;

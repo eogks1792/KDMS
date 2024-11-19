@@ -27,7 +27,7 @@ namespace KDMSViewer
         }
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            MessageBoxResult result = MessageBox.Show($"현재 시스템 동작 중입니다. \n\r프로그램을 종료하시겠습니까?", "프로그램 종료", MessageBoxButton.YesNo, MessageBoxImage.Information);
+            MessageBoxResult result = _worker.DataYesNoView($"현재 시스템 동작 중입니다. \n프로그램을 종료하시겠습니까?", "프로그램 종료");
             if (result == MessageBoxResult.No)
             {
                 e.Cancel = true;

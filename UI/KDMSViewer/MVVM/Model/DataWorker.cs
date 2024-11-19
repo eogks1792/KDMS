@@ -25,6 +25,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
@@ -1637,11 +1638,31 @@ namespace KDMSViewer.Model
         {
             DispatcherService.Invoke((System.Action)(() => 
             {
+                Mouse.OverrideCursor = Cursors.Arrow;
+
                 MessageClickView view = new MessageClickView();
-                view.Title = title;
+                view.Title = $" {title}";
                 view.Result.Text = msg;
                 view.ShowDialog();
             }));
+        }
+
+        public MessageBoxResult DataYesNoView(string msg, string title = "데이터 조회")
+        {
+            MessageBoxResult mbr = MessageBoxResult.No;
+            DispatcherService.Invoke((System.Action)(() =>
+            {
+                Mouse.OverrideCursor = Cursors.Arrow;
+
+                MessageYesNoView view = new MessageYesNoView();
+                view.Title = $" {title}";
+                view.Result.Text = msg;
+                if (view.ShowDialog() == true)
+                    mbr = MessageBoxResult.Yes;
+                else
+                    mbr = MessageBoxResult.No;
+            }));
+            return mbr;
         }
 
         public object GetPointItems(int type)
