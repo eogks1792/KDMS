@@ -140,18 +140,18 @@ namespace KDMSServer.ViewModel
                 try
                 {
                     using (var client = new TcpClient(PrimeIP, Convert.ToInt32(ControlPort)))
-                    firstCheck = true;
+                        firstCheck = true;
 
                     IsSocketConnetionText = $"{PrimeIP} KDMS 서버 연결 성공 (CONTORL Session)";
                 }
-                catch 
+                catch
                 {
                     if (!firstCheck)
                     {
                         try
                         {
                             using (var client = new TcpClient(BackupIP, Convert.ToInt32(ControlPort)))
-                            IsSocketConnetionText = $"{BackupIP} KDMS 서버 연결 성공 (CONTORL Session)";
+                                IsSocketConnetionText = $"{BackupIP} KDMS 서버 연결 성공 (CONTORL Session)";
                         }
                         catch (Exception ex)
                         {
@@ -178,7 +178,7 @@ namespace KDMSServer.ViewModel
                 JsonHelpers.AddOrUpdateAppSetting(filePath, "ChannelInfo:Scan", ScanPort);
                 //JsonHelpers.AddOrUpdateAppSetting(filePath, "ChannelInfo:Control", ControlPort);
                 JsonHelpers.AddOrUpdateAppSetting(filePath, "ChannelInfo:Alarm", EventPort);
-                
+
                 var root = (IConfigurationRoot)_configuration;
                 root.Reload();
 
@@ -200,13 +200,13 @@ namespace KDMSServer.ViewModel
             {
                 bool retValue = MySqlMapper.IsConnection(connectionString);
                 if (retValue)
-                    IsDBConnetionText = $"{Name} 데이터베이스 연결 성공"; 
+                    IsDBConnetionText = $"{Name} 데이터베이스 연결 성공";
                 else
                     IsDBConnetionText = $"{Name} 데이터베이스 연결 실패";
             }
             catch (Exception ex)
             {
-                IsDBConnetionText = $"{Name} 데이터베이스 연결 실패 ex:{ex.Message}"; 
+                IsDBConnetionText = $"{Name} 데이터베이스 연결 실패 ex:{ex.Message}";
             }
         }
 
@@ -241,12 +241,77 @@ namespace KDMSServer.ViewModel
         [RelayCommand]
         private void ManualStatistics()
         {
+            var dateTime = Manualtime;
             //_logger.Log($"{Manualtime.ToString("yyyy-MM-dd")} 통계 데이터 입력 시작");
             Task.Run(() =>
             {
                 IsInput = false;
-                _worker.GetProcData(SelectItem, Manualtime, true);
+                switch (SelectItem)
+                {
+                    case (int)ProcTypeCode.MINDATA:
+                        {
+
+                        }
+                        break;
+                    case (int)ProcTypeCode.DAYSTATDATA:
+                        {
+                            dateTime = dateTime.AddDays(-1);
+                        }
+                        break;
+                    case (int)ProcTypeCode.STATISTICSMIN:
+                        {
+
+                        }
+                        break;
+                    case (int)ProcTypeCode.STATISTICSHOUR:
+                        {
+                            dateTime = dateTime.AddHours(-1);
+                        }
+                        break;
+                    case (int)ProcTypeCode.STATISTICSDAY:
+                        {
+                            dateTime = dateTime.AddDays(-1);
+                        }
+                        break;
+                    case (int)ProcTypeCode.STATISTICSMONTH:
+                        {
+                            dateTime = dateTime.AddMonths(-1);
+                        }
+                        break;
+                    case (int)ProcTypeCode.STATISTICSYEAR:
+                        {
+                            dateTime = dateTime.AddYears(-1);
+                        }
+                        break;
+                    case (int)ProcTypeCode.FIALARM:
+                        {
+
+                        }
+                        break;
+                    case (int)ProcTypeCode.COMMSTATE:
+                        {
+
+                        }
+                        break;
+                    case (int)ProcTypeCode.COMMSTATELOG:
+                        {
+
+                        }
+                        break;
+                    case (int)ProcTypeCode.MINTABLECREATE:
+                        {
+
+                        }
+                        break;
+                    case (int)ProcTypeCode.DAYSTATTABLECREATE:
+                        {
+
+                        }
+                        break;
+                }
+                _worker.GetProcData(SelectItem, dateTime, true);
             });
         }
+
     }
 }

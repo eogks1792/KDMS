@@ -67,7 +67,7 @@ namespace KDMSServer.Features
 
                             var inputData = findDatas.Select(p => new StatisticsHour
                             {
-                                SaveTime = request.Time,
+                                SaveTime = request.Time.AddHours(1),
                                 Ceqid = p.Ceqid,
                                 Cpsid = p.Cpsid,
                                 Circuitno = p.Circuitno,
