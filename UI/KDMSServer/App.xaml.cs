@@ -10,6 +10,7 @@ using KDMSServer.ViewModel;
 using System.Diagnostics;
 using DevExpress.Xpf.Core;
 using KDMSServer.Model;
+using System.Security.Claims;
 
 namespace KDMSServer
 {

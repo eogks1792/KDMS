@@ -5,6 +5,7 @@ using KDMS.EF.Core.Infrastructure.Reverse.Models;
 using KdmsTcpSocket;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using System.Data;
 using System.IO;
@@ -49,6 +50,8 @@ namespace KDMSServer.Model
         public List<pdb_PowerTransformer> pdbPowerTransformers = new List<pdb_PowerTransformer>();
 
         private string BackupPath { get; set; }
+
+        private DataWorker worker => App.Current.Services.GetService<DataWorker>()!;
 
         public CommonDataModel(KdmsContext kdmsContext, IConfiguration configuration, ILogger logger)
         {
@@ -931,6 +934,9 @@ namespace KDMSServer.Model
                     data.Value = (float)alarm.fVal;
                     data.LogDesc = GetStringData(alarm.szDesc);
 
+
+
+
                     switch (alarm.uiPtType)
                     {
                         case (int)PointTypeCode.BI:
@@ -1104,8 +1110,39 @@ namespace KDMSServer.Model
                     data.FaultCurrentC = GetAlarmDataValue(ceqAnalogList, currentCId);
                     data.FaultCurrentN = GetAlarmDataValue(ceqAnalogList, currentNId);
 
+                    // 고장검출 알람이고 Value 값이 1이면 Fault Current A,B,C,N 검사
+                    if (data.AlarmName.Contains("고장") && data.Value == 1)
+                    {
+                        // 고장전류A 상 값이 0이면 다시 한번 RTDB PDB 다운로드
+                        if (data.FaultCurrentA == 0)
+                        {
+                            _logger.Debug($"[알람 실시간] PID;{find.pid} DPID:{find.dp_fk} FaultCurrentA:0 RTDB PDB 재다운로드 진행 시작");
+                            worker.KdmsRealTimePdbFile();
+                            _logger.Debug($"[알람 실시간] PID;{find.pid} DPID:{find.dp_fk} FaultCurrentA:0 RTDB PDB 재다운로드 진행 완료");
+                            data.FaultCurrentA = GetAlarmDataValue(ceqAnalogList, currentAId);
+                            data.FaultCurrentB = GetAlarmDataValue(ceqAnalogList, currentBId);
+                            data.FaultCurrentC = GetAlarmDataValue(ceqAnalogList, currentCId);
+                            data.FaultCurrentN = GetAlarmDataValue(ceqAnalogList, currentNId);
+                        }
+                    }
+                    else if (data.AlarmName.Contains("고장") && data.Value == 0)
+                    {
+                        data.FaultCurrentA = 0;
+                        data.FaultCurrentB = 0;
+                        data.FaultCurrentC = 0;
+                        data.FaultCurrentN = 0;
+                    }
+
                     string query = $"insert into history_fi_alarm values ('{data.SaveTime.ToString("yyyy-MM-dd HH:mm:ss")}', {data.Ceqid}, '{data.LogTime?.ToString("yyyy-MM-dd HH:mm:ss.fff")}', '{data.FrtuTime?.ToString("yyyy-MM-dd HH:mm:ss.fff")}', " +
                         $" {data.Cpsid}, {data.Circuitno}, '{data.Name?.Trim()}', '{data.Dl?.Trim()}', '{data.AlarmName}', {data.Value}, '{data.LogDesc}', {data.FaultCurrentA}, {data.FaultCurrentB}, {data.FaultCurrentC}, {data.FaultCurrentN})";
+
+                    //_logger.Debug("확인 로그 시작=====================================================================================");
+                    //_logger.Debug("");
+                    //_logger.Debug($"[알람 실시간] SAVETIME, CEQID, LOGTIME, FRTUTIME, CPSID, CIRCUITNO, NAME, DL, ALARMNAME, VALUE, LOGDESC, FaultCurrentA, FaultCurrentB, FaultCurrentC, FaultCurrentN");
+                    //_logger.Debug($"[알람 실시간] '{data.SaveTime.ToString("yyyy-MM-dd HH:mm:ss")}', {data.Ceqid}, '{data.LogTime?.ToString("yyyy-MM-dd HH:mm:ss.fff")}', '{data.FrtuTime?.ToString("yyyy-MM-dd HH:mm:ss.fff")}', " +
+                    //    $" {data.Cpsid}, {data.Circuitno}, '{data.Name?.Trim()}', '{data.Dl?.Trim()}', '{data.AlarmName}', {data.Value}, '{data.LogDesc}', {data.FaultCurrentA}, {data.FaultCurrentB}, {data.FaultCurrentC}, {data.FaultCurrentN}");
+                    //_logger.Debug("");
+                    //_logger.Debug("확인 로그 종료=====================================================================================");
 
                     using (MySqlMapper mapper = new MySqlMapper(_configuration))
                     {

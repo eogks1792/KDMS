@@ -78,6 +78,21 @@ namespace KDMSServer.Model
 
     [Serializable]
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct rtdb_Discrete
+    {
+        public UInt32 pid;
+        public double value;
+        public UInt32 tlq;
+        public UInt32 last_update;
+
+        public int GetSize()
+        {
+            return Marshal.SizeOf(this);
+        }
+    }
+
+    [Serializable]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct rtdb_Dmc
     {
         public UInt32 pid;

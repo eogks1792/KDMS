@@ -11,6 +11,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using System.IO;
 using System.Net.Sockets;
+using System.ServiceModel.Channels;
+using System.Windows;
 
 namespace KDMSServer.Model
 {
@@ -26,7 +28,10 @@ namespace KDMSServer.Model
 
         private SocketConnectionType socketConnectionType { get; set; }
 
-        private List<PdbListModel> pdbLists = new List<PdbListModel>();
+        private List<PdbListModel> pdbLists = new();
+
+        //private List<List<rtdb_Alarm>> alarmCheckList = new();
+        private Queue<List<rtdb_Alarm>> alarmCheckList = new();
 
         private bool SocketThreadFlag { get; set; } = false;
         private bool DBThreadFlag { get; set; } = true;
@@ -41,6 +46,20 @@ namespace KDMSServer.Model
             _mediator = mediator;
             _configuration = configuration;
             _commonData = commonData;
+
+            //Queue<int> ints = new();
+            //ints.Enqueue(1);
+            //ints.Enqueue(2);
+            //ints.Enqueue(3);
+            //ints.Enqueue(4);
+            //var count = ints.Count;
+            //for (int idx = 0; idx < count; idx++)
+            //{
+            //    var dd = ints.Dequeue();
+            //    MessageBox.Show(dd.ToString());
+            //}
+            //MessageBox.Show(ints.Count.ToString());
+
         }
         public void Init()
         {
@@ -495,10 +514,14 @@ namespace KDMSServer.Model
                                             var allAlarmList = alarmList.Where(p => p.uiPtType != (int)PointTypeCode.DMC).ToList();
                                             if (allAlarmList.Count > 0)
                                             {
-                                                await Task.Run(() =>
-                                                {
-                                                    _commonData.FiAlarmDataSave(alarmList);
-                                                });
+                                                alarmCheckList.Enqueue(allAlarmList);
+                                                //alarmCheckList.Add(allAlarmList);
+                                                _logger.Debug($"[알람 실시간] 실시간 알람 추가 완료. 현재 COUNT:{alarmCheckList.Count}");
+
+                                                //await Task.Run(() =>
+                                                //{
+                                                //    _commonData.FiAlarmDataSave(alarmList);
+                                                //});
                                             }
 
                                             var dmcAlarmList = alarmList.Where(p => p.uiPtType == (int)PointTypeCode.DMC).ToList();
@@ -569,6 +592,26 @@ namespace KDMSServer.Model
                     if (minDataInitialTime <= nowTime)
                     {
                         KdmsRealTimePdbFile();
+                        // 1분 RTDB 수신 완료 후 처리
+                        if(alarmCheckList.Count > 0)
+                        {
+                            var cnt = alarmCheckList.Count;
+                            await Task.Run(() =>
+                            {
+                                for(int idx = 0; idx < cnt; idx++) 
+                                {
+                                    var alarm = alarmCheckList.Dequeue();
+                                    _commonData.FiAlarmDataSave(alarm);
+                                }
+
+                                //foreach (var alarm in alarmCheckList) 
+                                //{
+                                //    _commonData.FiAlarmDataSave(alarm);
+                                //}
+                            });
+                        }
+                        //else {_logger.Debug("[알람 실시간] 처리할 알람이 없습니다. COUNT:0");}
+
                         if (_commonData.rtdbAnalogs.Count > 0)
                         {
                             _logger.ServerLog($"[1분 실시간] {minDataInitialTime.ToString("yyyy-MM-dd HH:mm:ss")} 데이터 입력 시작");
